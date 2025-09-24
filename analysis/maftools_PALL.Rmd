@@ -1,0 +1,1294 @@
+---
+title: "PALL visualization data"
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_float: true
+    theme: united
+    code_folding: hide
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+author: "Gianluca Alessio Mariani"
+
+params:
+  manual_timestamp: "250924_1500"
+  project: "pall"
+  clinical_data: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/clinical_data.csv"
+  maf_tumor_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic"
+  cnv_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/variantalker/results/250923_1647_pall/250923/annotation/cnv"
+  forgistic_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4"
+  results_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results"
+  refgene_file: "/hpcnfs/scratch/DIMA/gmariani/__softwares/gistic2/gistic2/refgenes/hg38.UCSC.add_mir.160920/gistic2.refgene.hg38.UCSC.add_miR.160920.mat"
+  gene_table1: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv"
+  gene_table2: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv"
+  cnvkit_out_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results/250918_1626_cnvkit_pall"
+  run_gistic2: TRUE
+---
+
+```{r}
+knitr::opts_chunk$set(echo       = FALSE,
+                      message    = FALSE,
+                      warning    = FALSE,
+                      cache      = FALSE,
+                      autodep    = TRUE,
+                      fig.align  = 'center',
+                      fig.width  = 10,
+                      fig.height = 8)
+```
+
+```{r params_for_interactive_session}
+# Chunk: setup_parameters
+if (!exists("params")) {
+  params <- list(
+    manual_timestamp = "250924_1500",
+    project = "pall",
+    clinical_data = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/clinical_data.csv",
+    maf_tumor_dir = "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic",
+    cnv_dir = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/variantalker/results/250923_1647_pall/250923/annotation/cnv",
+    forgistic_dir = "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4",
+    results_dir = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results",
+    refgene_file = "/hpcnfs/scratch/DIMA/gmariani/__softwares/gistic2/gistic2/refgenes/hg38.UCSC.add_mir.160920/gistic2.refgene.hg38.UCSC.add_miR.160920.mat",
+    gene_table1 = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv",
+    gene_table2 = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv",
+    cnvkit_out_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results/250918_1626_cnvkit_pall",
+    run_gistic2 = TRUE
+  )
+}
+
+if (!is.null(params$manual_timestamp) && 
+    !is.na(params$manual_timestamp) &&
+    params$manual_timestamp != "") {
+  timestamp <- params$manual_timestamp
+} else {
+  timestamp <- format(Sys.time(), "%y%m%d_%H%M")
+}
+```
+
+```{r load_libraries_and_setup}
+library(maftools)
+library(data.table)
+library(tidyr)
+library(dplyr)
+library(stringr)
+library(GenomicRanges)
+library(readr)
+library("mclust")
+library(ggplot2)
+library(circlize)
+library(RCircos)
+library("RColorBrewer")
+```
+
+```{r functions1}
+get_sample_id <- function(filepath) {
+  tools::file_path_sans_ext(basename(filepath)) %>% 
+    sub("\\.cnv\\.annotated$", "", .) %>% 
+    sub("\\.target\\.counts$", "", .)
+}
+
+process_sample_for_gistic <- function(cnv_file, target_counts_file) {
+  sample_id <- strsplit(basename(cnv_file), "\\.")[[1]][[1]]
+  
+  # 1. Leggi CNV
+  cnv <- tryCatch({
+    read.delim(cnv_file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+  }, error = function(e) {
+    message(sprintf("Errore nella lettura di %s: %s", cnv_file, e$message))
+    return(NULL)
+  })
+  
+  if (is.null(cnv) || !"All.protein.coding.genes" %in% colnames(cnv)) return(NULL)
+  cnv <- cnv[cnv$All.protein.coding.genes != "", ]
+  cnv$CNV_Status <- ifelse(cnv$Type == "DEL", "Del",
+                           ifelse(cnv$Type == "DUP", "Amp", NA))
+  cnv <- cnv[!is.na(cnv$CNV_Status), ]
+  if (nrow(cnv) == 0) return(NULL)
+
+  # 2. Leggi target counts
+  target_counts <- tryCatch({
+    read.delim(target_counts_file, header = TRUE, comment.char = "#", stringsAsFactors = FALSE)
+  }, error = function(e) {
+    message(sprintf("Errore nella lettura di %s: %s", target_counts_file, e$message))
+    return(NULL)
+  })
+  if (is.null(target_counts) || nrow(target_counts) == 0) return(NULL)
+
+  marker_gr <- GRanges(
+    seqnames = target_counts$contig,
+    ranges = IRanges(start = target_counts$start, end = target_counts$stop)
+  )
+
+  cnv_gr <- GRanges(
+    seqnames = cnv$Chromosome,
+    ranges = IRanges(start = cnv$Start, end = cnv$End)
+  )
+
+  overlaps <- countOverlaps(cnv_gr, marker_gr)
+
+  # 🔹 1. File per GISTIC: una riga per segmento
+  gistic_seg_df <- cnv %>%
+    mutate(Sample = sample_id,
+           Start_Position = Start,
+           End_Position = End,
+           Num_Markers = overlaps,
+           Seg_CN = logRatio - 1,
+           Chromosome = sub("^chr", "", Chromosome)) %>%
+    select(Sample, Chromosome, Start_Position, End_Position, Num_Markers, Seg_CN, Classification) %>%
+    distinct()  # Elimina eventuali duplicati
+
+  # 🔹 2. File gene-level (solo se ti serve)
+  gene_annotation_df <- cnv %>%
+    mutate(Sample = sample_id,
+           Start_Position = Start,
+           End_Position = End) %>%
+    separate_rows(All.protein.coding.genes, sep = ",\\s*") %>%
+    mutate(Hugo_Symbol = All.protein.coding.genes) %>%
+    select(Hugo_Symbol, Sample, CNV_Status, Chromosome, Start_Position, End_Position)
+
+  # 8. Ritorna entrambi
+  return(list(
+    cnv_list = gene_annotation_df,
+    gistic_seg_list = gistic_seg_df
+  ))
+}
+
+
+
+
+
+
+
+generate_gistic_uniform_file <- function(gistic_table_path, output_path = NULL) {
+  seg <- read_tsv(gistic_table_path, col_types = cols(
+    Sample = col_character(),
+    Chromosome = col_character(),
+    Start_Position = col_double(),
+    End_Position = col_double(),
+    Num_Markers = col_double(),
+    Seg_CN = col_double()
+  ))
+
+  all_segments <- GRanges(
+    seqnames = seg$Chromosome,
+    ranges = IRanges(start = seg$Start_Position, end = seg$End_Position)
+  )
+
+  unified_regions <- reduce(all_segments)
+
+  unified_df <- data.frame(
+    Chromosome = as.character(seqnames(unified_regions)),
+    Start_Position = start(unified_regions),
+    End_Position = end(unified_regions)
+  )
+
+  unified_df <- unified_df %>%
+    arrange(factor(Chromosome, levels = c(as.character(1:22), "X", "Y", "MT")), Start_Position)
+
+  samples <- unique(seg$Sample)
+
+  create_uniform_segments <- function(sample_id) {
+    sample_segments <- seg %>% filter(Sample == sample_id)
+    
+    sample_gr <- GRanges(
+      seqnames = sample_segments$Chromosome,
+      ranges = IRanges(sample_segments$Start_Position, sample_segments$End_Position),
+      Num_Markers = sample_segments$Num_Markers,
+      Seg_CN = sample_segments$Seg_CN
+    )
+    
+    overlaps <- findOverlaps(unified_regions, sample_gr)
+    
+    df_out <- unified_df %>%
+      mutate(
+        Sample = sample_id,
+        Num_Markers = NA_real_,
+        Seg_CN = NA_real_
+      )
+    
+    for (i in seq_along(overlaps@from)) {
+      idx_region <- overlaps@from[i]
+      idx_sample <- overlaps@to[i]
+      
+      df_out$Num_Markers[idx_region] <- mcols(sample_gr)$Num_Markers[idx_sample]
+      df_out$Seg_CN[idx_region] <- mcols(sample_gr)$Seg_CN[idx_sample]
+    }
+    
+    df_out$Seg_CN[is.na(df_out$Seg_CN)] <- 0
+    df_out$Num_Markers[is.na(df_out$Num_Markers)] <- 0
+    
+    df_out %>%
+      select(Sample, Chromosome, Start_Position, End_Position, Num_Markers, Seg_CN)
+  }
+  uniform_seg_list <- lapply(samples, create_uniform_segments)
+  uniform_seg <- bind_rows(uniform_seg_list)
+  if (!is.null(output_path)) {
+    write_tsv(uniform_seg, output_path, na = "NA")
+    message("✅ File uniforme scritto in: ", output_path)
+  }
+  return(uniform_seg)
+}
+
+```
+
+```{r functions2}
+
+```
+
+```{r preprocessing}
+samples <- list.dirs(params$maf_tumor_dir, full.names = FALSE, recursive = FALSE)
+
+genelist <- unique(c(read_csv(params$gene_table1)$Hugo_Symbol, read_csv(params$gene_table2)$Hugo_Symbol))
+
+cnv_files <- file.path(params$cnv_dir, samples, paste0(samples, ".cnv.annotated.tsv"))
+cnv_files <- cnv_files[file.exists(cnv_files)]
+
+gistic_files <- file.path(params$forgistic_dir, samples, paste0(samples, ".target.counts.gz"))
+gistic_files <- gistic_files[file.exists(gistic_files)]
+
+cnv_samples <- setNames(cnv_files, sapply(cnv_files, get_sample_id))
+target_samples <- setNames(gistic_files, sapply(gistic_files, get_sample_id))
+
+common_samples <- intersect(names(cnv_samples), names(target_samples))
+
+file_pairs <- lapply(common_samples, function(sid) {
+  list(
+    sample_id = sid,
+    cnv_file = cnv_samples[[sid]],
+    target_file = target_samples[[sid]]
+  )
+})
+
+results <- lapply(file_pairs, function(pair) {
+  process_sample_for_gistic(pair$cnv_file, pair$target_file)
+})
+```
+
+```{r generate_files}
+# Combina tutti i risultati validi
+cnv_combined <- bind_rows(lapply(results, `[[`, "cnv_list"))
+gistic_seg_combined <- bind_rows(lapply(results, `[[`, "gistic_seg_list"))
+
+gistic_seg_combined_original <- gistic_seg_combined[, c("Sample", "Chromosome", "Start_Position", "End_Position", "Num_Markers", "Seg_CN")]
+gistic_seg_combined_tierI_II <- gistic_seg_combined[
+  gistic_seg_combined$Classification %in% c("Pathogenic", "Likely pathogenic"),
+  c("Sample", "Chromosome", "Start_Position", "End_Position", "Num_Markers", "Seg_CN")
+]
+gistic_seg_combined_tierI_II_III <- gistic_seg_combined[
+  gistic_seg_combined$Classification %in% c("Pathogenic", "Likely pathogenic", "Uncertain significance"),
+  c("Sample", "Chromosome", "Start_Position", "End_Position", "Num_Markers", "Seg_CN")
+]
+
+maf_files <- file.path(params$maf_tumor_dir, samples, paste0(samples, ".maf"))
+maf_files <- maf_files[file.exists(maf_files)]
+merged_maf <- merge_mafs(maf_files)
+
+maf_obj <- read.maf(maf = merged_maf@data, clinicalData = params$clinical_data, cnTable = cnv_combined)
+```
+
+```{r genelists}
+maf_obj_filtered_cancervar_I_II_III <- maf_obj@data[maf_obj@data$CancerVar %in% c("Tier_I_strong", "Tier_II_potential", "Tier_III_Uncertain"), ]
+genelist_filtered_cancervar_I_II_III <- unique(maf_obj_filtered_cancervar_I_II_III$Hugo_Symbol)
+
+maf_obj_filtered_cancervar_I_II <- maf_obj@data[maf_obj@data$CancerVar %in% c("Tier_I_strong", "Tier_II_potential"), ]
+genelist_filtered_cancervar_I_II <- unique(maf_obj_filtered_cancervar_I_II$Hugo_Symbol)
+```
+
+```{r filters}
+clin_data <- maf_obj@clinical.data
+clin_data_sorted <- clin_data[order(clin_data$T1221, clin_data$Sample_group), ]
+sample_order <- clin_data_sorted$Tumor_Sample_Barcode
+
+# gene filters
+mut_summary <- getGeneSummary(maf_obj)
+mut_summary_filtered <- mut_summary[mut_summary$Hugo_Symbol %in% genelist, ]
+top_in_genelist <- head(mut_summary_filtered[order(-mut_summary_filtered$MutatedSamples), "Hugo_Symbol"], 20)
+
+mut_summary_filtered_cancervar_I_II <- mut_summary[mut_summary$Hugo_Symbol %in% genelist_filtered_cancervar_I_II, ]
+top_in_genelist_cancervar_I_II <- head(mut_summary_filtered_cancervar_I_II[order(-mut_summary_filtered_cancervar_I_II$MutatedSamples), "Hugo_Symbol"], 20)
+
+mut_summary_filtered_cancervar_I_II_III <- mut_summary[mut_summary$Hugo_Symbol %in% genelist_filtered_cancervar_I_II_III, ]
+top_in_genelist_cancervar_I_II_III <- head(mut_summary_filtered_cancervar_I_II_III[order(-mut_summary_filtered_cancervar_I_II_III$MutatedSamples), "Hugo_Symbol"], 20)
+
+# sample filters
+sample_order_diag_relapse <- clin_data_sorted$Tumor_Sample_Barcode[
+  clin_data_sorted$Sample_group %in% c("diag", "relapse1")
+]
+maf_obj_filtered_diag_relapse <- subsetMaf(maf = maf_obj, tsb = sample_order_diag_relapse)
+
+sample_order_diag <- clin_data_sorted$Tumor_Sample_Barcode[
+  clin_data_sorted$Sample_group %in% c("diag")
+]
+maf_obj_filtered_diag <- subsetMaf(maf = maf_obj, tsb = sample_order_diag)
+
+sample_order_relapse <- clin_data_sorted$Tumor_Sample_Barcode[
+  clin_data_sorted$Sample_group %in% c("relapse1")
+]
+maf_obj_filtered_relapse <- subsetMaf(maf = maf_obj, tsb = sample_order_relapse)
+
+samples_neg <- clin_data_sorted$Tumor_Sample_Barcode[clin_data_sorted$T1221 == "NEG"]
+maf_obj_filtered_neg <- subsetMaf(maf = maf_obj, tsb = samples_neg)
+samples_pos <- clin_data_sorted$Tumor_Sample_Barcode[clin_data_sorted$T1221 == "POS"]
+maf_obj_filtered_pos <- subsetMaf(maf = maf_obj, tsb = samples_pos)
+```
+
+```{r gistic_setup}
+# setup directories
+output_dir <- file.path(params$results_dir, paste0(timestamp, "_", params$project))
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+
+
+
+gistic_table_path <- file.path(output_dir, "all_samples_gistic.seg")
+uniform_gistic_table_path <- file.path(output_dir, "all_samples_gistic_uniform.seg")
+
+gistic_output_dir <- file.path(output_dir, "gistic_out")
+if (!dir.exists(gistic_output_dir)) {
+  dir.create(gistic_output_dir, recursive = TRUE)
+}
+
+uniform_gistic_table_pos_path <- file.path(output_dir, "pos_samples_gistic_uniform.seg")
+
+pos_samples_gistic_output_dir <- file.path(output_dir, "pos_samples_gistic_out")
+if (!dir.exists(pos_samples_gistic_output_dir)) {
+  dir.create(pos_samples_gistic_output_dir, recursive = TRUE)
+}
+
+uniform_gistic_table_neg_path <- file.path(output_dir, "neg_samples_gistic_uniform.seg")
+
+neg_samples_gistic_output_dir <- file.path(output_dir, "neg_samples_gistic_out")
+if (!dir.exists(neg_samples_gistic_output_dir)) {
+  dir.create(neg_samples_gistic_output_dir, recursive = TRUE)
+}
+
+
+
+
+
+
+gistic_table_path_tierI_II <- file.path(output_dir, "all_samples_gistic_tierI_II.seg")
+uniform_gistic_table_path_tierI_II <- file.path(output_dir, "all_samples_gistic_uniform_tierI_II.seg")
+
+gistic_output_dir_tierI_II <- file.path(output_dir, "gistic_out_tierI_II")
+if (!dir.exists(gistic_output_dir_tierI_II)) {
+  dir.create(gistic_output_dir_tierI_II, recursive = TRUE)
+}
+
+uniform_gistic_table_pos_tierI_II_path <- file.path(output_dir, "pos_samples_gistic_uniform_tierI_II.seg")
+
+pos_samples_tierI_II_gistic_output_dir <- file.path(output_dir, "pos_samples_gistic_out_tierI_II")
+if (!dir.exists(pos_samples_tierI_II_gistic_output_dir)) {
+  dir.create(pos_samples_tierI_II_gistic_output_dir, recursive = TRUE)
+}
+
+uniform_gistic_table_neg_tierI_II_path <- file.path(output_dir, "neg_samples_gistic_uniform_tierI_II.seg")
+
+neg_samples_tierI_II_gistic_output_dir <- file.path(output_dir, "neg_samples_gistic_out_tierI_II")
+if (!dir.exists(neg_samples_tierI_II_gistic_output_dir)) {
+  dir.create(neg_samples_tierI_II_gistic_output_dir, recursive = TRUE)
+}
+
+
+
+
+
+gistic_table_path_tierI_II_III <- file.path(output_dir, "all_samples_gistic_tierI_II_III.seg")
+uniform_gistic_table_path_tierI_II_III <- file.path(output_dir, "all_samples_gistic_uniform_tierI_II_III.seg")
+
+gistic_output_dir_tierI_II_III <- file.path(output_dir, "gistic_out_tierI_II_III")
+if (!dir.exists(gistic_output_dir_tierI_II_III)) {
+  dir.create(gistic_output_dir_tierI_II_III, recursive = TRUE)
+}
+
+uniform_gistic_table_pos_tierI_II_III_path <- file.path(output_dir, "pos_samples_gistic_uniform_tierI_II_III.seg")
+
+pos_samples_tierI_II_III_gistic_output_dir <- file.path(output_dir, "pos_samples_gistic_out_tierI_II_III")
+if (!dir.exists(pos_samples_tierI_II_III_gistic_output_dir)) {
+  dir.create(pos_samples_tierI_II_III_gistic_output_dir, recursive = TRUE)
+}
+
+uniform_gistic_table_neg_tierI_II_III_path <- file.path(output_dir, "neg_samples_gistic_uniform_tierI_II_III.seg")
+
+neg_samples_tierI_II_III_gistic_output_dir <- file.path(output_dir, "neg_samples_gistic_out_tierI_II_III")
+if (!dir.exists(neg_samples_tierI_II_III_gistic_output_dir)) {
+  dir.create(neg_samples_tierI_II_III_gistic_output_dir, recursive = TRUE)
+}
+```
+
+```{r gistic_exe}
+if (params$run_gistic2) {
+  # generate files
+  write.table(gistic_seg_combined_original, file = gistic_table_path, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(gistic_seg_combined_tierI_II, file = gistic_table_path_tierI_II, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(gistic_seg_combined_tierI_II_III, file = gistic_table_path_tierI_II_III, sep = "\t", row.names = FALSE, quote = FALSE)
+  
+  # all genes
+  uniform_gistic_table <- generate_gistic_uniform_file(gistic_table_path, output_path = uniform_gistic_table_path)
+  cmd <- sprintf(
+    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
+    shQuote(gistic_output_dir),
+    shQuote(uniform_gistic_table_path),
+    shQuote(params$refgene_file),
+    0.2, 0.2, 10
+  )
+  system(cmd)
+  
+  uniform_gistic_table_pos <- uniform_gistic_table %>%
+    filter(Sample %in% samples_pos)
+  write.table(uniform_gistic_table_pos, file = uniform_gistic_table_pos_path, sep = "\t", row.names = FALSE, quote = FALSE)
+  cmd <- sprintf(
+    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
+    shQuote(pos_samples_gistic_output_dir),
+    shQuote(uniform_gistic_table_pos_path),
+    shQuote(params$refgene_file),
+    0.2, 0.2, 10
+  )
+  system(cmd)
+  
+  uniform_gistic_table_neg <- uniform_gistic_table %>%
+    filter(Sample %in% samples_neg)
+  write.table(uniform_gistic_table_neg, file = uniform_gistic_table_neg_path, sep = "\t", row.names = FALSE, quote = FALSE)
+  cmd <- sprintf(
+    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
+    shQuote(neg_samples_gistic_output_dir),
+    shQuote(uniform_gistic_table_neg_path),
+    shQuote(params$refgene_file),
+    0.2, 0.2, 10
+  )
+  system(cmd)
+  
+  
+  
+  # tier I II
+    uniform_gistic_table_tierI_II <- generate_gistic_uniform_file(gistic_table_path_tierI_II, output_path = uniform_gistic_table_path_tierI_II)
+  cmd <- sprintf(
+    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
+    shQuote(gistic_output_dir_tierI_II),
+    shQuote(uniform_gistic_table_path_tierI_II),
+    shQuote(params$refgene_file),
+    0.2, 0.2, 10
+  )
+  system(cmd)
+  
+  uniform_gistic_table_pos_tierI_II <- uniform_gistic_table_tierI_II %>%
+    filter(Sample %in% samples_pos)
+  write.table(uniform_gistic_table_pos_tierI_II, file = uniform_gistic_table_pos_tierI_II_path, sep = "\t", row.names = FALSE, quote = FALSE)
+  cmd <- sprintf(
+    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
+    shQuote(pos_samples_tierI_II_gistic_output_dir),
+    shQuote(uniform_gistic_table_pos_tierI_II_path),
+    shQuote(params$refgene_file),
+    0.2, 0.2, 10
+  )
+  system(cmd)
+  
+  uniform_gistic_table_neg_tierI_II <- uniform_gistic_table_tierI_II %>%
+    filter(Sample %in% samples_neg)
+  write.table(uniform_gistic_table_neg_tierI_II, file = uniform_gistic_table_neg_tierI_II_path, sep = "\t", row.names = FALSE, quote = FALSE)
+  cmd <- sprintf(
+    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
+    shQuote(neg_samples_tierI_II_gistic_output_dir),
+    shQuote(uniform_gistic_table_neg_tierI_II_path),
+    shQuote(params$refgene_file),
+    0.2, 0.2, 10
+  )
+  system(cmd)
+  
+  
+  
+  # tier I II III
+    uniform_gistic_table_tierI_II_III <- generate_gistic_uniform_file(gistic_table_path_tierI_II_III, output_path = uniform_gistic_table_path_tierI_II_III)
+  cmd <- sprintf(
+    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
+    shQuote(gistic_output_dir_tierI_II_III),
+    shQuote(uniform_gistic_table_path_tierI_II_III),
+    shQuote(params$refgene_file),
+    0.2, 0.2, 10
+  )
+  system(cmd)
+  
+  uniform_gistic_table_pos_tierI_II_III <- uniform_gistic_table_tierI_II_III %>%
+    filter(Sample %in% samples_pos)
+  write.table(uniform_gistic_table_pos_tierI_II_III, file = uniform_gistic_table_pos_tierI_II_III_path, sep = "\t", row.names = FALSE, quote = FALSE)
+  cmd <- sprintf(
+    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
+    shQuote(pos_samples_tierI_II_III_gistic_output_dir),
+    shQuote(uniform_gistic_table_pos_tierI_II_III_path),
+    shQuote(params$refgene_file),
+    0.2, 0.2, 10
+  )
+  system(cmd)
+  
+  uniform_gistic_table_neg_tierI_II_III <- uniform_gistic_table_tierI_II_III %>%
+    filter(Sample %in% samples_neg)
+  write.table(uniform_gistic_table_neg_tierI_II_III, file = uniform_gistic_table_neg_tierI_II_III_path, sep = "\t", row.names = FALSE, quote = FALSE)
+  cmd <- sprintf(
+    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
+    shQuote(neg_samples_tierI_II_III_gistic_output_dir),
+    shQuote(uniform_gistic_table_neg_tierI_II_III_path),
+    shQuote(params$refgene_file),
+    0.2, 0.2, 10
+  )
+  system(cmd)
+  
+} else {
+  uniform_gistic_table <- read_tsv(uniform_gistic_table_path)
+  uniform_gistic_table_pos <- read_tsv(uniform_gistic_table_pos_path)
+  uniform_gistic_table_neg <- read_tsv(uniform_gistic_table_neg_path)
+  uniform_gistic_table_tierI_II <- read_tsv(uniform_gistic_table_path_tierI_II)
+  uniform_gistic_table_pos_tierI_II <- read_tsv(uniform_gistic_table_pos_tierI_II_path)
+  uniform_gistic_table_neg_tierI_II <- read_tsv(uniform_gistic_table_neg_tierI_II_path)
+  uniform_gistic_table_tierI_II_III <- read_tsv(uniform_gistic_table_path_tierI_II_III)
+  uniform_gistic_table_pos_tierI_II_III <- read_tsv(uniform_gistic_table_pos_tierI_II_III_path)
+  uniform_gistic_table_neg_tierI_II_III <- read_tsv(uniform_gistic_table_neg_tierI_II_III_path)
+}
+
+gistic_obj = readGistic(gisticDir = gistic_output_dir, isTCGA = FALSE)
+pos_gistic_obj = readGistic(gisticDir = pos_samples_gistic_output_dir, isTCGA = FALSE)
+neg_gistic_obj = readGistic(gisticDir = neg_samples_gistic_output_dir, isTCGA = FALSE)
+
+gobj_12 = readGistic(gisticDir = gistic_output_dir_tierI_II, isTCGA = FALSE)
+p_gobj_12 = readGistic(gisticDir = pos_samples_tierI_II_gistic_output_dir, isTCGA = FALSE)
+n_gobj_12 = readGistic(gisticDir = neg_samples_tierI_II_gistic_output_dir, isTCGA = FALSE)
+
+gobj_123 = readGistic(gisticDir = gistic_output_dir_tierI_II_III, isTCGA = FALSE)
+p_gobj_123 = readGistic(gisticDir = pos_samples_tierI_II_III_gistic_output_dir, isTCGA = FALSE)
+n_gobj_123 = readGistic(gisticDir = neg_samples_tierI_II_III_gistic_output_dir, isTCGA = FALSE)
+```
+
+# Maftools Report
+
+## Summary
+
+### Summary - all samples
+
+```{r summary1}
+plotmafSummary(maf = maf_obj, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
+```
+
+### Summary - diagnosis samples
+
+```{r summary2}
+plotmafSummary(maf = maf_obj_filtered_diag, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
+```
+
+### Summary - first relapse samples
+
+```{r summary3}
+plotmafSummary(maf = maf_obj_filtered_relapse, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
+```
+
+### Oncoplots
+
+#### Chiara's List, all samples
+
+```{r oncoplot1}
+oncoplot(
+  maf = maf_obj,
+  genes = top_in_genelist$Hugo_Symbol, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+```
+
+#### CancerVar Tier I and II genes, all samples
+
+```{r oncoplot2}
+oncoplot(
+  maf = maf_obj,
+  genes = top_in_genelist_cancervar_I_II$Hugo_Symbol, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+```
+
+#### CancerVar Tier I, II and III genes, all samples
+
+```{r oncoplot3}
+oncoplot(
+  maf = maf_obj,
+  genes = top_in_genelist_cancervar_I_II_III$Hugo_Symbol, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+```
+
+#### Chiara's List, only diagnosis and relapse 1 samples
+
+```{r oncoplot4}
+oncoplot(
+  maf = maf_obj_filtered_diag_relapse,
+  genes = top_in_genelist$Hugo_Symbol, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_diag_relapse
+  )
+```
+
+#### CancerVar Tier I, and II genes, only diagnosis and relapse 1 samples
+
+```{r oncoplot5}
+oncoplot(
+  maf = maf_obj_filtered_diag_relapse,
+  genes = top_in_genelist_cancervar_I_II$Hugo_Symbol, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_diag_relapse
+  )
+```
+
+#### CancerVar Tier I, II and III genes, only diagnosis and relapse 1 samples
+
+```{r oncoplot6}
+oncoplot(
+  maf = maf_obj_filtered_diag_relapse,
+  genes = top_in_genelist_cancervar_I_II_III$Hugo_Symbol, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_diag_relapse
+  )
+```
+
+```{r all_patients_oncoplot, results='asis', fig.height=6}
+all_barcodes <- unique(maf_obj@data$Tumor_Sample_Barcode)
+patient_ids <- gsub("-.*", "", all_barcodes)
+barcode_map <- split(all_barcodes, patient_ids)
+
+for (patient in names(barcode_map)) {
+  
+  patient_barcodes <- barcode_map[[patient]]
+  maf_patient <- subsetMaf(maf = maf_obj, tsb = patient_barcodes)
+  top_genes <- getGeneSummary(maf_patient)
+
+  if (nrow(top_genes) == 0) {
+    cat("## Patient:", patient, " - No mutation found\n\n")
+    next
+  }
+
+  num_genes = 10
+  genes_to_plot <- head(top_genes$Hugo_Symbol, num_genes)
+
+  cat("## Patient:", patient, "- Top", num_genes, "mutated genes\n\n")
+
+  # Plot
+  oncoplot(
+    maf = maf_patient,
+    genes = genes_to_plot,
+    showTumorSampleBarcodes = TRUE,
+    clinicalFeatures = c("T1221", "Sample_group"), 
+    barcode_mar = 12.5,
+    SampleNamefontSize = 1.3
+  )
+}
+```
+
+### Transitions-Transversions
+
+```{r transition_transversions, fig.height=13}
+maf_obj.titv = titv(maf = maf_obj, plot = FALSE, useSyn = TRUE)
+plotTiTv(res = maf_obj.titv, showBarcodes = TRUE)
+```
+
+### TMB Comparison Graph
+
+```{r TMB_comparison}
+maf_obj.mutload = tcgaCompare(maf = maf_obj, cohortName = 'PALL', logscale = TRUE, capture_size = 50)
+```
+
+### VAF Plot, positive samples
+
+```{r vaf_plot1}
+plotVaf(maf = maf_obj_filtered_pos, vafCol = 'tumor_f')
+```
+
+### VAF Plot, negative samples
+
+```{r vaf_plot2}
+plotVaf(maf = maf_obj_filtered_neg, vafCol = 'tumor_f')
+```
+
+## Gistic
+
+### Chromosome Plot
+
+```{r gist_chrplot1}
+gisticChromPlot(gistic = gistic_obj, markBands = "all")
+```
+
+### Chromosome Plot, positive samples
+
+```{r gist_chrplot2}
+gisticChromPlot(gistic = pos_gistic_obj, markBands = "all")
+```
+
+### Chromosome Plot, negative samples
+
+```{r gist_chrplot3}
+gisticChromPlot(gistic = neg_gistic_obj, markBands = "all")
+```
+
+### Chromosome Plot comparison, Amplifications pos vs neg
+
+```{r gistic_comparison1}
+coGisticChromPlot(gistic1 = pos_gistic_obj, gistic2 = neg_gistic_obj, g1Name = "positive samples", g2Name = "negative samples", type = 'Amp')
+```
+
+### Chromosome Plot comparison, Deletions pos vs neg
+
+```{r gistic_comparison2}
+coGisticChromPlot(gistic1 = pos_gistic_obj, gistic2 = neg_gistic_obj, g1Name = "positive samples", g2Name = "negative samples", type = 'Del')
+```
+
+### Gistic Oncoplot, all samples
+
+```{r gist_oncoplot1, fig.width=10}
+gisticOncoPlot(
+  gistic = gistic_obj, 
+  clinicalData = getClinicalData(x = maf_obj), 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  sortByAnnotation = TRUE, 
+  top = 20, 
+  right_mar = 4, 
+  gene_mar = 10, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+)
+```
+
+### Gistic Oncoplot, positive samples
+
+```{r gist_oncoplot2, fig.width=10}
+gisticOncoPlot(
+  gistic = pos_gistic_obj, 
+  clinicalData = getClinicalData(x = maf_obj), 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  sortByAnnotation = TRUE, 
+  top = 20, 
+  right_mar = 4, 
+  gene_mar = 10, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+)
+```
+
+### Gistic Oncoplot, negative samples
+
+```{r gist_oncoplot3, fig.width=10}
+gisticOncoPlot(
+  gistic = neg_gistic_obj, 
+  clinicalData = getClinicalData(x = maf_obj), 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  sortByAnnotation = TRUE, 
+  top = 20, 
+  right_mar = 4, 
+  gene_mar = 10, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+)
+```
+
+### Gistic Oncoplot, all samples, tier I and II
+
+```{r gist_oncoplot4, fig.width=10}
+gisticOncoPlot(
+  gistic = gobj_12, 
+  clinicalData = getClinicalData(x = maf_obj), 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  sortByAnnotation = TRUE, 
+  top = 20, 
+  right_mar = 4, 
+  gene_mar = 10, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+)
+```
+
+### Gistic Oncoplot, positive samples, tier I and II
+
+```{r gist_oncoplot5, fig.width=10}
+gisticOncoPlot(
+  gistic = p_gobj_12, 
+  clinicalData = getClinicalData(x = maf_obj), 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  sortByAnnotation = TRUE, 
+  top = 20, 
+  right_mar = 4, 
+  gene_mar = 10, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+)
+```
+
+### Gistic Oncoplot, negative samples, tier I and II
+
+```{r gist_oncoplot6, fig.width=10}
+gisticOncoPlot(
+  gistic = n_gobj_12, 
+  clinicalData = getClinicalData(x = maf_obj), 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  sortByAnnotation = TRUE, 
+  top = 20, 
+  right_mar = 4, 
+  gene_mar = 10, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+)
+```
+
+### Gistic Oncoplot, all samples, tier I, II and III
+
+```{r gist_oncoplot7, fig.width=10}
+gisticOncoPlot(
+  gistic = gobj_123, 
+  clinicalData = getClinicalData(x = maf_obj), 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  sortByAnnotation = TRUE, 
+  top = 20, 
+  right_mar = 4, 
+  gene_mar = 10, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+)
+```
+
+### Gistic Oncoplot, positive samples, tier I, II and III
+
+```{r gist_oncoplot8, fig.width=10}
+gisticOncoPlot(
+  gistic = p_gobj_123, 
+  clinicalData = getClinicalData(x = maf_obj), 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  sortByAnnotation = TRUE, 
+  top = 20, 
+  right_mar = 4, 
+  gene_mar = 10, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+)
+```
+
+### Gistic Oncoplot, negative samples, tier I, II and III
+
+```{r gist_oncoplot9, fig.width=10}
+gisticOncoPlot(
+  gistic = n_gobj_123, 
+  clinicalData = getClinicalData(x = maf_obj), 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  sortByAnnotation = TRUE, 
+  top = 20, 
+  right_mar = 4, 
+  gene_mar = 10, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+)
+```
+
+### Segmentation Summary
+
+```{r summarize}
+segSummarize_results = segSummarize(seg = uniform_gistic_table, maf = maf_obj, build = 'hg38')
+```
+
+## Additional Plots
+
+### Oncodrivers
+
+```{r oncodriver}
+maf_obj.sig = oncodrive(maf = maf_obj, AACol = 'Protein_Change', minMut = 15, pvalMethod = 'zscore')
+plotOncodrive(res = maf_obj.sig, fdrCutOff = 0.01, useFraction = TRUE, labelSize = 1.0)
+```
+
+### Survival Analysis
+
+```{r surv_anal}
+mafSurvival(maf = maf_obj, genes = 'TP53', time = 'efstime1', Status = 'D2_relapse', isTCGA = FALSE)
+```
+
+### Tumor Heterogeneity
+
+```{r het}
+IH_PALL <- inferHeterogeneity(maf = maf_obj, tsb = 'PALL04NU7A-1TAD104', vafCol = 'tumor_f')
+plotClusters(clusters = IH_PALL)
+```
+
+### CN Gistic Manhattan Plot
+
+```{r manhattan, fig.width=10}
+# esempio: definire lo stato per regione: gain se Seg_CN > cutoff, loss se < -cutoff, altrimenti neutral
+cutoff_gain <- 0.3
+cutoff_loss <- -0.3
+
+df_state <- uniform_gistic_table %>%
+  mutate(
+    State = case_when(
+      Seg_CN > cutoff_gain ~ "Gain",
+      Seg_CN < cutoff_loss ~ "Loss",
+      TRUE ~ "Neutral"
+    )
+  )
+
+# calcola la frequenza di stato per regione (chrom, start, end)
+freq_df <- df_state %>%
+  group_by(Chromosome, Start_Position, End_Position) %>%
+  summarise(
+    n_samples = n(),
+    freq_gain = sum(State == "Gain") / n_samples,
+    freq_loss = sum(State == "Loss") / n_samples,
+    .groups = "drop"
+  ) %>%
+  ungroup() %>%
+  # per il manhattan plot combini la frequenza massima tra gain/loss
+  mutate(
+    freq_change = pmax(freq_gain, freq_loss),
+    CNV_type = case_when(
+      freq_gain > freq_loss ~ "Gain",
+      freq_loss > freq_gain ~ "Loss",
+      TRUE ~ "Neutral"  # utile se servisse in futuro
+    )
+  )
+
+# Aggiungi un offset cumulativo per cromosomi, per posizioni x globali
+# per fare Manhattan su tutto il genoma
+chr_order <- c(as.character(1:22), "X", "Y")
+# assume cromosomi come "1","2",...,"X","Y"
+
+
+chr_sizes <- freq_df %>%
+  group_by(Chromosome) %>%
+  summarise(max_end = max(as.numeric(End_Position)), .groups = "drop") %>%
+  filter(Chromosome %in% chr_order) %>%
+  mutate(Chromosome = factor(Chromosome, levels = chr_order)) %>%
+  arrange(Chromosome)
+
+offsets <- cumsum(lag(as.numeric(chr_sizes$max_end), default = 0))
+names(offsets) <- chr_sizes$Chromosome
+
+breaks <- offsets + chr_sizes$max_end/2
+names(breaks) <- chr_sizes$Chromosome
+
+freq_df <- freq_df %>%
+  filter(Chromosome %in% chr_order) %>%
+  mutate(Chromosome = factor(Chromosome, levels = chr_order))  # Ordine corretto nei plot
+
+freq_df <- freq_df %>%
+  mutate(
+    cum_start = as.numeric(Start_Position) + offsets[Chromosome],
+    cum_end   = as.numeric(End_Position) + offsets[Chromosome],
+    cum_mid   = (cum_start + cum_end)/2
+  )
+
+freq_df <- freq_df %>%
+  rowwise() %>%
+  mutate(
+    # prendi il numero massimo di gain o loss
+    obs_events = round(n_samples * freq_change),
+    # test binomiale: successi = obs_events, prove = n_samples, probabilità attesa = 0.05
+    p_value = binom.test(obs_events, n_samples, p = 0.05, alternative = "greater")$p.value,
+    log10_p = -log10(p_value)
+  ) %>%
+  ungroup()
+
+# plot
+ggplot(freq_df, aes(x = cum_mid, y = log10_p, color = CNV_type)) +
+  geom_point(size = 0.5) +
+  scale_color_manual(values = c("Gain" = "#1f78b4", "Loss" = "#e31a1c")) +  # blu e rosso
+  scale_x_continuous(
+    breaks = breaks,
+    labels = names(breaks)
+  ) +
+  labs(
+    x = "Genomic Position",
+    y = expression(-log[10](p)),
+    color = "CNV Type"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  ) +
+  geom_hline(yintercept = -log10(0.05), linetype = "longdash", color = "black")
+```
+
+### CN CNVKit Manhattan Plot, Bins
+
+```{r manhattan_manual_bins, eval=FALSE}
+
+for (c_path in list.dirs(params$cnvkit_out_dir, recursive = FALSE)) {
+
+  file <- file.path(c_path, paste0(basename(c_path), "_tumor.cnr"))
+  
+  cnr <- read_tsv(file, show_col_types = FALSE)
+  # Potresti dover adattare se il file è delimitato da tab, spazio, etc
+  
+  # 2. Pulisci/formata
+  cnr2 <- cnr %>%
+    filter(!is.na(log2)) %>%           # rimuove eventuali record mancanti
+    mutate(chromosome = as.character(chromosome)) %>% 
+    # se ci sono "X", "Y", ecc. conviene gestire separatamente
+    # ordina i cromosomi
+    mutate(chromosome = factor(chromosome,
+                               levels = c(1:22, "X", "Y", "MT"))) %>% 
+    arrange(chromosome, start)
+  
+  # 3. Calcola posizioni cumulative per ogni cromosoma
+  # prima serve la dimensione massima di ogni cromosoma
+  chr_sizes <- cnr2 %>%
+    group_by(chromosome) %>%
+    summarize(chr_max = max(end)) %>%
+    arrange(chromosome) %>%
+    mutate(chr_cum_start = lag(cumsum(chr_max), default = 0))
+  
+  # unisci con i dati principali
+  cnr3 <- cnr2 %>%
+    left_join(chr_sizes, by = "chromosome") %>%
+    mutate(pos_cum = start + chr_cum_start)
+  
+  # 4. Plot
+  p <- ggplot(cnr3, aes(x = pos_cum, y = log2, color = chromosome)) +
+    geom_point(size = 0.5, alpha = 0.7) +
+    scale_color_manual(values = rep(c("gray50", "gray80"), length.out = nlevels(cnr3$chromosome))) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") +  # linea di riferimento
+    theme_bw() +
+    theme( 
+      panel.border = element_blank(),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      axis.text.x = element_blank(),  # nasconde label dei cromosomi se troppo affollati
+      axis.ticks.x = element_blank()  
+    ) +
+    labs(
+      x = "Genomic position",
+      y = "Log2 copy number ratio",
+      title = "Manhattan‑plot dei log2 ratio (bins WES)",
+      color = "Cromosoma"
+    )
+  
+  # 5. Aggiungi etichette dei cromosomi sull’asse x
+  # calcolare il centro di ciascun cromosoma per posizionare il nome
+  centers <- chr_sizes %>%
+    mutate(center = chr_cum_start + chr_max/2)
+  
+  print(
+    p + scale_x_continuous(
+          breaks = centers$center,
+          labels = centers$chromosome,
+          expand = c(0,0)
+        )
+  )
+}
+```
+
+### CN CNVKit Manhattan Plot, Segments
+
+```{r manhattan_manual_seg}
+
+for (c_path in list.dirs(params$cnvkit_out_dir, recursive = FALSE)) {
+
+  file <- file.path(c_path, paste0(basename(c_path), "_tumor.cns"))
+  
+  cns <- read_tsv(file, show_col_types = FALSE)
+  # Potresti dover adattare se il file è delimitato da tab, spazio, etc
+  
+  cns2 <- cns %>%
+    mutate(
+      chromosome = gsub("^chr", "", chromosome),  # rimuove "chr" dal nome del cromosoma
+      chromosome = factor(chromosome, levels = c(1:22, "X", "Y")),
+      mid = (start + end) / 2
+    ) %>%
+    arrange(chromosome, start)
+  
+  # Calcola posizioni cumulative
+  chr_sizes <- cns2 %>%
+    group_by(chromosome) %>%
+    summarize(chr_max = max(end)) %>%
+    arrange(chromosome) %>%
+    mutate(chr_cum_start = lag(cumsum(chr_max), default = 0))
+  
+  cns3 <- cns2 %>%
+    left_join(chr_sizes, by = "chromosome") %>%
+    mutate(pos_cum = mid + chr_cum_start,
+           seg_width = end - start)
+  
+  # Calcola centro dei cromosomi per label
+  centers <- chr_sizes %>%
+    mutate(center = chr_cum_start + chr_max/2)
+  
+  n_chrom <- length(levels(cns3$chromosome))
+    chrom_colors <- colorRampPalette(brewer.pal(12, "Paired"))(n_chrom)
+  
+  # 4. Plot
+  p <- ggplot(cns3, aes(x = pos_cum, y = log2, group = chromosome)) +
+    geom_segment(aes(x = start + chr_cum_start,
+                     xend = end + chr_cum_start,
+                     y = log2, yend = log2,
+                     color = chromosome), size = 1) +
+    scale_color_manual(values = chrom_colors) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+    scale_x_continuous(breaks = centers$center, labels = centers$chromosome, expand = c(0,0)) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 90, size = 6),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank()
+    ) +
+    labs(
+      title = paste("Copy number segments (line plot) for sample", basename(c_path)),
+      x = "Chromosome",
+      y = "Log2 copy number ratio"
+    )
+  
+  print(p)
+}
+```
+
+### CN Circle Plot
+
+```{r circleplot}
+# Pulisci e prepara i dati
+mean_cn <- uniform_gistic_table %>%
+  group_by(Chromosome, Start_Position, End_Position) %>%
+  summarise(mean_segcn = mean(Seg_CN, na.rm = TRUE), .groups = "drop") %>%
+  filter(!Chromosome %in% c("MT", "chrMT")) %>%
+  mutate(
+    Chromosome = ifelse(grepl("^chr", Chromosome), Chromosome, paste0("chr", Chromosome))
+  )
+
+# Rinomina colonne
+df <- mean_cn %>%
+  dplyr::rename(chr = Chromosome, start = Start_Position, end = End_Position, value = mean_segcn)
+
+# Pulisci e inizializza circos
+circos.clear()
+circos.initializeWithIdeogram(species = "hg38")
+
+# Aggiungi il track (una riga alla volta)
+circos.genomicTrack(
+  df,
+  panel.fun = function(region, value, ...) {
+  col_vector <- ifelse(value$value > 0.3, "red",
+                ifelse(value$value > 0.15 & value$value <= 0.3, "orange",
+                ifelse(value$value < -0.3, "blue", "gray")))
+  
+    circos.genomicRect(region, value,
+      col = col_vector, border = NA, ...)
+  },
+  track.height = 0.25,
+  bg.border = NA
+)
+
+# Definisci colori e label della legenda
+legend_colors <- c("red", "orange", "gray", "blue")
+legend_labels <- c("Copy number > 0.3", "Copy number between 0.15 and 0.3", "Copy number between -0.3 and 0.15", "Copy number < -0.3")
+# Aggiungi legenda base R (posizione personalizzabile)
+legend("topright", legend = legend_labels, fill = legend_colors, border = NA, bty = "n", cex = 0.8)
+```
+
+```{r Rcircos, eval=FALSE}
+# --- Prepara dati ---
+mean_cn <- uniform_gistic_table %>%
+  group_by(Chromosome, Start_Position, End_Position) %>%
+  summarise(mean_segcn = mean(Seg_CN, na.rm = TRUE), .groups = "drop") %>%
+  filter(!Chromosome %in% c("MT", "chrMT")) %>%
+  mutate(
+    Chromosome = ifelse(grepl("^chr", Chromosome), Chromosome, paste0("chr", Chromosome))
+  )
+
+# RCircos vuole i cromosomi senza 'chr' quindi li togliamo
+mean_cn <- mean_cn %>%
+  mutate(Chromosome = gsub("chr", "", Chromosome))
+
+# Rinomina colonne secondo RCircos
+df <- mean_cn %>%
+  dplyr::rename(
+    Chromosome = Chromosome,
+    chromStart = Start_Position,
+    chromEnd = End_Position,
+    segMean = mean_segcn
+  ) %>%
+  select(Chromosome, chromStart, chromEnd, segMean)
+
+# --- Inizializza RCircos ---
+
+# Carica ideogramma per hg38 (viene incluso nel pacchetto)
+data(UCSC.HG38.Human.CytoBandIdeogram)  
+cyto.info <- UCSC.HG38.Human.CytoBandIdeogram
+
+# Inizializza core components
+RCircos.Set.Core.Components(
+  cyto.info = cyto.info, 
+  chr.exclude = NULL,  # considera tutti i cromosomi
+  tracks.inside = 5,   # numero di track dentro il cerchio
+  tracks.outside = 0
+)
+
+# Imposta area plot
+RCircos.Set.Plot.Area()
+
+# Plot ideogramma (bande cromosomiche)
+RCircos.Chromosome.Ideogram.Plot()
+
+# --- Aggiungi i dati come heatmap track (colorato in base a valore) ---
+
+# Il pacchetto chiede che il valore sia in colonna 4, per heatmap plot
+# Crea un vettore colori basato su segMean (rosso se >0.3, blu se < -0.3, grigio altrimenti)
+df$color <- ifelse(df$segMean > 0.3, "red",
+                   ifelse(df$segMean < -0.3, "blue", "gray"))
+
+# Usa RCircos.Heatmap.Plot (richiede un data frame con colonne: Chromosome, chromStart, chromEnd, DataValue)
+# Ma non accetta la colonna colore direttamente → serve passare il valore e definire la palette colore
+
+# Imposta esplicitamente i valori min, max e zero
+min_val <- min(df$segMean)
+max_val <- max(df$segMean)
+zero_val <- 0
+
+# Verifica che min_val < zero_val < max_val
+print(c(min_val, zero_val, max_val))
+
+# Crea palette solo se l'ordine è corretto
+if(min_val < zero_val & zero_val < max_val) {
+  palette <- colorRamp2(c(min_val, zero_val, max_val), c("blue", "gray", "red"))
+} else {
+  stop("I valori min, zero e max non sono in ordine crescente!")
+}
+
+# Aggiungi colonna GeneName (vuota, ma necessaria)
+df$GeneName <- ""
+
+# Passa le prime 5 colonne
+RCircos.Heatmap.Plot(df[, c("Chromosome", "chromStart", "chromEnd", "segMean", "GeneName")], 
+                     data.col = 4, track.num = 1, side = "in")
+```
