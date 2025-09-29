@@ -1,0 +1,20 @@
+---
+title: "Test"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, results='asis')
+```
+
+```{r test1}
+# Questo codice NON dovrebbe essere visibile
+print("Hello world")
+```
+
+```{r test2}
+# Questo codice NON dovrebbe essere visibile
+print("Hello world number 2")
+message("Questo messaggio non dovrebbe vedersi.")
+warning("Nemmeno questo warning dovrebbe vedersi.")
+```
