@@ -8,4 +8,13 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+<div class="alert alert-dismissible alert-info">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>New label!</strong> The 'new' label denotes the most recently delivered report(s).
+</div>
+
+This  website contains genomic data visualization for the PALL project.
+
+# Main report
+
+- [PALL report](maftools_PALL.html)<span class="label btn-warning">new report</span>
