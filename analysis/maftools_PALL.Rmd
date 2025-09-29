@@ -10,7 +10,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 author: "Gianluca Alessio Mariani"
 
 params:
-  manual_timestamp: "250924_1500"
+  manual_timestamp: "250929_0900"
   project: "pall"
   clinical_data: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/clinical_data.csv"
   maf_tumor_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic"
@@ -21,10 +21,10 @@ params:
   gene_table1: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv"
   gene_table2: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv"
   cnvkit_out_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results/250918_1626_cnvkit_pall"
-  run_gistic2: TRUE
+  run_gistic2: FALSE
 ---
 
-```{r}
+```{r setup_knit, include=FALSE}
 knitr::opts_chunk$set(echo       = FALSE,
                       message    = FALSE,
                       warning    = FALSE,
@@ -39,7 +39,7 @@ knitr::opts_chunk$set(echo       = FALSE,
 # Chunk: setup_parameters
 if (!exists("params")) {
   params <- list(
-    manual_timestamp = "250924_1500",
+    manual_timestamp = "250929_0900",
     project = "pall",
     clinical_data = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/clinical_data.csv",
     maf_tumor_dir = "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic",
@@ -50,7 +50,7 @@ if (!exists("params")) {
     gene_table1 = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv",
     gene_table2 = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv",
     cnvkit_out_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results/250918_1626_cnvkit_pall",
-    run_gistic2 = TRUE
+    run_gistic2 = FALSE
   )
 }
 
@@ -63,7 +63,7 @@ if (!is.null(params$manual_timestamp) &&
 }
 ```
 
-```{r load_libraries_and_setup}
+```{r load_libraries_and_setup, results='hide'}
 library(maftools)
 library(data.table)
 library(tidyr)
@@ -233,7 +233,7 @@ generate_gistic_uniform_file <- function(gistic_table_path, output_path = NULL) 
 
 ```
 
-```{r preprocessing}
+```{r preprocessing, results='hide'}
 samples <- list.dirs(params$maf_tumor_dir, full.names = FALSE, recursive = FALSE)
 
 genelist <- unique(c(read_csv(params$gene_table1)$Hugo_Symbol, read_csv(params$gene_table2)$Hugo_Symbol))
@@ -262,7 +262,7 @@ results <- lapply(file_pairs, function(pair) {
 })
 ```
 
-```{r generate_files}
+```{r generate_files, results='hide'}
 # Combina tutti i risultati validi
 cnv_combined <- bind_rows(lapply(results, `[[`, "cnv_list"))
 gistic_seg_combined <- bind_rows(lapply(results, `[[`, "gistic_seg_list"))
@@ -284,7 +284,7 @@ merged_maf <- merge_mafs(maf_files)
 maf_obj <- read.maf(maf = merged_maf@data, clinicalData = params$clinical_data, cnTable = cnv_combined)
 ```
 
-```{r genelists}
+```{r genelists, results='hide'}
 maf_obj_filtered_cancervar_I_II_III <- maf_obj@data[maf_obj@data$CancerVar %in% c("Tier_I_strong", "Tier_II_potential", "Tier_III_Uncertain"), ]
 genelist_filtered_cancervar_I_II_III <- unique(maf_obj_filtered_cancervar_I_II_III$Hugo_Symbol)
 
@@ -292,7 +292,7 @@ maf_obj_filtered_cancervar_I_II <- maf_obj@data[maf_obj@data$CancerVar %in% c("T
 genelist_filtered_cancervar_I_II <- unique(maf_obj_filtered_cancervar_I_II$Hugo_Symbol)
 ```
 
-```{r filters}
+```{r filters, results='hide'}
 clin_data <- maf_obj@clinical.data
 clin_data_sorted <- clin_data[order(clin_data$T1221, clin_data$Sample_group), ]
 sample_order <- clin_data_sorted$Tumor_Sample_Barcode
@@ -330,7 +330,7 @@ samples_pos <- clin_data_sorted$Tumor_Sample_Barcode[clin_data_sorted$T1221 == "
 maf_obj_filtered_pos <- subsetMaf(maf = maf_obj, tsb = samples_pos)
 ```
 
-```{r gistic_setup}
+```{r gistic_setup, results='hide'}
 # setup directories
 output_dir <- file.path(params$results_dir, paste0(timestamp, "_", params$project))
 if (!dir.exists(output_dir)) {
@@ -415,7 +415,7 @@ if (!dir.exists(neg_samples_tierI_II_III_gistic_output_dir)) {
 }
 ```
 
-```{r gistic_exe}
+```{r gistic_exe, results='hide'}
 if (params$run_gistic2) {
   # generate files
   write.table(gistic_seg_combined_original, file = gistic_table_path, sep = "\t", row.names = FALSE, quote = FALSE)
