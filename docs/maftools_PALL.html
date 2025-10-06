@@ -14,7 +14,7 @@
 
 <title>PALL visualization data</title>
 
-<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
@@ -364,7 +364,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">PALL visualization data</h1>
 <h4 class="author">Gianluca Alessio Mariani</h4>
-<h4 class="date">29 September, 2025</h4>
+<h4 class="date">06 October, 2025</h4>
 
 </div>
 
@@ -372,7 +372,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -383,8 +383,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -393,13 +393,13 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-09-29
+<strong>Last updated:</strong> 2025-10-06
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>pall_project/</code> <span
@@ -440,17 +440,55 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongobjectspresent">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>Environment:</strong> objects present
+</a>
 </p>
 </div>
-<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div id="strongEnvironmentstrongobjectspresent"
+class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! The global environment was empty. Objects defined in the
-global environment can affect the analysis in your R Markdown file in
-unknown ways. For reproduciblity it’s best to always run the code in an
-empty environment.</p>
+<p>
+The global environment had objects present when the code in the R
+Markdown file was run. These objects can affect the analysis in your R
+Markdown file in unknown ways. For reproduciblity it’s best to always
+run the code in an empty environment. Use <code>wflow_publish</code> or
+<code>wflow_build</code> to ensure that the code is always run in an
+empty environment.
+</p>
+<p>
+The following objects were defined in the global environment when these
+results were created:
+</p>
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th style="text-align:left;">
+Name
+</th>
+<th style="text-align:left;">
+Class
+</th>
+<th style="text-align:left;">
+Size
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+lib_path
+</td>
+<td style="text-align:left;">
+character
+</td>
+<td style="text-align:left;">
+168 bytes
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -524,15 +562,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdimadatasciencepallprojecttreec020e28a8fe659e2dc4808535a8dc61e564114e6targetblankc020e28a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdimadatasciencepallprojecttree4f0d332eb9a6fd8870e1e0a11c50042761b30de4targetblank4f0d332a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dimadatascience/pall_project/tree/c020e28a8fe659e2dc4808535a8dc61e564114e6" target="_blank">c020e28</a>
+<a href="https://github.com/dimadatascience/pall_project/tree/4f0d332eb9a6fd8870e1e0a11c50042761b30de4" target="_blank">4f0d332</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdimadatasciencepallprojecttreec020e28a8fe659e2dc4808535a8dc61e564114e6targetblankc020e28a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdimadatasciencepallprojecttree4f0d332eb9a6fd8870e1e0a11c50042761b30de4targetblank4f0d332a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -542,7 +580,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dimadatascience/pall_project/tree/c020e28a8fe659e2dc4808535a8dc61e564114e6" target="_blank">c020e28</a>.
+<a href="https://github.com/dimadatascience/pall_project/tree/4f0d332eb9a6fd8870e1e0a11c50042761b30de4" target="_blank">4f0d332</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -557,7 +595,15 @@ were generated:
 </p>
 <pre><code>
 Untracked files:
-    Untracked:  analysis/test.Rmd
+    Untracked:  Rplot001.png
+    Untracked:  analysis/Rplot001.png
+    Untracked:  analysis/Rplot002.png
+    Untracked:  test.png
+    Untracked:  test_init.png
+    Untracked:  test_plot.png
+
+Unstaged changes:
+    Modified:   .Rprofile
 
 </code></pre>
 <p>
@@ -602,6 +648,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/4f0d332eb9a6fd8870e1e0a11c50042761b30de4/analysis/maftools_PALL.Rmd" target="_blank">4f0d332</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2025-10-06
+</td>
+<td>
+Added requested features, still missing patient specific oncoplots
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dimadatascience/pall_project/654bdb6ce781ae4743899075247f711985914bde/docs/maftools_PALL.html" target="_blank">654bdb6</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2025-09-29
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -787,10 +867,15 @@ Mariani_Gianluca_Alessio
 </div>
 </div>
 </div>
-<div id="oncoplots" class="section level3">
-<h3>Oncoplots</h3>
-<div id="chiaras-list-all-samples" class="section level4">
-<h4>Chiara’s List, all samples</h4>
+<div id="oncoplots-vcc-varsome-cancervar-clinvar-cc-cancervar-clinvar"
+class="section level3">
+<h3>Oncoplots (VCC = VARSOME + CANCERVAR + CLINVAR, CC = CANCERVAR +
+CLINVAR)</h3>
+<div id="most-pathogenic-in-vcc-tier-i-and-ii-genes"
+class="section level4">
+<h4>Most pathogenic in VCC, Tier I and II genes</h4>
+<div id="all-samples" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/maftools_PALL.Rmd/oncoplot1-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot1-1">
@@ -830,9 +915,20 @@ Mariani_Gianluca_Alessio
 </div>
 </div>
 </div>
-<div id="cancervar-tier-i-and-ii-genes-all-samples"
+<div id="positive-samples" class="section level5">
+<h5>Positive samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot1pos-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="negative-samples" class="section level5">
+<h5>Negative samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot1neg-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="most-pathogenic-in-vcc-tier-i-ii-and-iii-genes"
 class="section level4">
-<h4>CancerVar Tier I and II genes, all samples</h4>
+<h4>Most pathogenic in VCC, Tier I, II and III genes</h4>
+<div id="all-samples-1" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/maftools_PALL.Rmd/oncoplot2-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot2-1">
@@ -872,9 +968,20 @@ Mariani_Gianluca_Alessio
 </div>
 </div>
 </div>
-<div id="cancervar-tier-i-ii-and-iii-genes-all-samples"
+<div id="positive-samples-1" class="section level5">
+<h5>Positive samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot2pos-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="negative-samples-1" class="section level5">
+<h5>Negative samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot2neg-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="most-pathogenic-in-cc-tier-i-and-ii-genes"
 class="section level4">
-<h4>CancerVar Tier I, II and III genes, all samples</h4>
+<h4>Most pathogenic in CC, Tier I and II genes</h4>
+<div id="all-samples-2" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/maftools_PALL.Rmd/oncoplot3-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot3-1">
@@ -914,9 +1021,20 @@ Mariani_Gianluca_Alessio
 </div>
 </div>
 </div>
-<div id="chiaras-list-only-diagnosis-and-relapse-1-samples"
+<div id="positive-samples-2" class="section level5">
+<h5>Positive samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot3pos-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="negative-samples-2" class="section level5">
+<h5>Negative samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot3neg-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="most-pathogenic-in-cc-tier-i-ii-and-iii-genes-all-samples"
 class="section level4">
-<h4>Chiara’s List, only diagnosis and relapse 1 samples</h4>
+<h4>Most pathogenic in CC, Tier I, II and III genes, all samples</h4>
+<div id="all-samples-3" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/maftools_PALL.Rmd/oncoplot4-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot4-1">
@@ -956,11 +1074,22 @@ Mariani_Gianluca_Alessio
 </div>
 </div>
 </div>
+<div id="positive-samples-3" class="section level5">
+<h5>Positive samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot4pos-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="negative-samples-3" class="section level5">
+<h5>Negative samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot4neg-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+</div>
 <div
-id="cancervar-tier-i-and-ii-genes-only-diagnosis-and-relapse-1-samples"
+id="most-pathogenic-in-vcc-tier-i-and-ii-genes-only-diagnosis-and-relapse-1-samples"
 class="section level4">
-<h4>CancerVar Tier I, and II genes, only diagnosis and relapse 1
-samples</h4>
+<h4>Most pathogenic in VCC, Tier I and II genes, only diagnosis and
+relapse 1 samples</h4>
+<div id="all-samples-4" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/maftools_PALL.Rmd/oncoplot5-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot5-1">
@@ -1000,11 +1129,22 @@ Mariani_Gianluca_Alessio
 </div>
 </div>
 </div>
+<div id="positive-samples-4" class="section level5">
+<h5>Positive samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot5pos-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="negative-samples-4" class="section level5">
+<h5>Negative samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot5neg-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+</div>
 <div
-id="cancervar-tier-i-ii-and-iii-genes-only-diagnosis-and-relapse-1-samples"
+id="most-pathogenic-in-vcc-tier-i-ii-and-iii-genes-only-diagnosis-and-relapse-1-samples"
 class="section level4">
-<h4>CancerVar Tier I, II and III genes, only diagnosis and relapse 1
-samples</h4>
+<h4>Most pathogenic in VCC, Tier I, II and III genes, only diagnosis and
+relapse 1 samples</h4>
+<div id="all-samples-5" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/maftools_PALL.Rmd/oncoplot6-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot6-1">
@@ -1043,845 +1183,50 @@ Mariani_Gianluca_Alessio
 </table>
 </div>
 </div>
-<p>-Processing clinical data ## Patient: PALL040VUE - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-1">
-Past versions of all_patients_oncoplot-1.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
+</div>
+<div id="positive-samples-5" class="section level5">
+<h5>Positive samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot6pos-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="negative-samples-5" class="section level5">
+<h5>Negative samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot6neg-1.png" width="960" style="display: block; margin: auto;" /></p>
 </div>
 </div>
-<p>-Processing clinical data ## Patient: PALL0414OF - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-2.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-2">
-Past versions of all_patients_oncoplot-2.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-2.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
+<div
+id="most-pathogenic-in-cc-tier-i-and-ii-genes-only-diagnosis-and-relapse-1-samples"
+class="section level4">
+<h4>Most pathogenic in CC, Tier I, and II genes, only diagnosis and
+relapse 1 samples</h4>
+<div id="all-samples-6" class="section level5">
+<h5>All samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot7-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="positive-samples-6" class="section level5">
+<h5>Positive samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot7pos-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="negative-samples-6" class="section level5">
+<h5>Negative samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot7neg-1.png" width="960" style="display: block; margin: auto;" /></p>
 </div>
 </div>
-<p>-Processing clinical data ## Patient: PALL043B15 - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-3.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-3">
-Past versions of all_patients_oncoplot-3.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-3.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
+<div
+id="most-pathogenic-in-cc-tier-i-ii-and-iii-genes-only-diagnosis-and-relapse-1-samples"
+class="section level4">
+<h4>Most pathogenic in CC, Tier I, II and III genes, only diagnosis and
+relapse 1 samples</h4>
+<div id="all-samples-7" class="section level5">
+<h5>All samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot8-1.png" width="960" style="display: block; margin: auto;" /></p>
 </div>
+<div id="positive-samples-7" class="section level5">
+<h5>Positive samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot8pos-1.png" width="960" style="display: block; margin: auto;" /></p>
 </div>
-<p>–Possible FLAGS among top ten genes: DST -Processing clinical data ##
-Patient: PALL043UBQ - Top 10 mutated genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-4.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-4">
-Past versions of all_patients_oncoplot-4.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-4.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL0473XN - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-5.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-5">
-Past versions of all_patients_oncoplot-5.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-5.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL0476PY - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-6.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-6">
-Past versions of all_patients_oncoplot-6.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-6.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL047E6W - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-7.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-7">
-Past versions of all_patients_oncoplot-7.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-7.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL048QTF - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-8.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-8">
-Past versions of all_patients_oncoplot-8.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-8" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-8.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL04AAE8 - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-9.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-9">
-Past versions of all_patients_oncoplot-9.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-9" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-9.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL04ABVK - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-10.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-10">
-Past versions of all_patients_oncoplot-10.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-10" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-10.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>–Possible FLAGS among top ten genes: TTN SYNE1 -Processing clinical
-data ## Patient: PALL04BAQD - Top 10 mutated genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-11.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-11">
-Past versions of all_patients_oncoplot-11.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-11" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-11.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL04DJ47 - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-12.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-12">
-Past versions of all_patients_oncoplot-12.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-12" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-12.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL04GWJJ - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-13.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-13">
-Past versions of all_patients_oncoplot-13.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-13" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-13.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>–Possible FLAGS among top ten genes: AHNAK2 -Processing clinical data
-## Patient: PALL04HQQX - Top 10 mutated genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-14.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-14">
-Past versions of all_patients_oncoplot-14.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-14" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-14.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>–Possible FLAGS among top ten genes: TTN DST MUC16 -Processing
-clinical data ## Patient: PALL04NU7A - Top 10 mutated genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-15.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-15">
-Past versions of all_patients_oncoplot-15.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-15" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-15.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL04NVUC - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-16.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-16">
-Past versions of all_patients_oncoplot-16.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-16" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-16.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL04O6YQ - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-17.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-17">
-Past versions of all_patients_oncoplot-17.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-17" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-17.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>–Possible FLAGS among top ten genes: MUC5B -Processing clinical data
-## Patient: PALL04S6BF - Top 10 mutated genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-18.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-18">
-Past versions of all_patients_oncoplot-18.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-18" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-18.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>–Possible FLAGS among top ten genes: PLEC -Processing clinical data
-## Patient: PALL04UACN - Top 10 mutated genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-19.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-19">
-Past versions of all_patients_oncoplot-19.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-19" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-19.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL04X91V - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-20.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-20">
-Past versions of all_patients_oncoplot-20.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-20" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-20.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>-Processing clinical data ## Patient: PALL04Z0XS - Top 10 mutated
-genes</p>
-<p><img src="figure/maftools_PALL.Rmd/all_patients_oncoplot-21.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-all_patients_oncoplot-21">
-Past versions of all_patients_oncoplot-21.png
-</button>
-</p>
-<div id="fig-all_patients_oncoplot-21" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/all_patients_oncoplot-21.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div id="negative-samples-7" class="section level5">
+<h5>Negative samples</h5>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot8neg-1.png" width="960" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
@@ -1967,8 +1312,12 @@ Mariani_Gianluca_Alessio
 </div>
 </div>
 </div>
-<div id="vaf-plot-positive-samples" class="section level3">
-<h3>VAF Plot, positive samples</h3>
+<div
+id="vaf-plot-positive-samples-most-pathogenic-in-cc-tier-i-and-ii-genes"
+class="section level3">
+<h3>VAF Plot, positive samples, most pathogenic in CC, Tier I and II
+genes</h3>
+<pre><code>-Processing clinical data</code></pre>
 <p><img src="figure/maftools_PALL.Rmd/vaf_plot1-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vaf_plot1-1">
@@ -2008,8 +1357,12 @@ Mariani_Gianluca_Alessio
 </div>
 </div>
 </div>
-<div id="vaf-plot-negative-samples" class="section level3">
-<h3>VAF Plot, negative samples</h3>
+<div
+id="vaf-plot-negative-samples-most-pathogenic-in-cc-tier-i-and-ii-genes"
+class="section level3">
+<h3>VAF Plot, negative samples, most pathogenic in CC, Tier I and II
+genes</h3>
+<pre><code>-Processing clinical data</code></pre>
 <p><img src="figure/maftools_PALL.Rmd/vaf_plot2-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vaf_plot2-1">
@@ -2049,678 +1402,28 @@ Mariani_Gianluca_Alessio
 </div>
 </div>
 </div>
-</div>
-<div id="gistic" class="section level2">
-<h2>Gistic</h2>
-<div id="chromosome-plot" class="section level3">
-<h3>Chromosome Plot</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_chrplot1-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_chrplot1-1">
-Past versions of gist_chrplot1-1.png
-</button>
-</p>
-<div id="fig-gist_chrplot1-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_chrplot1-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="chromosome-plot-positive-samples" class="section level3">
-<h3>Chromosome Plot, positive samples</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_chrplot2-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_chrplot2-1">
-Past versions of gist_chrplot2-1.png
-</button>
-</p>
-<div id="fig-gist_chrplot2-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_chrplot2-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="chromosome-plot-negative-samples" class="section level3">
-<h3>Chromosome Plot, negative samples</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_chrplot3-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_chrplot3-1">
-Past versions of gist_chrplot3-1.png
-</button>
-</p>
-<div id="fig-gist_chrplot3-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_chrplot3-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="chromosome-plot-comparison-amplifications-pos-vs-neg"
+<div
+id="vaf-plot-positive-samples-most-pathogenic-in-vcc-tier-i-and-ii-genes"
 class="section level3">
-<h3>Chromosome Plot comparison, Amplifications pos vs neg</h3>
-<p><img src="figure/maftools_PALL.Rmd/gistic_comparison1-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gistic_comparison1-1">
-Past versions of gistic_comparison1-1.png
-</button>
-</p>
-<div id="fig-gistic_comparison1-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gistic_comparison1-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
+<h3>VAF Plot, positive samples, most pathogenic in VCC, Tier I and II
+genes</h3>
+<pre><code>-Processing clinical data</code></pre>
+<p><img src="figure/maftools_PALL.Rmd/vaf_plot3-1.png" width="960" style="display: block; margin: auto;" /></p>
 </div>
-</div>
-</div>
-<div id="chromosome-plot-comparison-deletions-pos-vs-neg"
+<div
+id="vaf-plot-negative-samples-most-pathogenic-in-vcc-tier-i-and-ii-genes"
 class="section level3">
-<h3>Chromosome Plot comparison, Deletions pos vs neg</h3>
-<p><img src="figure/maftools_PALL.Rmd/gistic_comparison2-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gistic_comparison2-1">
-Past versions of gistic_comparison2-1.png
-</button>
-</p>
-<div id="fig-gistic_comparison2-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gistic_comparison2-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="gistic-oncoplot-all-samples" class="section level3">
-<h3>Gistic Oncoplot, all samples</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_oncoplot1-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_oncoplot1-1">
-Past versions of gist_oncoplot1-1.png
-</button>
-</p>
-<div id="fig-gist_oncoplot1-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_oncoplot1-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="gistic-oncoplot-positive-samples" class="section level3">
-<h3>Gistic Oncoplot, positive samples</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_oncoplot2-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_oncoplot2-1">
-Past versions of gist_oncoplot2-1.png
-</button>
-</p>
-<div id="fig-gist_oncoplot2-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_oncoplot2-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="gistic-oncoplot-negative-samples" class="section level3">
-<h3>Gistic Oncoplot, negative samples</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_oncoplot3-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_oncoplot3-1">
-Past versions of gist_oncoplot3-1.png
-</button>
-</p>
-<div id="fig-gist_oncoplot3-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_oncoplot3-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="gistic-oncoplot-all-samples-tier-i-and-ii"
-class="section level3">
-<h3>Gistic Oncoplot, all samples, tier I and II</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_oncoplot4-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_oncoplot4-1">
-Past versions of gist_oncoplot4-1.png
-</button>
-</p>
-<div id="fig-gist_oncoplot4-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_oncoplot4-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="gistic-oncoplot-positive-samples-tier-i-and-ii"
-class="section level3">
-<h3>Gistic Oncoplot, positive samples, tier I and II</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_oncoplot5-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_oncoplot5-1">
-Past versions of gist_oncoplot5-1.png
-</button>
-</p>
-<div id="fig-gist_oncoplot5-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_oncoplot5-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="gistic-oncoplot-negative-samples-tier-i-and-ii"
-class="section level3">
-<h3>Gistic Oncoplot, negative samples, tier I and II</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_oncoplot6-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_oncoplot6-1">
-Past versions of gist_oncoplot6-1.png
-</button>
-</p>
-<div id="fig-gist_oncoplot6-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_oncoplot6-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="gistic-oncoplot-all-samples-tier-i-ii-and-iii"
-class="section level3">
-<h3>Gistic Oncoplot, all samples, tier I, II and III</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_oncoplot7-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_oncoplot7-1">
-Past versions of gist_oncoplot7-1.png
-</button>
-</p>
-<div id="fig-gist_oncoplot7-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_oncoplot7-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="gistic-oncoplot-positive-samples-tier-i-ii-and-iii"
-class="section level3">
-<h3>Gistic Oncoplot, positive samples, tier I, II and III</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_oncoplot8-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_oncoplot8-1">
-Past versions of gist_oncoplot8-1.png
-</button>
-</p>
-<div id="fig-gist_oncoplot8-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_oncoplot8-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="gistic-oncoplot-negative-samples-tier-i-ii-and-iii"
-class="section level3">
-<h3>Gistic Oncoplot, negative samples, tier I, II and III</h3>
-<p><img src="figure/maftools_PALL.Rmd/gist_oncoplot9-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gist_oncoplot9-1">
-Past versions of gist_oncoplot9-1.png
-</button>
-</p>
-<div id="fig-gist_oncoplot9-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/gist_oncoplot9-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="segmentation-summary" class="section level3">
-<h3>Segmentation Summary</h3>
-<p><img src="figure/maftools_PALL.Rmd/summarize-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summarize-1">
-Past versions of summarize-1.png
-</button>
-</p>
-<div id="fig-summarize-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/summarize-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>       arm Variant_Classification     N
-    &lt;char&gt;                 &lt;char&gt; &lt;int&gt;
- 1:    X_p                   Gain    27
- 2:    X_q                   Gain    27
- 3:   10_p                   Gain    23
- 4:   10_q                   Gain    23
- 5:    X_p                   Loss    18
- 6:    X_q                   Loss    18
- 7:    4_q                   Loss    15
- 8:   10_p                   Loss    14
- 9:   10_q                   Loss    14
-10:    6_p                   Loss    11
-11:    6_q                   Loss    11
-12:    6_p                   Gain     7
-13:    6_q                   Gain     7
-14:    4_q                   Gain     6
-15:    1_q                   Loss     3
-16:   17_p                   Loss     3
-17:   17_q                   Loss     3
-18:   21_p                   Gain     3
-19:   21_q                   Gain     3
-20:   18_p                   Loss     2
-21:   18_q                   Loss     2
-22:    2_q                   Loss     2
-23:   12_p                   Gain     1
-24:   14_q                   Gain     1
-25:   16_p                   Loss     1
-26:   16_q                   Loss     1
-27:   19_p                   Loss     1
-28:    2_p                   Loss     1
-29:    2_q                   Gain     1
-30:    4_p                   Loss     1
-31:    4_p                   Gain     1
-32:    5_p                   Loss     1
-33:    5_q                   Loss     1
-34:    8_p                   Loss     1
-35:    8_q                   Loss     1
-36:    9_p                   Loss     1
-37:    9_q                   Loss     1
-       arm Variant_Classification     N</code></pre>
+<h3>VAF Plot, negative samples, most pathogenic in VCC, Tier I and II
+genes</h3>
+<pre><code>-Processing clinical data</code></pre>
+<p><img src="figure/maftools_PALL.Rmd/vaf_plot4-1.png" width="960" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="additional-plots" class="section level2">
 <h2>Additional Plots</h2>
 <div id="oncodrivers" class="section level3">
 <h3>Oncodrivers</h3>
-<pre><code>  |                                                                              |                                                                      |   0%  |                                                                              |=========                                                             |  12%  |                                                                              |==================                                                    |  25%  |                                                                              |==========================                                            |  38%  |                                                                              |===================================                                   |  50%  |                                                                              |============================================                          |  62%  |                                                                              |====================================================                  |  75%  |                                                                              |=============================================================         |  88%  |                                                                              |======================================================================| 100%</code></pre>
+<pre><code>  |                                                                              |                                                                      |   0%  |                                                                              |=====                                                                 |   7%  |                                                                              |=========                                                             |  13%  |                                                                              |==============                                                        |  20%  |                                                                              |===================                                                   |  27%  |                                                                              |=======================                                               |  33%  |                                                                              |============================                                          |  40%  |                                                                              |=================================                                     |  47%  |                                                                              |=====================================                                 |  53%  |                                                                              |==========================================                            |  60%  |                                                                              |===============================================                       |  67%  |                                                                              |===================================================                   |  73%  |                                                                              |========================================================              |  80%  |                                                                              |=============================================================         |  87%  |                                                                              |=================================================================     |  93%  |                                                                              |======================================================================| 100%</code></pre>
 <p><img src="figure/maftools_PALL.Rmd/oncodriver-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncodriver-1">
@@ -2848,1803 +1551,32 @@ Mariani_Gianluca_Alessio
 </div>
 </div>
 </div>
-<div id="cn-gistic-manhattan-plot" class="section level3">
-<h3>CN Gistic Manhattan Plot</h3>
-<p><img src="figure/maftools_PALL.Rmd/manhattan-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan-1">
-Past versions of manhattan-1.png
-</button>
-</p>
-<div id="fig-manhattan-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
 <div id="cn-cnvkit-manhattan-plot-bins" class="section level3">
-<h3>CN CNVKit Manhattan Plot, Bins</h3>
+<h3>CN CNVKit, Manhattan Plot, Bins</h3>
 </div>
 <div id="cn-cnvkit-manhattan-plot-segments" class="section level3">
-<h3>CN CNVKit Manhattan Plot, Segments</h3>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-1">
-Past versions of manhattan_manual_seg-1.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-2.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-2">
-Past versions of manhattan_manual_seg-2.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-2.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-3.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-3">
-Past versions of manhattan_manual_seg-3.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-3.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-4.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-4">
-Past versions of manhattan_manual_seg-4.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-4.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-5.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-5">
-Past versions of manhattan_manual_seg-5.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-5.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-6.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-6">
-Past versions of manhattan_manual_seg-6.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-6.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-7.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-7">
-Past versions of manhattan_manual_seg-7.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-7.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-8.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-8">
-Past versions of manhattan_manual_seg-8.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-8" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-8.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-9.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-9">
-Past versions of manhattan_manual_seg-9.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-9" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-9.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-10.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-10">
-Past versions of manhattan_manual_seg-10.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-10" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-10.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-11.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-11">
-Past versions of manhattan_manual_seg-11.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-11" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-11.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-12.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-12">
-Past versions of manhattan_manual_seg-12.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-12" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-12.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-13.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-13">
-Past versions of manhattan_manual_seg-13.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-13" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-13.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-14.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-14">
-Past versions of manhattan_manual_seg-14.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-14" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-14.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-15.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-15">
-Past versions of manhattan_manual_seg-15.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-15" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-15.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-16.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-16">
-Past versions of manhattan_manual_seg-16.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-16" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-16.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-17.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-17">
-Past versions of manhattan_manual_seg-17.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-17" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-17.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-18.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-18">
-Past versions of manhattan_manual_seg-18.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-18" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-18.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-19.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-19">
-Past versions of manhattan_manual_seg-19.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-19" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-19.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-20.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-20">
-Past versions of manhattan_manual_seg-20.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-20" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-20.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-21.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-21">
-Past versions of manhattan_manual_seg-21.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-21" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-21.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-22.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-22">
-Past versions of manhattan_manual_seg-22.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-22" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-22.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-23.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-23">
-Past versions of manhattan_manual_seg-23.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-23" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-23.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-24.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-24">
-Past versions of manhattan_manual_seg-24.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-24" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-24.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-25.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-25">
-Past versions of manhattan_manual_seg-25.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-25" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-25.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-26.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-26">
-Past versions of manhattan_manual_seg-26.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-26" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-26.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-27.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-27">
-Past versions of manhattan_manual_seg-27.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-27" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-27.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-28.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-28">
-Past versions of manhattan_manual_seg-28.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-28" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-28.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-29.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-29">
-Past versions of manhattan_manual_seg-29.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-29" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-29.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-30.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-30">
-Past versions of manhattan_manual_seg-30.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-30" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-30.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-31.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-31">
-Past versions of manhattan_manual_seg-31.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-31" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-31.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-32.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-32">
-Past versions of manhattan_manual_seg-32.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-32" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-32.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-33.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-33">
-Past versions of manhattan_manual_seg-33.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-33" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-33.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-34.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-34">
-Past versions of manhattan_manual_seg-34.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-34" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-34.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-35.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-35">
-Past versions of manhattan_manual_seg-35.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-35" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-35.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-36.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-36">
-Past versions of manhattan_manual_seg-36.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-36" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-36.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-37.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-37">
-Past versions of manhattan_manual_seg-37.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-37" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-37.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-38.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-38">
-Past versions of manhattan_manual_seg-38.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-38" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-38.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-39.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-39">
-Past versions of manhattan_manual_seg-39.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-39" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-39.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-40.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-40">
-Past versions of manhattan_manual_seg-40.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-40" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-40.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-41.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-41">
-Past versions of manhattan_manual_seg-41.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-41" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-41.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-42.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-42">
-Past versions of manhattan_manual_seg-42.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-42" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-42.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-43.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-43">
-Past versions of manhattan_manual_seg-43.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-43" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-43.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-44.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-44">
-Past versions of manhattan_manual_seg-44.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-44" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-44.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg-45.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-manhattan_manual_seg-45">
-Past versions of manhattan_manual_seg-45.png
-</button>
-</p>
-<div id="fig-manhattan_manual_seg-45" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/manhattan_manual_seg-45.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cn-circle-plot" class="section level3">
-<h3>CN Circle Plot</h3>
-<p><img src="figure/maftools_PALL.Rmd/circleplot-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-circleplot-1">
-Past versions of circleplot-1.png
-</button>
-</p>
-<div id="fig-circleplot-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/dimadatascience/pall_project/blob/2f3c1c0fd49f9c010b2f4b2a26b304b51b003e65/docs/figure/maftools_PALL.Rmd/circleplot-1.png" target="_blank">2f3c1c0</a>
-</td>
-<td>
-Mariani_Gianluca_Alessio
-</td>
-<td>
-2025-09-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<h3>CN CNVKit, Manhattan Plot, Segments</h3>
+<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-1.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-2.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-3.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-4.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-5.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-6.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-7.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-8.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-9.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-10.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-11.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-12.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-13.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-14.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-15.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-16.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-17.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-18.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-19.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-20.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-21.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-22.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-23.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-24.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-25.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-26.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-27.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-28.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-29.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-30.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-31.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-32.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-33.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-34.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-35.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-36.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-37.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-38.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-39.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-40.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-41.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-42.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-43.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-44.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_cnvkit-45.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cn-dragen-seg-files-manhattan-plot-segments"
+class="section level3">
+<h3>CN DRAGEN seg files, Manhattan Plot, Segments</h3>
+<p><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-1.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-2.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-3.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-4.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-5.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-6.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-7.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-8.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-9.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-10.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-11.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-12.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-13.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-14.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-15.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-16.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-17.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-18.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-19.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-20.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-21.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-22.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-23.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-24.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-25.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-26.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-27.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-28.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-29.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-30.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-31.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-32.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-33.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-34.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-35.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-36.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-37.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-38.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-39.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-40.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-41.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-42.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-43.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-44.png" width="960" style="display: block; margin: auto;" /><img src="figure/maftools_PALL.Rmd/manhattan_manual_seg_dragen-45.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cn-oncoplot-dragen-annotationseg-files" class="section level3">
+<h3>CN Oncoplot, DRAGEN annotation/seg files</h3>
+<div id="cn-oncoplot-all-samples-tier-i" class="section level4">
+<h4>CN Oncoplot, all samples, tier I</h4>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot_dragen_cnbands_filter1-1.png" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cn-oncoplot-all-samples-tier-i-and-ii" class="section level4">
+<h4>CN Oncoplot, all samples, tier I and II</h4>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot_dragen_cnbands_filter2-1.png" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cn-oncoplot-all-samples-tier-i-ii-and-iii"
+class="section level4">
+<h4>CN Oncoplot, all samples, tier I, II and III</h4>
+<p><img src="figure/maftools_PALL.Rmd/oncoplot_dragen_cnbands_filter3-1.png" width="1152" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -4673,42 +1605,96 @@ time zone: Etc/UTC
 tzcode source: system (glibc)
 
 attached base packages:
-[1] stats4    stats     graphics  grDevices utils     datasets  methods  
-[8] base     
+[1] grid      stats4    stats     graphics  grDevices utils     datasets 
+[8] methods   base     
 
 other attached packages:
- [1] RColorBrewer_1.1-3   RCircos_1.2.2        circlize_0.4.16     
- [4] ggplot2_4.0.0        mclust_6.1.1         readr_2.1.5         
- [7] GenomicRanges_1.60.0 GenomeInfoDb_1.44.3  IRanges_2.42.0      
-[10] S4Vectors_0.46.0     BiocGenerics_0.54.0  generics_0.1.4      
-[13] stringr_1.5.2        dplyr_1.1.4          tidyr_1.3.1         
-[16] data.table_1.17.8    maftools_2.24.0      workflowr_1.7.2     
+ [1] purrr_1.1.0                             
+ [2] biovizBase_1.56.0                       
+ [3] org.Hs.eg.db_3.21.0                     
+ [4] TxDb.Hsapiens.UCSC.hg38.knownGene_3.21.0
+ [5] GenomicFeatures_1.60.0                  
+ [6] AnnotationDbi_1.70.0                    
+ [7] Biobase_2.68.0                          
+ [8] ComplexHeatmap_2.24.1                   
+ [9] RColorBrewer_1.1-3                      
+[10] RCircos_1.2.2                           
+[11] circlize_0.4.16                         
+[12] ggplot2_4.0.0                           
+[13] mclust_6.1.1                            
+[14] readr_2.1.5                             
+[15] GenomicRanges_1.60.0                    
+[16] GenomeInfoDb_1.44.3                     
+[17] IRanges_2.42.0                          
+[18] S4Vectors_0.46.0                        
+[19] BiocGenerics_0.54.0                     
+[20] generics_0.1.4                          
+[21] stringr_1.5.2                           
+[22] dplyr_1.1.4                             
+[23] tidyr_1.3.1                             
+[24] data.table_1.17.8                       
+[25] maftools_2.24.0                         
 
 loaded via a namespace (and not attached):
- [1] shape_1.4.6.1           gtable_0.3.6            xfun_0.53              
- [4] bslib_0.9.0             GlobalOptions_0.1.2     processx_3.8.6         
- [7] lattice_0.22-7          callr_3.7.6             tzdb_0.5.0             
-[10] vctrs_0.6.5             tools_4.5.1             ps_1.9.1               
-[13] parallel_4.5.1          tibble_3.3.0            R.oo_1.27.1            
-[16] pkgconfig_2.0.3         pheatmap_1.0.13         Matrix_1.7-4           
-[19] S7_0.2.0                lifecycle_1.0.4         GenomeInfoDbData_1.2.14
-[22] compiler_4.5.1          farver_2.1.2            git2r_0.36.2           
-[25] getPass_0.2-4           httpuv_1.6.16           htmltools_0.5.8.1      
-[28] sass_0.4.10             yaml_2.3.10             crayon_1.5.3           
-[31] later_1.4.4             pillar_1.11.1           jquerylib_0.1.4        
-[34] whisker_0.4.1           R.utils_2.13.0          cachem_1.1.0           
-[37] tidyselect_1.2.1        digest_0.6.37           stringi_1.8.7          
-[40] purrr_1.1.0             labeling_0.4.3          splines_4.5.1          
-[43] rprojroot_2.1.1         fastmap_1.2.0           grid_4.5.1             
-[46] colorspace_2.1-2        cli_3.6.5               magrittr_2.0.4         
-[49] dichromat_2.0-0.1       survival_3.8-3          withr_3.0.2            
-[52] UCSC.utils_1.4.0        scales_1.4.0            promises_1.3.3         
-[55] bit64_4.6.0-1           rmarkdown_2.29          XVector_0.48.0         
-[58] httr_1.4.7              bit_4.6.0               R.methodsS3_1.8.2      
-[61] hms_1.1.3               DNAcopy_1.82.0          evaluate_1.0.5         
-[64] knitr_1.50              rlang_1.1.6             Rcpp_1.1.0             
-[67] glue_1.8.0              vroom_1.6.6             rstudioapi_0.17.1      
-[70] jsonlite_2.0.0          R6_2.6.1                fs_1.6.6               </code></pre>
+  [1] rstudioapi_0.17.1           jsonlite_2.0.0             
+  [3] shape_1.4.6.1               magrittr_2.0.4             
+  [5] farver_2.1.2                rmarkdown_2.30             
+  [7] GlobalOptions_0.1.2         fs_1.6.6                   
+  [9] BiocIO_1.18.0               vctrs_0.6.5                
+ [11] Cairo_1.6-5                 memoise_2.0.1              
+ [13] Rsamtools_2.24.1            RCurl_1.98-1.17            
+ [15] base64enc_0.1-3             htmltools_0.5.8.1          
+ [17] S4Arrays_1.8.1              curl_7.0.0                 
+ [19] SparseArray_1.8.1           Formula_1.2-5              
+ [21] sass_0.4.10                 bslib_0.9.0                
+ [23] htmlwidgets_1.6.4           cachem_1.1.0               
+ [25] GenomicAlignments_1.44.0    whisker_0.4.1              
+ [27] lifecycle_1.0.4             iterators_1.0.14           
+ [29] pkgconfig_2.0.3             Matrix_1.7-4               
+ [31] R6_2.6.1                    fastmap_1.2.0              
+ [33] GenomeInfoDbData_1.2.14     MatrixGenerics_1.20.0      
+ [35] clue_0.3-66                 digest_0.6.37              
+ [37] colorspace_2.1-2            rprojroot_2.1.1            
+ [39] Hmisc_5.2-3                 RSQLite_2.4.3              
+ [41] labeling_0.4.3              httr_1.4.7                 
+ [43] abind_1.4-8                 compiler_4.5.1             
+ [45] bit64_4.6.0-1               withr_3.0.2                
+ [47] doParallel_1.0.17           htmlTable_2.4.3            
+ [49] S7_0.2.0                    backports_1.5.0            
+ [51] BiocParallel_1.42.2         DBI_1.2.3                  
+ [53] R.utils_2.13.0              DelayedArray_0.34.1        
+ [55] rjson_0.2.23                DNAcopy_1.82.0             
+ [57] tools_4.5.1                 foreign_0.8-90             
+ [59] httpuv_1.6.16               nnet_7.3-20                
+ [61] R.oo_1.27.1                 glue_1.8.0                 
+ [63] restfulr_0.0.16             promises_1.3.3             
+ [65] checkmate_2.3.3             cluster_2.1.8.1            
+ [67] BSgenome_1.76.0             gtable_0.3.6               
+ [69] tzdb_0.5.0                  R.methodsS3_1.8.2          
+ [71] ensembldb_2.32.0            hms_1.1.3                  
+ [73] XVector_0.48.0              foreach_1.5.2              
+ [75] pillar_1.11.1               vroom_1.6.6                
+ [77] later_1.4.4                 splines_4.5.1              
+ [79] lattice_0.22-7              survival_3.8-3             
+ [81] rtracklayer_1.68.0          bit_4.6.0                  
+ [83] tidyselect_1.2.1            Biostrings_2.76.0          
+ [85] knitr_1.50                  git2r_0.36.2               
+ [87] gridExtra_2.3               ProtGenerics_1.40.0        
+ [89] SummarizedExperiment_1.38.1 xfun_0.53                  
+ [91] matrixStats_1.5.0           stringi_1.8.7              
+ [93] UCSC.utils_1.4.0            workflowr_1.7.2            
+ [95] lazyeval_0.2.2              yaml_2.3.10                
+ [97] evaluate_1.0.5              codetools_0.2-20           
+ [99] tibble_3.3.0                cli_3.6.5                  
+[101] rpart_4.1.24                jquerylib_0.1.4            
+[103] dichromat_2.0-0.1           Rcpp_1.1.0                 
+[105] png_0.1-8                   XML_3.99-0.19              
+[107] parallel_4.5.1              blob_1.2.4                 
+[109] AnnotationFilter_1.32.0     bitops_1.0-9               
+[111] VariantAnnotation_1.54.1    scales_1.4.0               
+[113] crayon_1.5.3                GetoptLong_1.0.5           
+[115] rlang_1.1.6                 KEGGREST_1.48.1            </code></pre>
+</div>
 </div>
 </div>
 </div>
