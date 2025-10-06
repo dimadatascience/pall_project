@@ -15,24 +15,34 @@ params:
   clinical_data: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/clinical_data.csv"
   maf_tumor_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic"
   cnv_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/variantalker/results/250923_1647_pall/250923/annotation/cnv"
-  forgistic_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4"
+  raw_samples_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4"
   results_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results"
   refgene_file: "/hpcnfs/scratch/DIMA/gmariani/__softwares/gistic2/gistic2/refgenes/hg38.UCSC.add_mir.160920/gistic2.refgene.hg38.UCSC.add_miR.160920.mat"
+  cytoband_file: "/hpcnfs/scratch/DIMA/gmariani/_databases/reference_genomes/hg38/cytoBand_hg38.txt"
   gene_table1: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv"
   gene_table2: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv"
   cnvkit_out_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results/250918_1626_cnvkit_pall"
   run_gistic2: FALSE
+  num_top_genes: 20
+  num_top_regions: 20
+  type2use4cn_onco: "anno" #either "anno" or "seg"
+  thr4gain: 0.30
+  thr4amp: 0.90 
+  thr4loss: -0.30 
+  thr4deep: -0.90 
 ---
 
 ```{r setup_knit, include=FALSE}
-knitr::opts_chunk$set(echo       = FALSE,
-                      message    = FALSE,
-                      warning    = FALSE,
-                      cache      = FALSE,
-                      autodep    = TRUE,
-                      fig.align  = 'center',
-                      fig.width  = 10,
-                      fig.height = 8)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	fig.height = 8,
+	fig.width = 10,
+	message = FALSE,
+	warning = FALSE,
+	autodep = TRUE,
+	cache = FALSE
+)
 ```
 
 ```{r params_for_interactive_session}
@@ -44,7 +54,7 @@ if (!exists("params")) {
     clinical_data = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/clinical_data.csv",
     maf_tumor_dir = "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic",
     cnv_dir = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/variantalker/results/250923_1647_pall/250923/annotation/cnv",
-    forgistic_dir = "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4",
+    raw_samples_dir = "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4",
     results_dir = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results",
     refgene_file = "/hpcnfs/scratch/DIMA/gmariani/__softwares/gistic2/gistic2/refgenes/hg38.UCSC.add_mir.160920/gistic2.refgene.hg38.UCSC.add_miR.160920.mat",
     gene_table1 = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv",
@@ -57,13 +67,14 @@ if (!exists("params")) {
 if (!is.null(params$manual_timestamp) && 
     !is.na(params$manual_timestamp) &&
     params$manual_timestamp != "") {
-  timestamp <- params$manual_timestamp
+  manual_timestamp <- params$manual_timestamp
 } else {
-  timestamp <- format(Sys.time(), "%y%m%d_%H%M")
+  manual_timestamp <- format(Sys.time(), "%y%m%d_%H%M")
 }
 ```
 
 ```{r load_libraries_and_setup, results='hide'}
+library(grDevices)
 library(maftools)
 library(data.table)
 library(tidyr)
@@ -76,6 +87,14 @@ library(ggplot2)
 library(circlize)
 library(RCircos)
 library("RColorBrewer")
+library(grDevices)
+library(ComplexHeatmap)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library('org.Hs.eg.db')
+library(AnnotationDbi)
+library(biovizBase)
+library(grid)
+library(purrr)
 ```
 
 ```{r functions1}
@@ -85,7 +104,7 @@ get_sample_id <- function(filepath) {
     sub("\\.target\\.counts$", "", .)
 }
 
-process_sample_for_gistic <- function(cnv_file, target_counts_file) {
+process_cnv_sample <- function(cnv_file) {
   sample_id <- strsplit(basename(cnv_file), "\\.")[[1]][[1]]
   
   # 1. Leggi CNV
@@ -103,179 +122,210 @@ process_sample_for_gistic <- function(cnv_file, target_counts_file) {
   cnv <- cnv[!is.na(cnv$CNV_Status), ]
   if (nrow(cnv) == 0) return(NULL)
 
-  # 2. Leggi target counts
-  target_counts <- tryCatch({
-    read.delim(target_counts_file, header = TRUE, comment.char = "#", stringsAsFactors = FALSE)
-  }, error = function(e) {
-    message(sprintf("Errore nella lettura di %s: %s", target_counts_file, e$message))
-    return(NULL)
-  })
-  if (is.null(target_counts) || nrow(target_counts) == 0) return(NULL)
-
-  marker_gr <- GRanges(
-    seqnames = target_counts$contig,
-    ranges = IRanges(start = target_counts$start, end = target_counts$stop)
-  )
-
   cnv_gr <- GRanges(
     seqnames = cnv$Chromosome,
     ranges = IRanges(start = cnv$Start, end = cnv$End)
   )
 
-  overlaps <- countOverlaps(cnv_gr, marker_gr)
-
-  # 🔹 1. File per GISTIC: una riga per segmento
-  gistic_seg_df <- cnv %>%
-    mutate(Sample = sample_id,
-           Start_Position = Start,
-           End_Position = End,
-           Num_Markers = overlaps,
-           Seg_CN = logRatio - 1,
-           Chromosome = sub("^chr", "", Chromosome)) %>%
-    select(Sample, Chromosome, Start_Position, End_Position, Num_Markers, Seg_CN, Classification) %>%
-    distinct()  # Elimina eventuali duplicati
-
-  # 🔹 2. File gene-level (solo se ti serve)
+  # 🔹 File gene-level (solo se ti serve)
   gene_annotation_df <- cnv %>%
     mutate(Sample = sample_id,
            Start_Position = Start,
            End_Position = End) %>%
     separate_rows(All.protein.coding.genes, sep = ",\\s*") %>%
     mutate(Hugo_Symbol = All.protein.coding.genes) %>%
-    select(Hugo_Symbol, Sample, CNV_Status, Chromosome, Start_Position, End_Position)
+    dplyr::select(Hugo_Symbol, Sample, CNV_Status, Chromosome, Start_Position, End_Position)
 
-  # 8. Ritorna entrambi
+  # Ritorna entrambi
   return(list(
-    cnv_list = gene_annotation_df,
-    gistic_seg_list = gistic_seg_df
+    cnv_list = gene_annotation_df
   ))
 }
-
-
-
-
-
-
-
-generate_gistic_uniform_file <- function(gistic_table_path, output_path = NULL) {
-  seg <- read_tsv(gistic_table_path, col_types = cols(
-    Sample = col_character(),
-    Chromosome = col_character(),
-    Start_Position = col_double(),
-    End_Position = col_double(),
-    Num_Markers = col_double(),
-    Seg_CN = col_double()
-  ))
-
-  all_segments <- GRanges(
-    seqnames = seg$Chromosome,
-    ranges = IRanges(start = seg$Start_Position, end = seg$End_Position)
-  )
-
-  unified_regions <- reduce(all_segments)
-
-  unified_df <- data.frame(
-    Chromosome = as.character(seqnames(unified_regions)),
-    Start_Position = start(unified_regions),
-    End_Position = end(unified_regions)
-  )
-
-  unified_df <- unified_df %>%
-    arrange(factor(Chromosome, levels = c(as.character(1:22), "X", "Y", "MT")), Start_Position)
-
-  samples <- unique(seg$Sample)
-
-  create_uniform_segments <- function(sample_id) {
-    sample_segments <- seg %>% filter(Sample == sample_id)
-    
-    sample_gr <- GRanges(
-      seqnames = sample_segments$Chromosome,
-      ranges = IRanges(sample_segments$Start_Position, sample_segments$End_Position),
-      Num_Markers = sample_segments$Num_Markers,
-      Seg_CN = sample_segments$Seg_CN
-    )
-    
-    overlaps <- findOverlaps(unified_regions, sample_gr)
-    
-    df_out <- unified_df %>%
-      mutate(
-        Sample = sample_id,
-        Num_Markers = NA_real_,
-        Seg_CN = NA_real_
-      )
-    
-    for (i in seq_along(overlaps@from)) {
-      idx_region <- overlaps@from[i]
-      idx_sample <- overlaps@to[i]
-      
-      df_out$Num_Markers[idx_region] <- mcols(sample_gr)$Num_Markers[idx_sample]
-      df_out$Seg_CN[idx_region] <- mcols(sample_gr)$Seg_CN[idx_sample]
-    }
-    
-    df_out$Seg_CN[is.na(df_out$Seg_CN)] <- 0
-    df_out$Num_Markers[is.na(df_out$Num_Markers)] <- 0
-    
-    df_out %>%
-      select(Sample, Chromosome, Start_Position, End_Position, Num_Markers, Seg_CN)
-  }
-  uniform_seg_list <- lapply(samples, create_uniform_segments)
-  uniform_seg <- bind_rows(uniform_seg_list)
-  if (!is.null(output_path)) {
-    write_tsv(uniform_seg, output_path, na = "NA")
-    message("✅ File uniforme scritto in: ", output_path)
-  }
-  return(uniform_seg)
-}
-
 ```
 
 ```{r functions2}
+apply_priority <- function(df, colnames_list, priority, new_colname = "Clinical_Significance_Summary") {
+  
+  colnames_vec <- unlist(colnames_list)
+  df <- as.data.frame(df)
+  
+  # Funzione che prende un vettore di tag e sceglie quello con priorità più alta
+  select_highest_priority <- function(tags) {
+    tags <- trimws(tags)
+    tags <- tags[tags != "" & !is.na(tags)]
+    
+    for (p in priority) {
+      if (p %in% tags) return(p)
+    }
+    return(NA_character_)
+  }
+  
+  df[[new_colname]] <- apply(df[, colnames_vec, drop=FALSE], 1, select_highest_priority)
+  
+  return(data.table(df))
+}
 
+
+simplify_clinvar <- function(value, priority, mapping) {
+  if (is.na(value) || trimws(value) == "") {
+    return("Not_Provided")
+  }
+  
+  # Split per tutti i separatori
+  tags <- unlist(strsplit(value, "[|/;,]"))
+  tags <- trimws(tags)
+  
+  # Applica il mapping ai tag
+  mapped_tags <- sapply(tags, function(x) {
+    if (x %in% names(mapping)) {
+      return(mapping[[x]])
+    } else {
+      return(x)
+    }
+  }, USE.NAMES = FALSE)
+  
+  # Trova il primo tag con priorità più alta nel mapping
+  for (p in priority) {
+    if (p %in% mapped_tags) {
+      return(p)
+    }
+  }
+  
+  # Se nessun match nella priorità, restituisce il primo tag mappato
+  return(mapped_tags[1])
+}
+```
+
+```{r functions3}
+preproc_oncocn <- function(dt, cyto_file, gain = 0.30, amp = 0.90, loss = -0.30, deep = -0.90, top_regions) {
+# ---- 2) Normalizza nomi cromosomi ----
+dt <- dt %>%
+  mutate(Chromosome = ifelse(grepl("^chr", Chromosome), Chromosome, paste0("chr", Chromosome)))
+
+# ---- 3) Crea GRanges per segmenti ----
+cnv_gr <- GRanges(
+  seqnames = dt$Chromosome,
+  ranges = IRanges(start = dt$Start, end = dt$End),
+  sample = dt$Sample,
+  log2R = log2(dt$Segment_Mean)
+)
+
+# ---- 4) Carica bande citogenetiche ----
+cyto <- read.delim(cyto_file, header = FALSE, stringsAsFactors = FALSE)
+colnames(cyto) <- c("chrom", "chromStart", "chromEnd", "name", "gieStain")
+
+cyto_gr <- GRanges(
+  seqnames = cyto$chrom,
+  ranges = IRanges(start = cyto$chromStart + 1, end = cyto$chromEnd),
+  name = cyto$name,
+  gieStain = cyto$gieStain
+)
+
+cyto_gr$region <- paste0(seqnames(cyto_gr), cyto_gr$name)
+
+# ---- 5) Match seqlevels ----
+seqlevelsStyle(cnv_gr) <- "UCSC"
+cyto_gr <- keepSeqlevels(cyto_gr, intersect(seqlevels(cyto_gr), seqlevels(cnv_gr)), pruning.mode = "coarse")
+cnv_gr  <- keepSeqlevels(cnv_gr, intersect(seqlevels(cyto_gr), seqlevels(cnv_gr)), pruning.mode = "coarse")
+
+# ---- 6) Trova overlap tra CNV e bande ----
+ov <- findOverlaps(cnv_gr, cyto_gr, ignore.strand = TRUE)
+qh <- queryHits(ov)
+sh <- subjectHits(ov)
+
+# ---- 7) Calcola log2R medio pesato per (sample, regione) ----
+ints <- pintersect(cnv_gr[qh], cyto_gr[sh])
+df_raw <- data.frame(
+  sample = cnv_gr$sample[qh],
+  region = cyto_gr$region[sh],
+  log2R = cnv_gr$log2R[qh],
+  w = width(ints),
+  stringsAsFactors = FALSE
+)
+
+df <- df_raw %>%
+  group_by(sample, region) %>%
+  summarise(
+    log2R = weighted.mean(log2R, w),
+    total_w = sum(w),
+    .groups = "drop"
+  )
+
+# ---- 8) Classifica in base al log2R aggregato ----
+thr <- list(gain = gain, amp = amp, loss = loss, deep = deep)
+
+df <- df %>%
+  mutate(call = case_when(
+    log2R >= thr$amp  ~ "AMP",
+    log2R >= thr$gain ~ "GAIN",
+    log2R <= thr$deep ~ "HOMDEL",
+    log2R <= thr$loss ~ "DEL",
+    TRUE              ~ ""
+  )) %>%
+  filter(call != "")
+
+# ---- 9) Costruisci matrice regione × sample ----
+mat <- df %>%
+  dplyr::select(sample, region, call) %>%
+  pivot_wider(names_from = sample, values_from = call, values_fill = "") %>%
+  group_by(region) %>%
+  summarise(across(everything(), ~ paste(unique(.), collapse = ";")), .groups = "drop") %>%
+  tibble::column_to_rownames("region") %>%
+  as.matrix()
+
+top_n <- top_regions
+region_freq <- apply(mat, 1, function(x) sum(x != ""))
+top_regions <- names(sort(region_freq, decreasing = TRUE))[1:top_n]
+mat_top <- mat[top_regions, , drop = FALSE]
+
+# ---- 10) Definisci colori e funzioni per oncoPrint ----
+col_map <- c(AMP = "#e41a1c", GAIN = "#fb9a99", DEL = "#377eb8", HOMDEL = "#08519c")
+
+alter_fun <- list(
+  background = function(x, y, w, h) {
+    grid::grid.rect(x, y, w, h, gp = grid::gpar(fill = "#f2f2f2", col = NA))
+  },
+  AMP = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["AMP"], col = NA))
+  },
+  GAIN = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["GAIN"], col = NA))
+  },
+  DEL = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["DEL"], col = NA))
+  },
+  HOMDEL = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["HOMDEL"], col = NA))
+  }
+)
+
+get_type <- function(x) strsplit(x, ";")[[1]]
+
+return(list(mat_top = mat_top, col_map = col_map, alter_fun = alter_fun, get_type = get_type))
+}
 ```
 
 ```{r preprocessing, results='hide'}
 samples <- list.dirs(params$maf_tumor_dir, full.names = FALSE, recursive = FALSE)
 
-genelist <- unique(c(read_csv(params$gene_table1)$Hugo_Symbol, read_csv(params$gene_table2)$Hugo_Symbol))
+final_genetable <- bind_rows(
+  read_csv(params$gene_table1),
+  read_csv(params$gene_table2)
+)
+
+genelist <- unique(final_genetable$Hugo_Symbol)
 
 cnv_files <- file.path(params$cnv_dir, samples, paste0(samples, ".cnv.annotated.tsv"))
 cnv_files <- cnv_files[file.exists(cnv_files)]
 
-gistic_files <- file.path(params$forgistic_dir, samples, paste0(samples, ".target.counts.gz"))
-gistic_files <- gistic_files[file.exists(gistic_files)]
-
 cnv_samples <- setNames(cnv_files, sapply(cnv_files, get_sample_id))
-target_samples <- setNames(gistic_files, sapply(gistic_files, get_sample_id))
 
-common_samples <- intersect(names(cnv_samples), names(target_samples))
-
-file_pairs <- lapply(common_samples, function(sid) {
-  list(
-    sample_id = sid,
-    cnv_file = cnv_samples[[sid]],
-    target_file = target_samples[[sid]]
-  )
-})
-
-results <- lapply(file_pairs, function(pair) {
-  process_sample_for_gistic(pair$cnv_file, pair$target_file)
-})
+results <- lapply(cnv_files, process_cnv_sample)
 ```
 
 ```{r generate_files, results='hide'}
 # Combina tutti i risultati validi
 cnv_combined <- bind_rows(lapply(results, `[[`, "cnv_list"))
-gistic_seg_combined <- bind_rows(lapply(results, `[[`, "gistic_seg_list"))
-
-gistic_seg_combined_original <- gistic_seg_combined[, c("Sample", "Chromosome", "Start_Position", "End_Position", "Num_Markers", "Seg_CN")]
-gistic_seg_combined_tierI_II <- gistic_seg_combined[
-  gistic_seg_combined$Classification %in% c("Pathogenic", "Likely pathogenic"),
-  c("Sample", "Chromosome", "Start_Position", "End_Position", "Num_Markers", "Seg_CN")
-]
-gistic_seg_combined_tierI_II_III <- gistic_seg_combined[
-  gistic_seg_combined$Classification %in% c("Pathogenic", "Likely pathogenic", "Uncertain significance"),
-  c("Sample", "Chromosome", "Start_Position", "End_Position", "Num_Markers", "Seg_CN")
-]
 
 maf_files <- file.path(params$maf_tumor_dir, samples, paste0(samples, ".maf"))
 maf_files <- maf_files[file.exists(maf_files)]
@@ -284,35 +334,153 @@ merged_maf <- merge_mafs(maf_files)
 maf_obj <- read.maf(maf = merged_maf@data, clinicalData = params$clinical_data, cnTable = cnv_combined)
 ```
 
-```{r genelists, results='hide'}
-maf_obj_filtered_cancervar_I_II_III <- maf_obj@data[maf_obj@data$CancerVar %in% c("Tier_I_strong", "Tier_II_potential", "Tier_III_Uncertain"), ]
-genelist_filtered_cancervar_I_II_III <- unique(maf_obj_filtered_cancervar_I_II_III$Hugo_Symbol)
+```{r clin_summary_setup}
+clinvar_dict <- c("Pathogenic" = "Pathogenic",
+    "Pathogenic/Likely_pathogenic" = "Pathogenic",
+    "Likely_pathogenic" = "Likely_Pathogenic",
+    "Uncertain_significance" = "Uncertain_Significance",
+    "Conflicting_classifications_of_pathogenicity" = "Uncertain_Significance",
+    "Conflicting_interpretations_of_pathogenicity" = "Uncertain_Significance",
+    "Likely_benign" = "Likely_Benign",
+    "Benign/Likely_benign" = "Likely_Benign",
+    "Benign" = "Benign",
+    "drug_response" = "Drug_Response",
+    "not_provided" = "Not_Provided",
+    "no_classifications_from_unflagged_records" = "Unknown",
+    "risk_factor" = "Unknown",
+    "Affects" = "Unknown",
+    "no_classification_for_the_single_variant" = "Unknown",
+    "association" = "Unknown",
+    "other" = "Unknown",
+    "Uncertain_risk_allele" = "Unknown",
+    "Likely_risk_allele" = "Unknown",
+    "_low_penetrance" = "Unknown",
+    "protective" = "Unknown",
+    "association_not_found" = "Unknown",
+    "Established_risk_allele" = "Unknown",
+    "confers_sensitivity" = "Unknown")
 
-maf_obj_filtered_cancervar_I_II <- maf_obj@data[maf_obj@data$CancerVar %in% c("Tier_I_strong", "Tier_II_potential"), ]
-genelist_filtered_cancervar_I_II <- unique(maf_obj_filtered_cancervar_I_II$Hugo_Symbol)
+cancervar_dict <- list("Tier_I_strong" = "Pathogenic",
+    "Tier_II_potential" = "Likely_Pathogenic",
+    "Tier_III_Uncertain" = "Uncertain_Significance",
+    "Tier_IV_benign" = "Benign")
+
+varsome_dict  <- list("TierI" = "Pathogenic",
+                      "TierIV" = "Benign",
+                      "TierIII" = "Uncertain_Significance",
+                      "??" = "Unknown",
+                      "TierII" = "Likely_pathogenic",
+                      "???" = "Unknown")
+
+priority_order <- list("Pathogenic",
+    "Likely_Pathogenic",
+    "Uncertain_Significance",
+    "Likely_Benign",
+    "Benign",
+    "Drug_Response",
+    "Not_Provided",
+    "Unknown")
+
+cols_to_check_clin_canc <- list("CancerVar", "ClinVar_VCF_CLNSIG")
+cols_to_check_chiara <- list("VARSOME", "CancerVar", "ClinVar_VCF_CLNSIG")
 ```
 
-```{r filters, results='hide'}
+```{r clin_summary_exec}
+maf_data <- maf_obj@data
+
+maf_data <- maf_data %>%
+  dplyr::left_join(
+    final_genetable %>% dplyr::select(Chromosome, Start_Position, End_Position, VARSOME),
+    by = c("Chromosome", "Start_Position", "End_Position")
+  )
+
+maf_data$ClinVar_VCF_CLNSIG <- sapply(
+  maf_data$ClinVar_VCF_CLNSIG,
+  simplify_clinvar,
+  priority = priority_order,
+  mapping = clinvar_dict,
+  USE.NAMES = FALSE
+)
+maf_data$CancerVar[is.na(maf_data$CancerVar)] <- "Not_Provided"
+maf_data$CancerVar <- recode(maf_data$CancerVar, !!!cancervar_dict)
+maf_data$VARSOME[is.na(maf_data$VARSOME)] <- "Not_Provided"
+maf_data$VARSOME <- recode(maf_data$VARSOME, !!!varsome_dict)
+
+maf_obj@data <- maf_data
+
+maf_obj@data <- apply_priority(maf_obj@data, cols_to_check_clin_canc, priority_order, new_colname = "Clinical_Significance_Summary_Clinvar_Cancervar")
+maf_obj@data <- apply_priority(maf_obj@data, cols_to_check_chiara, priority_order, new_colname = "Clinical_Significance_Summary_Chiara")
+```
+
+```{r genelists, results='hide'}
+maf_obj_filtered_I <- maf_obj
+maf_obj_filtered_I_chiara <- maf_obj
+maf_obj_filtered_I_II <- maf_obj
+maf_obj_filtered_I_II_chiara <- maf_obj
+maf_obj_filtered_I_II_III <- maf_obj
+maf_obj_filtered_I_II_III_chiara <- maf_obj
+
+maf_obj_filtered_I_II_III@data <- maf_obj@data[maf_obj@data$Clinical_Significance_Summary_Clinvar_Cancervar %in% c("Pathogenic", "Likely_Pathogenic", "Uncertain_Significance"), ]
+genelist_filtered_I_II_III <- unique(maf_obj_filtered_I_II_III@data$Hugo_Symbol)
+
+maf_obj_filtered_I_II@data <- maf_obj@data[maf_obj@data$Clinical_Significance_Summary_Clinvar_Cancervar %in% c("Pathogenic", "Likely_Pathogenic"), ]
+genelist_filtered_I_II <- unique(maf_obj_filtered_I_II@data$Hugo_Symbol)
+
+maf_obj_filtered_I@data <- maf_obj@data[maf_obj@data$Clinical_Significance_Summary_Clinvar_Cancervar %in% c("Pathogenic"), ]
+genelist_filtered_I <- unique(maf_obj_filtered_I@data$Hugo_Symbol)
+
+maf_obj_filtered_I_II_III_chiara@data <- maf_obj@data[maf_obj@data$Clinical_Significance_Summary_Chiara %in% c("Pathogenic", "Likely_Pathogenic", "Uncertain_Significance"), ]
+genelist_filtered_I_II_III_chiara <- unique(maf_obj_filtered_I_II_III_chiara@data$Hugo_Symbol)
+
+maf_obj_filtered_I_II_chiara@data <- maf_obj@data[maf_obj@data$Clinical_Significance_Summary_Chiara %in% c("Pathogenic", "Likely_Pathogenic"), ]
+genelist_filtered_I_II_chiara <- unique(maf_obj_filtered_I_II_chiara@data$Hugo_Symbol)
+
+maf_obj_filtered_I_chiara@data <- maf_obj@data[maf_obj@data$Clinical_Significance_Summary_Chiara %in% c("Pathogenic"), ]
+genelist_filtered_I_chiara <- unique(maf_obj_filtered_I_chiara@data$Hugo_Symbol)
+```
+
+```{r filters_genes, results='hide'}
 clin_data <- maf_obj@clinical.data
 clin_data_sorted <- clin_data[order(clin_data$T1221, clin_data$Sample_group), ]
+clin_data_sorted_samples_paired <- clin_data[order(clin_data$Tumor_Sample_Barcode, clin_data$T1221, clin_data$Sample_group), ]
 sample_order <- clin_data_sorted$Tumor_Sample_Barcode
+sample_order_paired <- clin_data_sorted_samples_paired$Tumor_Sample_Barcode
 
 # gene filters
 mut_summary <- getGeneSummary(maf_obj)
 mut_summary_filtered <- mut_summary[mut_summary$Hugo_Symbol %in% genelist, ]
-top_in_genelist <- head(mut_summary_filtered[order(-mut_summary_filtered$MutatedSamples), "Hugo_Symbol"], 20)
+top_in_genelist <- head(mut_summary_filtered[order(-mut_summary_filtered$MutatedSamples), "Hugo_Symbol"], params$num_top_genes)
 
-mut_summary_filtered_cancervar_I_II <- mut_summary[mut_summary$Hugo_Symbol %in% genelist_filtered_cancervar_I_II, ]
-top_in_genelist_cancervar_I_II <- head(mut_summary_filtered_cancervar_I_II[order(-mut_summary_filtered_cancervar_I_II$MutatedSamples), "Hugo_Symbol"], 20)
+mut_summary_filtered_I_II <- mut_summary_filtered[mut_summary_filtered$Hugo_Symbol %in% genelist_filtered_I_II, ]
+top_in_genelist_I_II <- head(mut_summary_filtered_I_II[order(-mut_summary_filtered_I_II$MutatedSamples), "Hugo_Symbol"], params$num_top_genes)
 
-mut_summary_filtered_cancervar_I_II_III <- mut_summary[mut_summary$Hugo_Symbol %in% genelist_filtered_cancervar_I_II_III, ]
-top_in_genelist_cancervar_I_II_III <- head(mut_summary_filtered_cancervar_I_II_III[order(-mut_summary_filtered_cancervar_I_II_III$MutatedSamples), "Hugo_Symbol"], 20)
+mut_summary_filtered_I_II_III <- mut_summary_filtered[mut_summary_filtered$Hugo_Symbol %in% genelist_filtered_I_II_III, ]
+top_in_genelist_I_II_III <- head(mut_summary_filtered_I_II_III[order(-mut_summary_filtered_I_II_III$MutatedSamples), "Hugo_Symbol"], params$num_top_genes)
 
+mut_summary_filtered_I_II_chiara <- mut_summary_filtered[mut_summary_filtered$Hugo_Symbol %in% genelist_filtered_I_II_chiara, ]
+top_in_genelist_I_II_chiara <- head(mut_summary_filtered_I_II_chiara[order(-mut_summary_filtered_I_II_chiara$MutatedSamples), "Hugo_Symbol"], params$num_top_genes)
+
+mut_summary_filtered_I_II_III_chiara <- mut_summary_filtered[mut_summary_filtered$Hugo_Symbol %in% genelist_filtered_I_II_III_chiara, ]
+top_in_genelist_I_II_III_chiara <- head(mut_summary_filtered_I_II_III_chiara[order(-mut_summary_filtered_I_II_III_chiara$MutatedSamples), "Hugo_Symbol"], params$num_top_genes)
+```
+
+```{r filters_samples, results='hide'}
 # sample filters
 sample_order_diag_relapse <- clin_data_sorted$Tumor_Sample_Barcode[
   clin_data_sorted$Sample_group %in% c("diag", "relapse1")
 ]
 maf_obj_filtered_diag_relapse <- subsetMaf(maf = maf_obj, tsb = sample_order_diag_relapse)
+
+samples_neg_diag_relapse <- clin_data_sorted$Tumor_Sample_Barcode[
+  clin_data_sorted$T1221 == "NEG" &
+  clin_data_sorted$Sample_group %in% c("diag", "relapse1")
+]
+
+samples_pos_diag_relapse <- clin_data_sorted$Tumor_Sample_Barcode[
+  clin_data_sorted$T1221 == "POS" &
+  clin_data_sorted$Sample_group %in% c("diag", "relapse1")
+]
+
 
 sample_order_diag <- clin_data_sorted$Tumor_Sample_Barcode[
   clin_data_sorted$Sample_group %in% c("diag")
@@ -330,230 +498,12 @@ samples_pos <- clin_data_sorted$Tumor_Sample_Barcode[clin_data_sorted$T1221 == "
 maf_obj_filtered_pos <- subsetMaf(maf = maf_obj, tsb = samples_pos)
 ```
 
-```{r gistic_setup, results='hide'}
+```{r setup_directories}
 # setup directories
-output_dir <- file.path(params$results_dir, paste0(timestamp, "_", params$project))
+output_dir <- file.path(params$results_dir, paste0(manual_timestamp, "_", params$project))
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
-
-
-
-gistic_table_path <- file.path(output_dir, "all_samples_gistic.seg")
-uniform_gistic_table_path <- file.path(output_dir, "all_samples_gistic_uniform.seg")
-
-gistic_output_dir <- file.path(output_dir, "gistic_out")
-if (!dir.exists(gistic_output_dir)) {
-  dir.create(gistic_output_dir, recursive = TRUE)
-}
-
-uniform_gistic_table_pos_path <- file.path(output_dir, "pos_samples_gistic_uniform.seg")
-
-pos_samples_gistic_output_dir <- file.path(output_dir, "pos_samples_gistic_out")
-if (!dir.exists(pos_samples_gistic_output_dir)) {
-  dir.create(pos_samples_gistic_output_dir, recursive = TRUE)
-}
-
-uniform_gistic_table_neg_path <- file.path(output_dir, "neg_samples_gistic_uniform.seg")
-
-neg_samples_gistic_output_dir <- file.path(output_dir, "neg_samples_gistic_out")
-if (!dir.exists(neg_samples_gistic_output_dir)) {
-  dir.create(neg_samples_gistic_output_dir, recursive = TRUE)
-}
-
-
-
-
-
-
-gistic_table_path_tierI_II <- file.path(output_dir, "all_samples_gistic_tierI_II.seg")
-uniform_gistic_table_path_tierI_II <- file.path(output_dir, "all_samples_gistic_uniform_tierI_II.seg")
-
-gistic_output_dir_tierI_II <- file.path(output_dir, "gistic_out_tierI_II")
-if (!dir.exists(gistic_output_dir_tierI_II)) {
-  dir.create(gistic_output_dir_tierI_II, recursive = TRUE)
-}
-
-uniform_gistic_table_pos_tierI_II_path <- file.path(output_dir, "pos_samples_gistic_uniform_tierI_II.seg")
-
-pos_samples_tierI_II_gistic_output_dir <- file.path(output_dir, "pos_samples_gistic_out_tierI_II")
-if (!dir.exists(pos_samples_tierI_II_gistic_output_dir)) {
-  dir.create(pos_samples_tierI_II_gistic_output_dir, recursive = TRUE)
-}
-
-uniform_gistic_table_neg_tierI_II_path <- file.path(output_dir, "neg_samples_gistic_uniform_tierI_II.seg")
-
-neg_samples_tierI_II_gistic_output_dir <- file.path(output_dir, "neg_samples_gistic_out_tierI_II")
-if (!dir.exists(neg_samples_tierI_II_gistic_output_dir)) {
-  dir.create(neg_samples_tierI_II_gistic_output_dir, recursive = TRUE)
-}
-
-
-
-
-
-gistic_table_path_tierI_II_III <- file.path(output_dir, "all_samples_gistic_tierI_II_III.seg")
-uniform_gistic_table_path_tierI_II_III <- file.path(output_dir, "all_samples_gistic_uniform_tierI_II_III.seg")
-
-gistic_output_dir_tierI_II_III <- file.path(output_dir, "gistic_out_tierI_II_III")
-if (!dir.exists(gistic_output_dir_tierI_II_III)) {
-  dir.create(gistic_output_dir_tierI_II_III, recursive = TRUE)
-}
-
-uniform_gistic_table_pos_tierI_II_III_path <- file.path(output_dir, "pos_samples_gistic_uniform_tierI_II_III.seg")
-
-pos_samples_tierI_II_III_gistic_output_dir <- file.path(output_dir, "pos_samples_gistic_out_tierI_II_III")
-if (!dir.exists(pos_samples_tierI_II_III_gistic_output_dir)) {
-  dir.create(pos_samples_tierI_II_III_gistic_output_dir, recursive = TRUE)
-}
-
-uniform_gistic_table_neg_tierI_II_III_path <- file.path(output_dir, "neg_samples_gistic_uniform_tierI_II_III.seg")
-
-neg_samples_tierI_II_III_gistic_output_dir <- file.path(output_dir, "neg_samples_gistic_out_tierI_II_III")
-if (!dir.exists(neg_samples_tierI_II_III_gistic_output_dir)) {
-  dir.create(neg_samples_tierI_II_III_gistic_output_dir, recursive = TRUE)
-}
-```
-
-```{r gistic_exe, results='hide'}
-if (params$run_gistic2) {
-  # generate files
-  write.table(gistic_seg_combined_original, file = gistic_table_path, sep = "\t", row.names = FALSE, quote = FALSE)
-  write.table(gistic_seg_combined_tierI_II, file = gistic_table_path_tierI_II, sep = "\t", row.names = FALSE, quote = FALSE)
-  write.table(gistic_seg_combined_tierI_II_III, file = gistic_table_path_tierI_II_III, sep = "\t", row.names = FALSE, quote = FALSE)
-  
-  # all genes
-  uniform_gistic_table <- generate_gistic_uniform_file(gistic_table_path, output_path = uniform_gistic_table_path)
-  cmd <- sprintf(
-    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
-    shQuote(gistic_output_dir),
-    shQuote(uniform_gistic_table_path),
-    shQuote(params$refgene_file),
-    0.2, 0.2, 10
-  )
-  system(cmd)
-  
-  uniform_gistic_table_pos <- uniform_gistic_table %>%
-    filter(Sample %in% samples_pos)
-  write.table(uniform_gistic_table_pos, file = uniform_gistic_table_pos_path, sep = "\t", row.names = FALSE, quote = FALSE)
-  cmd <- sprintf(
-    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
-    shQuote(pos_samples_gistic_output_dir),
-    shQuote(uniform_gistic_table_pos_path),
-    shQuote(params$refgene_file),
-    0.2, 0.2, 10
-  )
-  system(cmd)
-  
-  uniform_gistic_table_neg <- uniform_gistic_table %>%
-    filter(Sample %in% samples_neg)
-  write.table(uniform_gistic_table_neg, file = uniform_gistic_table_neg_path, sep = "\t", row.names = FALSE, quote = FALSE)
-  cmd <- sprintf(
-    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
-    shQuote(neg_samples_gistic_output_dir),
-    shQuote(uniform_gistic_table_neg_path),
-    shQuote(params$refgene_file),
-    0.2, 0.2, 10
-  )
-  system(cmd)
-  
-  
-  
-  # tier I II
-    uniform_gistic_table_tierI_II <- generate_gistic_uniform_file(gistic_table_path_tierI_II, output_path = uniform_gistic_table_path_tierI_II)
-  cmd <- sprintf(
-    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
-    shQuote(gistic_output_dir_tierI_II),
-    shQuote(uniform_gistic_table_path_tierI_II),
-    shQuote(params$refgene_file),
-    0.2, 0.2, 10
-  )
-  system(cmd)
-  
-  uniform_gistic_table_pos_tierI_II <- uniform_gistic_table_tierI_II %>%
-    filter(Sample %in% samples_pos)
-  write.table(uniform_gistic_table_pos_tierI_II, file = uniform_gistic_table_pos_tierI_II_path, sep = "\t", row.names = FALSE, quote = FALSE)
-  cmd <- sprintf(
-    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
-    shQuote(pos_samples_tierI_II_gistic_output_dir),
-    shQuote(uniform_gistic_table_pos_tierI_II_path),
-    shQuote(params$refgene_file),
-    0.2, 0.2, 10
-  )
-  system(cmd)
-  
-  uniform_gistic_table_neg_tierI_II <- uniform_gistic_table_tierI_II %>%
-    filter(Sample %in% samples_neg)
-  write.table(uniform_gistic_table_neg_tierI_II, file = uniform_gistic_table_neg_tierI_II_path, sep = "\t", row.names = FALSE, quote = FALSE)
-  cmd <- sprintf(
-    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
-    shQuote(neg_samples_tierI_II_gistic_output_dir),
-    shQuote(uniform_gistic_table_neg_tierI_II_path),
-    shQuote(params$refgene_file),
-    0.2, 0.2, 10
-  )
-  system(cmd)
-  
-  
-  
-  # tier I II III
-    uniform_gistic_table_tierI_II_III <- generate_gistic_uniform_file(gistic_table_path_tierI_II_III, output_path = uniform_gistic_table_path_tierI_II_III)
-  cmd <- sprintf(
-    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
-    shQuote(gistic_output_dir_tierI_II_III),
-    shQuote(uniform_gistic_table_path_tierI_II_III),
-    shQuote(params$refgene_file),
-    0.2, 0.2, 10
-  )
-  system(cmd)
-  
-  uniform_gistic_table_pos_tierI_II_III <- uniform_gistic_table_tierI_II_III %>%
-    filter(Sample %in% samples_pos)
-  write.table(uniform_gistic_table_pos_tierI_II_III, file = uniform_gistic_table_pos_tierI_II_III_path, sep = "\t", row.names = FALSE, quote = FALSE)
-  cmd <- sprintf(
-    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
-    shQuote(pos_samples_tierI_II_III_gistic_output_dir),
-    shQuote(uniform_gistic_table_pos_tierI_II_III_path),
-    shQuote(params$refgene_file),
-    0.2, 0.2, 10
-  )
-  system(cmd)
-  
-  uniform_gistic_table_neg_tierI_II_III <- uniform_gistic_table_tierI_II_III %>%
-    filter(Sample %in% samples_neg)
-  write.table(uniform_gistic_table_neg_tierI_II_III, file = uniform_gistic_table_neg_tierI_II_III_path, sep = "\t", row.names = FALSE, quote = FALSE)
-  cmd <- sprintf(
-    "gistic2 -b %s -seg %s -refgene %s -ta %.2f -td %.2f -v %d",
-    shQuote(neg_samples_tierI_II_III_gistic_output_dir),
-    shQuote(uniform_gistic_table_neg_tierI_II_III_path),
-    shQuote(params$refgene_file),
-    0.2, 0.2, 10
-  )
-  system(cmd)
-  
-} else {
-  uniform_gistic_table <- read_tsv(uniform_gistic_table_path)
-  uniform_gistic_table_pos <- read_tsv(uniform_gistic_table_pos_path)
-  uniform_gistic_table_neg <- read_tsv(uniform_gistic_table_neg_path)
-  uniform_gistic_table_tierI_II <- read_tsv(uniform_gistic_table_path_tierI_II)
-  uniform_gistic_table_pos_tierI_II <- read_tsv(uniform_gistic_table_pos_tierI_II_path)
-  uniform_gistic_table_neg_tierI_II <- read_tsv(uniform_gistic_table_neg_tierI_II_path)
-  uniform_gistic_table_tierI_II_III <- read_tsv(uniform_gistic_table_path_tierI_II_III)
-  uniform_gistic_table_pos_tierI_II_III <- read_tsv(uniform_gistic_table_pos_tierI_II_III_path)
-  uniform_gistic_table_neg_tierI_II_III <- read_tsv(uniform_gistic_table_neg_tierI_II_III_path)
-}
-
-gistic_obj = readGistic(gisticDir = gistic_output_dir, isTCGA = FALSE)
-pos_gistic_obj = readGistic(gisticDir = pos_samples_gistic_output_dir, isTCGA = FALSE)
-neg_gistic_obj = readGistic(gisticDir = neg_samples_gistic_output_dir, isTCGA = FALSE)
-
-gobj_12 = readGistic(gisticDir = gistic_output_dir_tierI_II, isTCGA = FALSE)
-p_gobj_12 = readGistic(gisticDir = pos_samples_tierI_II_gistic_output_dir, isTCGA = FALSE)
-n_gobj_12 = readGistic(gisticDir = neg_samples_tierI_II_gistic_output_dir, isTCGA = FALSE)
-
-gobj_123 = readGistic(gisticDir = gistic_output_dir_tierI_II_III, isTCGA = FALSE)
-p_gobj_123 = readGistic(gisticDir = pos_samples_tierI_II_III_gistic_output_dir, isTCGA = FALSE)
-n_gobj_123 = readGistic(gisticDir = neg_samples_tierI_II_III_gistic_output_dir, isTCGA = FALSE)
 ```
 
 # Maftools Report
@@ -578,122 +528,583 @@ plotmafSummary(maf = maf_obj_filtered_diag, rmOutlier = TRUE, addStat = 'median'
 plotmafSummary(maf = maf_obj_filtered_relapse, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
 ```
 
-### Oncoplots
+### Oncoplots (VCC = VARSOME + CANCERVAR + CLINVAR, CC = CANCERVAR + CLINVAR)
 
-#### Chiara's List, all samples
+#### Most pathogenic in VCC, Tier I and II genes
 
-```{r oncoplot1}
-oncoplot(
-  maf = maf_obj,
-  genes = top_in_genelist$Hugo_Symbol, 
+##### All samples
+
+```{r oncoplot1, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = maf_obj_filtered_I_II_chiara,
+  genes = top_in_genelist_I_II_chiara$Hugo_Symbol, 
   showTumorSampleBarcodes = TRUE, 
   barcode_mar = 12.5, 
   clinicalFeatures = c("T1221", "Sample_group"), 
   SampleNamefontSize = 1.3,
   sampleOrder = sample_order
   )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
 ```
 
-#### CancerVar Tier I and II genes, all samples
+##### Positive samples
 
-```{r oncoplot2}
+```{r oncoplot1pos, results='hide', echo=FALSE}
 oncoplot(
-  maf = maf_obj,
-  genes = top_in_genelist_cancervar_I_II$Hugo_Symbol, 
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_chiara, tsb = samples_pos),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+##### Negative samples
+
+```{r oncoplot1neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_chiara, tsb = samples_neg),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+#### Most pathogenic in VCC, Tier I, II and III genes
+
+##### All samples
+
+```{r oncoplot2, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = maf_obj_filtered_I_II_III_chiara,
+  genes = top_in_genelist_I_II_III_chiara$Hugo_Symbol, 
   showTumorSampleBarcodes = TRUE, 
   barcode_mar = 12.5, 
   clinicalFeatures = c("T1221", "Sample_group"), 
   SampleNamefontSize = 1.3,
   sampleOrder = sample_order
   )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
 ```
 
-#### CancerVar Tier I, II and III genes, all samples
+##### Positive samples
 
-```{r oncoplot3}
+```{r oncoplot2pos, results='hide', echo=FALSE}
 oncoplot(
-  maf = maf_obj,
-  genes = top_in_genelist_cancervar_I_II_III$Hugo_Symbol, 
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_III_chiara, tsb = samples_pos),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+##### Negative samples
+
+```{r oncoplot2neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_III_chiara, tsb = samples_neg),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+#### Most pathogenic in CC, Tier I and II genes
+
+##### All samples
+
+```{r oncoplot3, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = maf_obj_filtered_I_II,
+  genes = top_in_genelist_I_II$Hugo_Symbol, 
   showTumorSampleBarcodes = TRUE, 
   barcode_mar = 12.5, 
   clinicalFeatures = c("T1221", "Sample_group"), 
   SampleNamefontSize = 1.3,
   sampleOrder = sample_order
   )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
 ```
 
-#### Chiara's List, only diagnosis and relapse 1 samples
+##### Positive samples
 
-```{r oncoplot4}
+```{r oncoplot3pos, results='hide', echo=FALSE}
 oncoplot(
-  maf = maf_obj_filtered_diag_relapse,
-  genes = top_in_genelist$Hugo_Symbol, 
+  maf = subsetMaf(maf = maf_obj_filtered_I_II, tsb = samples_pos),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
   barcode_mar = 12.5, 
   clinicalFeatures = c("T1221", "Sample_group"), 
   SampleNamefontSize = 1.3,
-  sampleOrder = sample_order_diag_relapse
+  sampleOrder = samples_pos
   )
 ```
 
-#### CancerVar Tier I, and II genes, only diagnosis and relapse 1 samples
+##### Negative samples
 
-```{r oncoplot5}
+```{r oncoplot3neg, results='hide', echo=FALSE}
 oncoplot(
-  maf = maf_obj_filtered_diag_relapse,
-  genes = top_in_genelist_cancervar_I_II$Hugo_Symbol, 
+  maf = subsetMaf(maf = maf_obj_filtered_I_II, tsb = samples_neg),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
   barcode_mar = 12.5, 
   clinicalFeatures = c("T1221", "Sample_group"), 
   SampleNamefontSize = 1.3,
-  sampleOrder = sample_order_diag_relapse
+  sampleOrder = samples_neg
   )
 ```
 
-#### CancerVar Tier I, II and III genes, only diagnosis and relapse 1 samples
 
-```{r oncoplot6}
-oncoplot(
-  maf = maf_obj_filtered_diag_relapse,
-  genes = top_in_genelist_cancervar_I_II_III$Hugo_Symbol, 
+
+
+
+#### Most pathogenic in CC, Tier I, II and III genes, all samples
+
+##### All samples
+
+```{r oncoplot4, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = maf_obj_filtered_I_II_III,
+  genes = top_in_genelist_I_II_III$Hugo_Symbol, 
   showTumorSampleBarcodes = TRUE, 
   barcode_mar = 12.5, 
   clinicalFeatures = c("T1221", "Sample_group"), 
   SampleNamefontSize = 1.3,
-  sampleOrder = sample_order_diag_relapse
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+##### Positive samples
+
+```{r oncoplot4pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_III, tsb = samples_pos),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
   )
 ```
 
-```{r all_patients_oncoplot, results='asis', fig.height=6}
+##### Negative samples
+
+```{r oncoplot4neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_III, tsb = samples_neg),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+#### Most pathogenic in VCC, Tier I and II genes, only diagnosis and relapse 1 samples
+
+##### All samples
+
+```{r oncoplot5, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_chiara, tsb = sample_order_diag_relapse),
+  genes = top_in_genelist_I_II_chiara$Hugo_Symbol, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+##### Positive samples
+
+```{r oncoplot5pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_chiara, tsb = samples_pos_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+##### Negative samples
+
+```{r oncoplot5neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_chiara, tsb = samples_neg_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+#### Most pathogenic in VCC, Tier I, II and III genes, only diagnosis and relapse 1 samples
+
+##### All samples
+
+```{r oncoplot6, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_III_chiara, tsb = sample_order_diag_relapse),
+  genes = top_in_genelist_I_II_chiara$Hugo_Symbol, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+##### Positive samples
+
+```{r oncoplot6pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_III_chiara, tsb = samples_pos_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+##### Negative samples
+
+```{r oncoplot6neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_III_chiara, tsb = samples_neg_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+#### Most pathogenic in CC, Tier I, and II genes, only diagnosis and relapse 1 samples
+
+##### All samples
+
+```{r oncoplot7, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II, tsb = sample_order_diag_relapse),
+  genes = top_in_genelist_I_II_chiara$Hugo_Symbol, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+##### Positive samples
+
+```{r oncoplot7pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II, tsb = samples_pos_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+##### Negative samples
+
+```{r oncoplot7neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II, tsb = samples_neg_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+#### Most pathogenic in CC, Tier I, II and III genes, only diagnosis and relapse 1 samples
+
+##### All samples
+
+```{r oncoplot8, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_III, tsb = sample_order_diag_relapse),
+  genes = top_in_genelist_I_II_chiara$Hugo_Symbol, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+##### Positive samples
+
+```{r oncoplot8pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_III, tsb = samples_pos_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+##### Negative samples
+
+```{r oncoplot8neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = maf_obj_filtered_I_II_III, tsb = samples_neg_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+```{r all_patients_oncoplot, results='asis', dev='svg', fig.height=6}
 all_barcodes <- unique(maf_obj@data$Tumor_Sample_Barcode)
 patient_ids <- gsub("-.*", "", all_barcodes)
 barcode_map <- split(all_barcodes, patient_ids)
+```
+
+```{r onco_allpat1, fig.width=8, fig.height=10, eval=FALSE}
+for (patient in names(barcode_map)) {
+  patient_barcodes <- barcode_map[[patient]]
+  
+  maf_patient_tierI <- subsetMaf(maf = maf_obj_filtered_I, tsb = patient_barcodes)
+  top_genes_tierI <- getGeneSummary(maf_patient_tierI)
+
+  if (nrow(top_genes_tierI) > 0) {
+    genes_to_plot_tierI <- head(top_genes_tierI$Hugo_Symbol, params$num_top_genes)
+    
+    if (length(genes_to_plot_tierI) >= 2) {
+
+      # Verifica clinicalFeatures
+      available_features <- intersect(c("T1221", "Sample_group"), colnames(maf_patient_tierI@clinical.data))
+      valid_features <- available_features[
+        sapply(maf_patient_tierI@clinical.data[, ..available_features], function(x) {
+          sum(!is.na(x)) >= 2
+        })
+      ]
+
+      cat("## Patient:", patient, "- Top", params$num_top_genes, "mutated genes in Tier I, most pathogenic in CC\n\n")
+      
+      onco_tierI <- oncoplot(
+        maf = maf_patient_tierI,
+        genes = genes_to_plot_tierI,
+        showTumorSampleBarcodes = TRUE,
+        clinicalFeatures = if (length(valid_features) > 0) valid_features else NULL,
+        barcode_mar = 4,
+        SampleNamefontSize = 1.3
+      )
+      cat("\n\n")
+    } else {
+      cat("## Patient:", patient, "- Not enough genes (", length(genes_to_plot_tierI), ") to plot for Tier I CC\n")
+    }
+  }
+}
+```
+
+```{r onco_allpat2, eval=FALSE}
+for (patient in names(barcode_map)) {
+  
+  patient_barcodes <- barcode_map[[patient]]
+  
+  # Tier I and II CC
+  maf_patient_tierI_II <- subsetMaf(maf = maf_obj_filtered_I_II, tsb = patient_barcodes)
+  top_genes_tierI_II <- getGeneSummary(maf_patient_tierI_II)
+  
+if (nrow(top_genes_tierI_II) > 0) {
+  genes_to_plot_tierI_II <- head(top_genes_tierI_II$Hugo_Symbol, params$num_top_genes)
+
+  if (length(genes_to_plot_tierI_II) >= 2) {   # <-- Controllo importante
+    onco_tierI_II <- oncoplot(
+      maf = maf_patient_tierI_II,
+      genes = genes_to_plot_tierI_II,
+      showTumorSampleBarcodes = TRUE,
+      clinicalFeatures = c("T1221", "Sample_group"), 
+      barcode_mar = 1,
+      SampleNamefontSize = 1.3
+    )
+
+    cat("## Patient:", patient, "- Top", params$num_top_genes, "mutated genes in Tier I and II, most pathogenic in CC\n\n")
+    print(onco_tierI_II)
+    cat("\n\n")
+  } else {
+    cat(paste("## Patient:", patient, "- Not enough genes (", length(genes_to_plot_tierI_II), ") to plot for Tier I and II CC\n"))
+  }
+}
+}
+```
+
+```{r onco_allpat3, eval=FALSE}
 
 for (patient in names(barcode_map)) {
   
   patient_barcodes <- barcode_map[[patient]]
-  maf_patient <- subsetMaf(maf = maf_obj, tsb = patient_barcodes)
-  top_genes <- getGeneSummary(maf_patient)
+  
+  # Tier I VCC
+  
+  maf_patient_tierI_chiara <- subsetMaf(maf = maf_obj_filtered_I_chiara, tsb = patient_barcodes)
+  top_genes_tierI_chiara <- getGeneSummary(maf_patient_tierI_chiara)
+  
+if (nrow(top_genes_tierI_chiara) > 0) {
+  genes_to_plot_tierI_chiara <- head(top_genes_tierI_chiara$Hugo_Symbol, params$num_top_genes)
 
-  if (nrow(top_genes) == 0) {
-    cat("## Patient:", patient, " - No mutation found\n\n")
-    next
-  }
-
-  num_genes = 10
-  genes_to_plot <- head(top_genes$Hugo_Symbol, num_genes)
-
-  cat("## Patient:", patient, "- Top", num_genes, "mutated genes\n\n")
-
-  # Plot
-  oncoplot(
-    maf = maf_patient,
-    genes = genes_to_plot,
+if (length(genes_to_plot_tierI_chiara) >= 2) {   # <-- Controllo importante
+  onco_tierI_chiara <- oncoplot(
+    maf = maf_patient_tierI_chiara,
+    genes = genes_to_plot_tierI_chiara,
     showTumorSampleBarcodes = TRUE,
     clinicalFeatures = c("T1221", "Sample_group"), 
     barcode_mar = 12.5,
     SampleNamefontSize = 1.3
   )
+
+  cat("## Patient:", patient, "- Top", params$num_top_genes, "mutated genes in Tier I, most pathogenic in VCC\n\n")
+  print(onco_tierI_chiara)
+  cat("\n\n")
+  } else {
+    cat(paste("## Patient:", patient, "- Not enough genes (", length(genes_to_plot_tierI_chiara), ") to plot for Tier I VCC\n"))    
+  }
+} 
+}
+```
+
+```{r onco_allpat4, eval=FALSE}
+
+for (patient in names(barcode_map)) {
+  
+  patient_barcodes <- barcode_map[[patient]]
+  
+  # Tier I and II VCC
+  
+  maf_patient_tierI_II_chiara <- subsetMaf(maf = maf_obj_filtered_I_II_chiara, tsb = patient_barcodes)
+  top_genes_tierI_II_chiara <- getGeneSummary(maf_patient_tierI_II_chiara)
+  
+if (nrow(top_genes_tierI_II_chiara) > 0) {
+  genes_to_plot_tierI_II_chiara <- head(top_genes_tierI_II$Hugo_Symbol, params$num_top_genes)
+
+  if (length(genes_to_plot_tierI_II_chiara) >= 2) {   # <-- Controllo importante
+  onco_tierI_II_chiara <- oncoplot(
+    maf = maf_patient_tierI_II_chiara,
+    genes = genes_to_plot_tierI_II_chiara,
+    showTumorSampleBarcodes = TRUE,
+    clinicalFeatures = c("T1221", "Sample_group"), 
+    barcode_mar = 12.5,
+    SampleNamefontSize = 1.3
+  )
+  
+  cat("## Patient:", patient, "- Top", params$num_top_genes, "mutated genes in Tier I and II, most pathogenic in VCC\n\n")
+  print(onco_tierI_II_chiara)
+  } else {
+    cat(paste("## Patient:", patient, "- Not enough genes (", length(genes_to_plot_tierI_II_chiara), ") to plot for Tier I and II VCC\n")) 
+  }
+}
+}
+```
+
+```{r onco_allpat5, eval=FALSE}
+
+for (patient in names(barcode_map)) {
+  
+  patient_barcodes <- barcode_map[[patient]]
+  
+if (nrow(top_genes_tierI) == 0 & nrow(top_genes_tierI_II) == 0 & nrow(top_genes_tierI) == 0 & nrow(top_genes_tierI_II) == 0) {
+    cat("## Patient:", patient, " - No mutation found for Tier I and II\n\n")
+  }
 }
 ```
 
@@ -710,216 +1121,28 @@ plotTiTv(res = maf_obj.titv, showBarcodes = TRUE)
 maf_obj.mutload = tcgaCompare(maf = maf_obj, cohortName = 'PALL', logscale = TRUE, capture_size = 50)
 ```
 
-### VAF Plot, positive samples
+### VAF Plot, positive samples, most pathogenic in CC, Tier I and II genes
 
 ```{r vaf_plot1}
-plotVaf(maf = maf_obj_filtered_pos, vafCol = 'tumor_f')
+plotVaf(maf = subsetMaf(maf = maf_obj_filtered_I_II, tsb = samples_pos), vafCol = 'tumor_f', genes = genelist_filtered_I_II)
 ```
 
-### VAF Plot, negative samples
+### VAF Plot, negative samples, most pathogenic in CC, Tier I and II genes
 
 ```{r vaf_plot2}
-plotVaf(maf = maf_obj_filtered_neg, vafCol = 'tumor_f')
+plotVaf(maf = subsetMaf(maf = maf_obj_filtered_I_II, tsb = samples_neg), vafCol = 'tumor_f', genes = genelist_filtered_I_II)
 ```
 
-## Gistic
+### VAF Plot, positive samples, most pathogenic in VCC, Tier I and II genes
 
-### Chromosome Plot
-
-```{r gist_chrplot1}
-gisticChromPlot(gistic = gistic_obj, markBands = "all")
+```{r vaf_plot3}
+plotVaf(maf = subsetMaf(maf = maf_obj_filtered_I_II_chiara, tsb = samples_pos), vafCol = 'tumor_f', genes = genelist_filtered_I_II_chiara)
 ```
 
-### Chromosome Plot, positive samples
+### VAF Plot, negative samples, most pathogenic in VCC, Tier I and II genes
 
-```{r gist_chrplot2}
-gisticChromPlot(gistic = pos_gistic_obj, markBands = "all")
-```
-
-### Chromosome Plot, negative samples
-
-```{r gist_chrplot3}
-gisticChromPlot(gistic = neg_gistic_obj, markBands = "all")
-```
-
-### Chromosome Plot comparison, Amplifications pos vs neg
-
-```{r gistic_comparison1}
-coGisticChromPlot(gistic1 = pos_gistic_obj, gistic2 = neg_gistic_obj, g1Name = "positive samples", g2Name = "negative samples", type = 'Amp')
-```
-
-### Chromosome Plot comparison, Deletions pos vs neg
-
-```{r gistic_comparison2}
-coGisticChromPlot(gistic1 = pos_gistic_obj, gistic2 = neg_gistic_obj, g1Name = "positive samples", g2Name = "negative samples", type = 'Del')
-```
-
-### Gistic Oncoplot, all samples
-
-```{r gist_oncoplot1, fig.width=10}
-gisticOncoPlot(
-  gistic = gistic_obj, 
-  clinicalData = getClinicalData(x = maf_obj), 
-  clinicalFeatures = c("T1221", "Sample_group"), 
-  sortByAnnotation = TRUE, 
-  top = 20, 
-  right_mar = 4, 
-  gene_mar = 10, 
-  showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
-  SampleNamefontSize = 1.3,
-  sampleOrder = sample_order
-)
-```
-
-### Gistic Oncoplot, positive samples
-
-```{r gist_oncoplot2, fig.width=10}
-gisticOncoPlot(
-  gistic = pos_gistic_obj, 
-  clinicalData = getClinicalData(x = maf_obj), 
-  clinicalFeatures = c("T1221", "Sample_group"), 
-  sortByAnnotation = TRUE, 
-  top = 20, 
-  right_mar = 4, 
-  gene_mar = 10, 
-  showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
-  SampleNamefontSize = 1.3,
-  sampleOrder = samples_pos
-)
-```
-
-### Gistic Oncoplot, negative samples
-
-```{r gist_oncoplot3, fig.width=10}
-gisticOncoPlot(
-  gistic = neg_gistic_obj, 
-  clinicalData = getClinicalData(x = maf_obj), 
-  clinicalFeatures = c("T1221", "Sample_group"), 
-  sortByAnnotation = TRUE, 
-  top = 20, 
-  right_mar = 4, 
-  gene_mar = 10, 
-  showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
-  SampleNamefontSize = 1.3,
-  sampleOrder = samples_neg
-)
-```
-
-### Gistic Oncoplot, all samples, tier I and II
-
-```{r gist_oncoplot4, fig.width=10}
-gisticOncoPlot(
-  gistic = gobj_12, 
-  clinicalData = getClinicalData(x = maf_obj), 
-  clinicalFeatures = c("T1221", "Sample_group"), 
-  sortByAnnotation = TRUE, 
-  top = 20, 
-  right_mar = 4, 
-  gene_mar = 10, 
-  showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
-  SampleNamefontSize = 1.3,
-  sampleOrder = sample_order
-)
-```
-
-### Gistic Oncoplot, positive samples, tier I and II
-
-```{r gist_oncoplot5, fig.width=10}
-gisticOncoPlot(
-  gistic = p_gobj_12, 
-  clinicalData = getClinicalData(x = maf_obj), 
-  clinicalFeatures = c("T1221", "Sample_group"), 
-  sortByAnnotation = TRUE, 
-  top = 20, 
-  right_mar = 4, 
-  gene_mar = 10, 
-  showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
-  SampleNamefontSize = 1.3,
-  sampleOrder = samples_pos
-)
-```
-
-### Gistic Oncoplot, negative samples, tier I and II
-
-```{r gist_oncoplot6, fig.width=10}
-gisticOncoPlot(
-  gistic = n_gobj_12, 
-  clinicalData = getClinicalData(x = maf_obj), 
-  clinicalFeatures = c("T1221", "Sample_group"), 
-  sortByAnnotation = TRUE, 
-  top = 20, 
-  right_mar = 4, 
-  gene_mar = 10, 
-  showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
-  SampleNamefontSize = 1.3,
-  sampleOrder = samples_neg
-)
-```
-
-### Gistic Oncoplot, all samples, tier I, II and III
-
-```{r gist_oncoplot7, fig.width=10}
-gisticOncoPlot(
-  gistic = gobj_123, 
-  clinicalData = getClinicalData(x = maf_obj), 
-  clinicalFeatures = c("T1221", "Sample_group"), 
-  sortByAnnotation = TRUE, 
-  top = 20, 
-  right_mar = 4, 
-  gene_mar = 10, 
-  showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
-  SampleNamefontSize = 1.3,
-  sampleOrder = sample_order
-)
-```
-
-### Gistic Oncoplot, positive samples, tier I, II and III
-
-```{r gist_oncoplot8, fig.width=10}
-gisticOncoPlot(
-  gistic = p_gobj_123, 
-  clinicalData = getClinicalData(x = maf_obj), 
-  clinicalFeatures = c("T1221", "Sample_group"), 
-  sortByAnnotation = TRUE, 
-  top = 20, 
-  right_mar = 4, 
-  gene_mar = 10, 
-  showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
-  SampleNamefontSize = 1.3,
-  sampleOrder = samples_pos
-)
-```
-
-### Gistic Oncoplot, negative samples, tier I, II and III
-
-```{r gist_oncoplot9, fig.width=10}
-gisticOncoPlot(
-  gistic = n_gobj_123, 
-  clinicalData = getClinicalData(x = maf_obj), 
-  clinicalFeatures = c("T1221", "Sample_group"), 
-  sortByAnnotation = TRUE, 
-  top = 20, 
-  right_mar = 4, 
-  gene_mar = 10, 
-  showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
-  SampleNamefontSize = 1.3,
-  sampleOrder = samples_neg
-)
-```
-
-### Segmentation Summary
-
-```{r summarize}
-segSummarize_results = segSummarize(seg = uniform_gistic_table, maf = maf_obj, build = 'hg38')
+```{r vaf_plot4}
+plotVaf(maf = subsetMaf(maf = maf_obj_filtered_I_II_chiara, tsb = samples_neg), vafCol = 'tumor_f', genes = genelist_filtered_I_II_chiara)
 ```
 
 ## Additional Plots
@@ -944,105 +1167,7 @@ IH_PALL <- inferHeterogeneity(maf = maf_obj, tsb = 'PALL04NU7A-1TAD104', vafCol 
 plotClusters(clusters = IH_PALL)
 ```
 
-### CN Gistic Manhattan Plot
-
-```{r manhattan, fig.width=10}
-# esempio: definire lo stato per regione: gain se Seg_CN > cutoff, loss se < -cutoff, altrimenti neutral
-cutoff_gain <- 0.3
-cutoff_loss <- -0.3
-
-df_state <- uniform_gistic_table %>%
-  mutate(
-    State = case_when(
-      Seg_CN > cutoff_gain ~ "Gain",
-      Seg_CN < cutoff_loss ~ "Loss",
-      TRUE ~ "Neutral"
-    )
-  )
-
-# calcola la frequenza di stato per regione (chrom, start, end)
-freq_df <- df_state %>%
-  group_by(Chromosome, Start_Position, End_Position) %>%
-  summarise(
-    n_samples = n(),
-    freq_gain = sum(State == "Gain") / n_samples,
-    freq_loss = sum(State == "Loss") / n_samples,
-    .groups = "drop"
-  ) %>%
-  ungroup() %>%
-  # per il manhattan plot combini la frequenza massima tra gain/loss
-  mutate(
-    freq_change = pmax(freq_gain, freq_loss),
-    CNV_type = case_when(
-      freq_gain > freq_loss ~ "Gain",
-      freq_loss > freq_gain ~ "Loss",
-      TRUE ~ "Neutral"  # utile se servisse in futuro
-    )
-  )
-
-# Aggiungi un offset cumulativo per cromosomi, per posizioni x globali
-# per fare Manhattan su tutto il genoma
-chr_order <- c(as.character(1:22), "X", "Y")
-# assume cromosomi come "1","2",...,"X","Y"
-
-
-chr_sizes <- freq_df %>%
-  group_by(Chromosome) %>%
-  summarise(max_end = max(as.numeric(End_Position)), .groups = "drop") %>%
-  filter(Chromosome %in% chr_order) %>%
-  mutate(Chromosome = factor(Chromosome, levels = chr_order)) %>%
-  arrange(Chromosome)
-
-offsets <- cumsum(lag(as.numeric(chr_sizes$max_end), default = 0))
-names(offsets) <- chr_sizes$Chromosome
-
-breaks <- offsets + chr_sizes$max_end/2
-names(breaks) <- chr_sizes$Chromosome
-
-freq_df <- freq_df %>%
-  filter(Chromosome %in% chr_order) %>%
-  mutate(Chromosome = factor(Chromosome, levels = chr_order))  # Ordine corretto nei plot
-
-freq_df <- freq_df %>%
-  mutate(
-    cum_start = as.numeric(Start_Position) + offsets[Chromosome],
-    cum_end   = as.numeric(End_Position) + offsets[Chromosome],
-    cum_mid   = (cum_start + cum_end)/2
-  )
-
-freq_df <- freq_df %>%
-  rowwise() %>%
-  mutate(
-    # prendi il numero massimo di gain o loss
-    obs_events = round(n_samples * freq_change),
-    # test binomiale: successi = obs_events, prove = n_samples, probabilità attesa = 0.05
-    p_value = binom.test(obs_events, n_samples, p = 0.05, alternative = "greater")$p.value,
-    log10_p = -log10(p_value)
-  ) %>%
-  ungroup()
-
-# plot
-ggplot(freq_df, aes(x = cum_mid, y = log10_p, color = CNV_type)) +
-  geom_point(size = 0.5) +
-  scale_color_manual(values = c("Gain" = "#1f78b4", "Loss" = "#e31a1c")) +  # blu e rosso
-  scale_x_continuous(
-    breaks = breaks,
-    labels = names(breaks)
-  ) +
-  labs(
-    x = "Genomic Position",
-    y = expression(-log[10](p)),
-    color = "CNV Type"
-  ) +
-  theme_minimal() +
-  theme(
-    panel.grid.major.x = element_blank(),
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  ) +
-  geom_hline(yintercept = -log10(0.05), linetype = "longdash", color = "black")
-```
-
-### CN CNVKit Manhattan Plot, Bins
+### CN CNVKit, Manhattan Plot, Bins
 
 ```{r manhattan_manual_bins, eval=FALSE}
 
@@ -1111,9 +1236,9 @@ for (c_path in list.dirs(params$cnvkit_out_dir, recursive = FALSE)) {
 }
 ```
 
-### CN CNVKit Manhattan Plot, Segments
+### CN CNVKit, Manhattan Plot, Segments
 
-```{r manhattan_manual_seg}
+```{r manhattan_manual_seg_cnvkit}
 
 for (c_path in list.dirs(params$cnvkit_out_dir, recursive = FALSE)) {
 
@@ -1174,121 +1299,576 @@ for (c_path in list.dirs(params$cnvkit_out_dir, recursive = FALSE)) {
 }
 ```
 
-### CN Circle Plot
+### CN DRAGEN seg files, Manhattan Plot, Segments
 
-```{r circleplot}
-# Pulisci e prepara i dati
-mean_cn <- uniform_gistic_table %>%
-  group_by(Chromosome, Start_Position, End_Position) %>%
-  summarise(mean_segcn = mean(Seg_CN, na.rm = TRUE), .groups = "drop") %>%
-  filter(!Chromosome %in% c("MT", "chrMT")) %>%
-  mutate(
-    Chromosome = ifelse(grepl("^chr", Chromosome), Chromosome, paste0("chr", Chromosome))
-  )
+```{r manhattan_manual_seg_dragen}
 
-# Rinomina colonne
-df <- mean_cn %>%
-  dplyr::rename(chr = Chromosome, start = Start_Position, end = End_Position, value = mean_segcn)
+for (c_path in list.dirs(params$raw_samples_dir, recursive = FALSE)) {
 
-# Pulisci e inizializza circos
-circos.clear()
-circos.initializeWithIdeogram(species = "hg38")
-
-# Aggiungi il track (una riga alla volta)
-circos.genomicTrack(
-  df,
-  panel.fun = function(region, value, ...) {
-  col_vector <- ifelse(value$value > 0.3, "red",
-                ifelse(value$value > 0.15 & value$value <= 0.3, "orange",
-                ifelse(value$value < -0.3, "blue", "gray")))
+  if (grepl("^PALL[0-9A-Za-z]+-[0-9]+T[0-9A-Za-z]+$", basename(c_path))) {
+    file <- file.path(c_path, paste0(basename(c_path), ".seg"))
   
-    circos.genomicRect(region, value,
-      col = col_vector, border = NA, ...)
-  },
-  track.height = 0.25,
-  bg.border = NA
-)
-
-# Definisci colori e label della legenda
-legend_colors <- c("red", "orange", "gray", "blue")
-legend_labels <- c("Copy number > 0.3", "Copy number between 0.15 and 0.3", "Copy number between -0.3 and 0.15", "Copy number < -0.3")
-# Aggiungi legenda base R (posizione personalizzabile)
-legend("topright", legend = legend_labels, fill = legend_colors, border = NA, bty = "n", cex = 0.8)
+  cns <- read_tsv(file, show_col_types = FALSE)
+  # Potresti dover adattare se il file è delimitato da tab, spazio, etc
+  
+  cns2 <- cns %>%
+    mutate(
+      chromosome = gsub("^chr", "", Chromosome),  # rimuove "chr" dal nome del cromosoma
+      chromosome = factor(chromosome, levels = c(1:22, "X", "Y")),
+      mid = (Start + End) / 2,
+      log2 = log2(Segment_Mean)
+    ) %>%
+    arrange(chromosome, Start)
+  
+  # Calcola posizioni cumulative
+  chr_sizes <- cns2 %>%
+    group_by(chromosome) %>%
+    summarize(chr_max = max(End)) %>%
+    arrange(chromosome) %>%
+    mutate(chr_cum_start = lag(cumsum(chr_max), default = 0))
+  
+  cns3 <- cns2 %>%
+    left_join(chr_sizes, by = "chromosome") %>%
+    mutate(pos_cum = mid + chr_cum_start,
+           seg_width = End - Start)
+  
+  cns3$log2_capped <- pmax(pmin(cns3$log2, 2.9), -2.9)
+  
+  # Calcola centro dei cromosomi per label
+  centers <- chr_sizes %>%
+    mutate(center = chr_cum_start + chr_max/2)
+  
+  n_chrom <- length(levels(cns3$chromosome))
+    chrom_colors <- colorRampPalette(brewer.pal(12, "Paired"))(n_chrom)
+  
+  # 4. Plot
+  p <- ggplot(cns3, aes(x = pos_cum, y = log2_capped, group = chromosome)) +
+    geom_segment(aes(x = Start + chr_cum_start,
+                     xend = End + chr_cum_start,
+                     y = log2_capped, yend = log2_capped,
+                     color = chromosome), size = 1) +
+    scale_color_manual(values = chrom_colors) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+    scale_x_continuous(breaks = centers$center, labels = centers$chromosome, expand = c(0,0)) +
+    coord_cartesian(ylim = c(-3, 3)) + 
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 90, size = 6),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank()
+    ) +
+    labs(
+      title = paste("Copy number segments (line plot) for sample", basename(c_path)),
+      x = "Chromosome",
+      y = "Log2 copy number ratio"
+    )
+  
+  print(p)
+  }
+}
 ```
 
-```{r Rcircos, eval=FALSE}
-# --- Prepara dati ---
-mean_cn <- uniform_gistic_table %>%
-  group_by(Chromosome, Start_Position, End_Position) %>%
-  summarise(mean_segcn = mean(Seg_CN, na.rm = TRUE), .groups = "drop") %>%
-  filter(!Chromosome %in% c("MT", "chrMT")) %>%
-  mutate(
-    Chromosome = ifelse(grepl("^chr", Chromosome), Chromosome, paste0("chr", Chromosome))
-  )
+### CN Oncoplot, DRAGEN annotation/seg files
 
-# RCircos vuole i cromosomi senza 'chr' quindi li togliamo
-mean_cn <- mean_cn %>%
-  mutate(Chromosome = gsub("chr", "", Chromosome))
+```{r oncoplot_dragen_genes, eval=FALSE}
+all_seg_data <- list()
 
-# Rinomina colonne secondo RCircos
-df <- mean_cn %>%
-  dplyr::rename(
-    Chromosome = Chromosome,
-    chromStart = Start_Position,
-    chromEnd = End_Position,
-    segMean = mean_segcn
-  ) %>%
-  select(Chromosome, chromStart, chromEnd, segMean)
+for (c_path in list.dirs(params$raw_samples_dir, recursive = FALSE)) {
 
-# --- Inizializza RCircos ---
+  # Filtro le directory che corrispondono al pattern
+  if (grepl("^PALL[0-9A-Za-z]+-[0-9]+T[0-9A-Za-z]+$", basename(c_path))) {
 
-# Carica ideogramma per hg38 (viene incluso nel pacchetto)
-data(UCSC.HG38.Human.CytoBandIdeogram)  
-cyto.info <- UCSC.HG38.Human.CytoBandIdeogram
+    file <- file.path(c_path, paste0(basename(c_path), ".seg"))
 
-# Inizializza core components
-RCircos.Set.Core.Components(
-  cyto.info = cyto.info, 
-  chr.exclude = NULL,  # considera tutti i cromosomi
-  tracks.inside = 5,   # numero di track dentro il cerchio
-  tracks.outside = 0
-)
+    if (file.exists(file)) {
+      # Leggi il file .seg con intestazione
+      seg_data <- read_tsv(file, col_types = cols())  # usa read.table se è .txt
 
-# Imposta area plot
-RCircos.Set.Plot.Area()
-
-# Plot ideogramma (bande cromosomiche)
-RCircos.Chromosome.Ideogram.Plot()
-
-# --- Aggiungi i dati come heatmap track (colorato in base a valore) ---
-
-# Il pacchetto chiede che il valore sia in colonna 4, per heatmap plot
-# Crea un vettore colori basato su segMean (rosso se >0.3, blu se < -0.3, grigio altrimenti)
-df$color <- ifelse(df$segMean > 0.3, "red",
-                   ifelse(df$segMean < -0.3, "blue", "gray"))
-
-# Usa RCircos.Heatmap.Plot (richiede un data frame con colonne: Chromosome, chromStart, chromEnd, DataValue)
-# Ma non accetta la colonna colore direttamente → serve passare il valore e definire la palette colore
-
-# Imposta esplicitamente i valori min, max e zero
-min_val <- min(df$segMean)
-max_val <- max(df$segMean)
-zero_val <- 0
-
-# Verifica che min_val < zero_val < max_val
-print(c(min_val, zero_val, max_val))
-
-# Crea palette solo se l'ordine è corretto
-if(min_val < zero_val & zero_val < max_val) {
-  palette <- colorRamp2(c(min_val, zero_val, max_val), c("blue", "gray", "red"))
-} else {
-  stop("I valori min, zero e max non sono in ordine crescente!")
+      # Aggiungi alla lista
+      all_seg_data[[length(all_seg_data) + 1]] <- seg_data
+    }
+  }
 }
 
-# Aggiungi colonna GeneName (vuota, ma necessaria)
-df$GeneName <- ""
+dt <- bind_rows(all_seg_data)
+    
+# ---- 0) your input ----
+# Expecting columns: sample, chrom, start, end, log2R
+# If you have a single sample and no 'sample' column, add one like: dt[, sample := "S1"]
+ 
+# Normalize chromosome names to UCSC style (chr1..chr22, chrX, chrY)
+if (!grepl("^chr", dt$Chromosome[1])) dt[, Chromosome := paste0("chr", Chromosome)]
+ 
+# ---- 1) CNV segments as GRanges ----
+cnv_gr <- GRanges(
+  seqnames = dt$Chromosome,
+  ranges   = IRanges(start = dt$Start, end = dt$End),
+  log2R    = log2(dt$Segment_Mean),
+  sample   = dt$Sample
+)
+ 
+# ---- 2) Gene coordinates (hg38) with symbols ----
+txdb   <- TxDb.Hsapiens.UCSC.hg38.knownGene
+gene_gr <- genes(txdb)                       # Entrez IDs
+sym <- mapIds(org.Hs.eg.db,
+              keys = as.character(gene_gr$gene_id),
+              keytype = "ENTREZID", column = "SYMBOL")
+gene_gr$symbol <- sym
+gene_gr <- gene_gr[!is.na(gene_gr$symbol)]
+seqlevelsStyle(gene_gr) <- "UCSC"
+ 
+# keep standard chromosomes
+keep <- intersect(seqlevels(gene_gr), seqlevels(cnv_gr))
+gene_gr <- keepSeqlevels(gene_gr, keep, pruning.mode="coarse")
+cnv_gr  <- keepSeqlevels(cnv_gr, keep, pruning.mode="coarse")
+ 
+# ---- 3) Overlap & weighted mean log2R per gene/sample ----
+ov <- findOverlaps(cnv_gr, gene_gr, ignore.strand = TRUE)
+qh <- queryHits(ov); sh <- subjectHits(ov)
+ 
+# intersection widths as weights
+ints <- pintersect(cnv_gr[qh], gene_gr[sh])
+w    <- width(ints)
+ 
+df <- data.frame(
+  sample = cnv_gr$sample[qh],
+  gene   = gene_gr$symbol[sh],
+  log2R  = cnv_gr$log2R[qh],
+  w      = w,
+  stringsAsFactors = FALSE
+)
+ 
+# weighted mean by sample × gene
+agg <- df %>%
+  group_by(sample, gene) %>%
+  summarise(log2R = sum(log2R * w) / sum(w), .groups = "drop")
+ 
+# ---- 4) Discretize to events (tune thresholds to your platform) ----
+thr <- list(gain = 0.30, amp = 0.90, loss = -0.30, deep = -0.90)
+agg <- agg %>%
+  mutate(call = case_when(
+    log2R >= thr$amp        ~ "AMP",     # high-level amplification
+    log2R >= thr$gain       ~ "GAIN",    # single-copy gain
+    log2R <= thr$deep       ~ "HOMDEL",  # deep deletion
+    log2R <= thr$loss       ~ "DEL",     # single-copy loss
+    TRUE                    ~ ""         # neutral
+  ))
+ 
+# optional: focus on a gene panel or take the most frequently altered genes
+top_n <- 30
+top_genes <- agg %>%
+  mutate(is_alt = call != "") %>%
+  group_by(gene) %>%
+  summarise(freq = mean(is_alt), .groups = "drop") %>%
+  arrange(desc(freq)) %>% slice_head(n = top_n) %>% pull(gene)
+ 
+agg_f <- agg %>% filter(gene %in% top_genes)
+ 
+# wide matrix for oncoPrint (entries are "", "GAIN", "AMP", "DEL", "HOMDEL")
+mat <- agg_f %>%
+  dplyr::select(sample, gene, call) %>%
+  mutate(call = replace_na(call, "")) %>%
+  pivot_wider(names_from = sample, values_from = call, values_fill = "") %>%
+  as.data.frame()
+ 
+rownames(mat) <- mat$gene
+mat$gene <- NULL
+mat <- as.matrix(mat)
+ 
+# ---- 5) Plot with ComplexHeatmap::oncoPrint ----
+# colors and drawing functions for each alteration type
+col_map <- c(AMP    = "#e41a1c",
+             GAIN   = "#fb9a99",
+             DEL    = "#377eb8",
+             HOMDEL = "#08519c")
+ 
+alter_fun <- list(
+  background = function(x, y, w, h) {
+    grid::grid.rect(x, y, w, h, gp = grid::gpar(fill = "#f2f2f2", col = NA))
+  },
+  AMP = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["AMP"], col = NA))
+  },
+  GAIN = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["GAIN"], col = NA))
+  },
+  DEL = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["DEL"], col = NA))
+  },
+  HOMDEL = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["HOMDEL"], col = NA))
+  }
+)
+ 
+# Convert each cell to a vector of alteration types (here at most one per cell)
+get_type <- function(x) strsplit(x, ";")[[1]]
+ 
+ht <- oncoPrint(
+  mat,
+  get_type = get_type,
+  alter_fun = alter_fun,
+  col = col_map,
+  remove_empty_rows = TRUE,
+  remove_empty_columns = TRUE,
+  column_title = "CNV Oncoprint (gene × sample)",
+  top_annotation = HeatmapAnnotation(
+    `Alteration burden` = anno_oncoprint_barplot(),
+    annotation_name_side = "left"
+  ),
+  left_annotation = rowAnnotation(
+    `Alteration freq` = anno_oncoprint_barplot(),
+    annotation_name_rot = 0
+  )
+)
+ 
+ht
+```
 
-# Passa le prime 5 colonne
-RCircos.Heatmap.Plot(df[, c("Chromosome", "chromStart", "chromEnd", "segMean", "GeneName")], 
-                     data.col = 4, track.num = 1, side = "in")
+``` {r oncoplot_setup}
+all_seg_data <- list()
+
+if (params$type2use4cn_onco == "seg") {
+  for (c_path in list.dirs(params$raw_samples_dir, recursive = FALSE)) {
+    if (grepl("^PALL[0-9A-Za-z]+-[0-9]+T[0-9A-Za-z]+$", basename(c_path))) {
+      file <- file.path(c_path, paste0(basename(c_path), ".seg"))
+      if (file.exists(file)) {
+        seg_data <- read_tsv(file, col_types = cols())
+        seg_data$Sample <- basename(c_path)
+        all_seg_data[[length(all_seg_data) + 1]] <- seg_data
+      }
+    }
+  }
+} else if (params$type2use4cn_onco == "anno") {
+  for (c_path in list.dirs(params$cnv_dir, recursive = FALSE)) {
+    if (grepl("^PALL[0-9A-Za-z]+-[0-9]+T[0-9A-Za-z]+$", basename(c_path))) {
+      file <- file.path(c_path, paste0(basename(c_path), ".cnv.annotated.tsv"))
+      if (file.exists(file)) {
+        seg_data <- read_tsv(file, col_types = cols())
+        seg_data$Sample <- basename(c_path)
+        
+        required_cols <- c("Sample", "Chromosome", "Start", "End", "Type", "Classification", "logRatio", "CNF")
+        
+        present_cols <- intersect(names(seg_data), required_cols)
+        
+        if (!"CNF" %in% present_cols) {
+          stop(paste("File", file, "does not contain required column 'CNF'"))
+        }
+        
+        seg_data <- seg_data %>%
+          dplyr::select(all_of(present_cols)) %>%
+          dplyr::rename(Segment_Mean = CNF)
+        
+        all_seg_data[[length(all_seg_data) + 1]] <- seg_data
+      }
+    }
+  }
+} else {
+  stop(paste("ERROR: parameter 'type2use4cn_onco' must be 'seg' or 'anno'. Parameter used =", params$type2use4cn_onco))
+}
+
+dt <- bind_rows(all_seg_data)
+
+dt_I <- dt[dt$Classification %in% c("Pathogenic"), ]
+dt_I_II <- dt[dt$Classification %in% c("Pathogenic", "Likely pathogenic"), ]
+dt_I_II_III <- dt[dt$Classification %in% c("Pathogenic", "Likely pathogenic", "Uncertain significance"), ]
+
+clinical_sample_info <- data.frame(maf_obj@clinical.data)
+
+t1221_colors <- c(NEG = "#1f78b4", POS = "#33a02c", NE = "#b2df8a")
+sample_group_colors <- c(diag = "#e41a1c", relapse1 = "#377eb8", relapse2 = "#4daf4a")
+
+```
+
+```{r oncoplot_dragen_cnbands, eval=FALSE}
+# ---- 2) Normalizza nomi cromosomi ----
+dt <- dt %>%
+  mutate(Chromosome = ifelse(grepl("^chr", Chromosome), Chromosome, paste0("chr", Chromosome)))
+
+# ---- 3) Crea GRanges per segmenti ----
+cnv_gr <- GRanges(
+  seqnames = dt$Chromosome,
+  ranges = IRanges(start = dt$Start, end = dt$End),
+  sample = dt$Sample,
+  log2R = log2(dt$Segment_Mean)
+)
+
+# ---- 4) Carica bande citogenetiche ----
+cyto <- read.delim(params$cytoband_file, header = FALSE, stringsAsFactors = FALSE)
+colnames(cyto) <- c("chrom", "chromStart", "chromEnd", "name", "gieStain")
+
+cyto_gr <- GRanges(
+  seqnames = cyto$chrom,
+  ranges = IRanges(start = cyto$chromStart + 1, end = cyto$chromEnd),
+  name = cyto$name,
+  gieStain = cyto$gieStain
+)
+
+cyto_gr$region <- paste0(seqnames(cyto_gr), cyto_gr$name)
+
+# ---- 5) Match seqlevels ----
+seqlevelsStyle(cnv_gr) <- "UCSC"
+cyto_gr <- keepSeqlevels(cyto_gr, intersect(seqlevels(cyto_gr), seqlevels(cnv_gr)), pruning.mode = "coarse")
+cnv_gr  <- keepSeqlevels(cnv_gr, intersect(seqlevels(cyto_gr), seqlevels(cnv_gr)), pruning.mode = "coarse")
+
+# ---- 6) Trova overlap tra CNV e bande ----
+ov <- findOverlaps(cnv_gr, cyto_gr, ignore.strand = TRUE)
+qh <- queryHits(ov)
+sh <- subjectHits(ov)
+
+# ---- 7) Calcola log2R medio pesato per (sample, regione) ----
+ints <- pintersect(cnv_gr[qh], cyto_gr[sh])
+df_raw <- data.frame(
+  sample = cnv_gr$sample[qh],
+  region = cyto_gr$region[sh],
+  log2R = cnv_gr$log2R[qh],
+  w = width(ints),
+  stringsAsFactors = FALSE
+)
+
+df <- df_raw %>%
+  group_by(sample, region) %>%
+  summarise(
+    log2R = weighted.mean(log2R, w),
+    total_w = sum(w),
+    .groups = "drop"
+  )
+
+# ---- 8) Classifica in base al log2R aggregato ----
+thr <- list(gain = 0.30, amp = 0.90, loss = -0.30, deep = -0.90)
+
+df <- df %>%
+  mutate(call = case_when(
+    log2R >= thr$amp  ~ "AMP",
+    log2R >= thr$gain ~ "GAIN",
+    log2R <= thr$deep ~ "HOMDEL",
+    log2R <= thr$loss ~ "DEL",
+    TRUE              ~ ""
+  )) %>%
+  filter(call != "")
+
+# ---- 9) Costruisci matrice regione × sample ----
+mat <- df %>%
+  dplyr::select(sample, region, call) %>%
+  pivot_wider(names_from = sample, values_from = call, values_fill = "") %>%
+  group_by(region) %>%
+  summarise(across(everything(), ~ paste(unique(.), collapse = ";")), .groups = "drop") %>%
+  tibble::column_to_rownames("region") %>%
+  as.matrix()
+
+top_n <- params$num_top_regions
+region_freq <- apply(mat, 1, function(x) sum(x != ""))
+top_regions <- names(sort(region_freq, decreasing = TRUE))[1:top_n]
+mat_top <- mat[top_regions, , drop = FALSE]
+
+# ---- 10) Definisci colori e funzioni per oncoPrint ----
+col_map <- c(AMP = "#e41a1c", GAIN = "#fb9a99", DEL = "#377eb8", HOMDEL = "#08519c")
+
+alter_fun <- list(
+  background = function(x, y, w, h) {
+    grid::grid.rect(x, y, w, h, gp = grid::gpar(fill = "#f2f2f2", col = NA))
+  },
+  AMP = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["AMP"], col = NA))
+  },
+  GAIN = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["GAIN"], col = NA))
+  },
+  DEL = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["DEL"], col = NA))
+  },
+  HOMDEL = function(x, y, w, h) {
+    grid::grid.rect(x, y, w*0.9, h*0.9, gp = grid::gpar(fill = col_map["HOMDEL"], col = NA))
+  }
+)
+
+get_type <- function(x) strsplit(x, ";")[[1]]
+```
+
+#### CN Oncoplot, all samples, tier I
+
+```{r oncoplot_dragen_cnbands_filter1, fig.width = 12}
+cn_block <- preproc_oncocn(
+  dt = dt_I, 
+  cyto_file = params$cytoband_file, 
+  gain = params$thr4gain, 
+  amp = params$thr4amp, 
+  loss = params$thr4loss, 
+  deep = params$thr4deep, 
+  top_regions = params$num_top_regions
+)
+
+mat_top <- cn_block$mat_top
+get_type <- cn_block$get_type
+alter_fun <- cn_block$alter_fun
+col_map <- cn_block$col_map
+
+anno_df <- clinical_sample_info %>%
+  filter(Tumor_Sample_Barcode %in% colnames(mat_top)) %>%
+  arrange(T1221, Sample_group)
+mat_top <- mat_top[, anno_df$Tumor_Sample_Barcode]
+
+bottom_anno <- HeatmapAnnotation(
+  T1221 = anno_df$T1221,
+  Sample_Group = anno_df$Sample_group,
+  col = list(
+    T1221 = t1221_colors,
+    Sample_Group = sample_group_colors
+    ),
+  annotation_name_side = "left",
+  annotation_legend_param = list(
+    T1221 = list(title = "T1221"),
+    Sample_Group = list(title = "Sample Group")
+    )
+)
+
+ht_I <- ComplexHeatmap::oncoPrint(
+  mat_top,
+  get_type = get_type,
+  alter_fun = alter_fun,
+  col = col_map,
+  top_annotation = HeatmapAnnotation(
+    `Alteration burden` = anno_oncoprint_barplot(),
+    annotation_name_side = "left"
+  ),
+  left_annotation = rowAnnotation(
+    `Alteration freq` = anno_oncoprint_barplot(),
+    annotation_name_rot = 0
+  ),
+  bottom_annotation = bottom_anno,
+  column_order = anno_df$Tumor_Sample_Barcode,
+  remove_empty_rows = TRUE,
+  remove_empty_columns = TRUE,
+  show_column_names = TRUE,
+  column_labels = anno_df$Tumor_Sample_Barcode,
+  column_names_gp = grid::gpar(fontsize = 8, rot = 45),
+  column_title = base::paste("Top", params$num_top_regions, "CNV Regions (cytobands × sample)")
+)
+
+print(ht_I)
+```
+
+#### CN Oncoplot, all samples, tier I and II
+
+```{r oncoplot_dragen_cnbands_filter2, fig.width = 12}
+cn_block <- preproc_oncocn(
+  dt = dt_I_II, 
+  cyto_file = params$cytoband_file, 
+  gain = params$thr4gain, 
+  amp = params$thr4amp, 
+  loss = params$thr4loss, 
+  deep = params$thr4deep, 
+  top_regions = params$num_top_regions
+)
+
+mat_top <- cn_block$mat_top
+get_type <- cn_block$get_type
+alter_fun <- cn_block$alter_fun
+col_map <- cn_block$col_map
+
+anno_df <- clinical_sample_info %>%
+  filter(Tumor_Sample_Barcode %in% colnames(mat_top)) %>%
+  arrange(T1221, Sample_group)
+mat_top <- mat_top[, anno_df$Tumor_Sample_Barcode]
+
+bottom_anno <- HeatmapAnnotation(
+  T1221 = anno_df$T1221,
+  Sample_Group = anno_df$Sample_group,
+  col = list(
+    T1221 = t1221_colors,
+    Sample_Group = sample_group_colors
+    ),
+  annotation_name_side = "left",
+  annotation_legend_param = list(
+    T1221 = list(title = "T1221"),
+    Sample_Group = list(title = "Sample Group")
+    )
+)
+
+ht_I_II <- ComplexHeatmap::oncoPrint(
+  mat_top,
+  get_type = get_type,
+  alter_fun = alter_fun,
+  col = col_map,
+  top_annotation = HeatmapAnnotation(
+    `Alteration burden` = anno_oncoprint_barplot(),
+    annotation_name_side = "left"
+  ),
+  left_annotation = rowAnnotation(
+    `Alteration freq` = anno_oncoprint_barplot(),
+    annotation_name_rot = 0
+  ),
+  bottom_annotation = bottom_anno,
+  column_order = anno_df$Tumor_Sample_Barcode,
+  remove_empty_rows = TRUE,
+  remove_empty_columns = TRUE,
+  show_column_names = TRUE,
+  column_labels = anno_df$Tumor_Sample_Barcode,
+  column_names_gp = grid::gpar(fontsize = 8, rot = 45),
+  column_title = base::paste("Top", params$num_top_regions, "CNV Regions (cytobands × sample)")
+)
+
+print(ht_I_II)
+```
+
+#### CN Oncoplot, all samples, tier I, II and III
+
+```{r oncoplot_dragen_cnbands_filter3, fig.width = 12}
+cn_block <- preproc_oncocn(
+  dt = dt_I_II_III, 
+  cyto_file = params$cytoband_file, 
+  gain = params$thr4gain, 
+  amp = params$thr4amp, 
+  loss = params$thr4loss, 
+  deep = params$thr4deep, 
+  top_regions = params$num_top_regions
+)
+
+mat_top <- cn_block$mat_top
+get_type <- cn_block$get_type
+alter_fun <- cn_block$alter_fun
+col_map <- cn_block$col_map
+
+anno_df <- clinical_sample_info %>%
+  filter(Tumor_Sample_Barcode %in% colnames(mat_top)) %>%
+  arrange(T1221, Sample_group)
+mat_top <- mat_top[, anno_df$Tumor_Sample_Barcode]
+
+bottom_anno <- HeatmapAnnotation(
+  T1221 = anno_df$T1221,
+  Sample_Group = anno_df$Sample_group,
+  col = list(
+    T1221 = t1221_colors,
+    Sample_Group = sample_group_colors
+    ),
+  annotation_name_side = "left",
+  annotation_legend_param = list(
+    T1221 = list(title = "T1221"),
+    Sample_Group = list(title = "Sample Group")
+    )
+)
+
+ht_I_II_III <- ComplexHeatmap::oncoPrint(
+  mat_top,
+  get_type = get_type,
+  alter_fun = alter_fun,
+  col = col_map,
+  top_annotation = HeatmapAnnotation(
+    `Alteration burden` = anno_oncoprint_barplot(),
+    annotation_name_side = "left"
+  ),
+  left_annotation = rowAnnotation(
+    `Alteration freq` = anno_oncoprint_barplot(),
+    annotation_name_rot = 0
+  ),
+  bottom_annotation = bottom_anno,
+  column_order = anno_df$Tumor_Sample_Barcode,
+  remove_empty_rows = TRUE,
+  remove_empty_columns = TRUE,
+  show_column_names = TRUE,
+  column_labels = anno_df$Tumor_Sample_Barcode,
+  column_names_gp = grid::gpar(fontsize = 8, rot = 45),
+  column_title = base::paste("Top", params$num_top_regions, "CNV Regions (cytobands × sample)")
+)
+
+print(ht_I_II_III)
 ```
