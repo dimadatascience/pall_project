@@ -671,7 +671,7 @@ Similarly to the genes, the sample list is also filtered by clinical conditions 
 ```{r filters_samples, results='hide'}
 # sample filters
 sample_order_diag_relapse <- clin_data_sorted[Sample_group %in% c("diag", "relapse1")][order(T1221, sample_num, sample_suffix)]$Tumor_Sample_Barcode
-maf_obj_filtered_diag_relapse <- subsetMaf(maf = maf_obj, tsb = sample_order_diag_relapse)
+maf_obj_filtered_diag_relapse <- subsetMaf(maf = mafobj_allgenes, tsb = sample_order_diag_relapse)
 
 samples_neg_diag_relapse <- clin_data_sorted[T1221 == "NEG" & Sample_group %in% c("diag", "relapse1")][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
 
@@ -679,15 +679,15 @@ samples_pos_diag_relapse <- clin_data_sorted[T1221 == "POS" & Sample_group %in% 
 
 
 sample_order_diag <- clin_data_sorted[Sample_group == "diag"][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
-maf_obj_filtered_diag <- subsetMaf(maf = maf_obj, tsb = sample_order_diag)
+maf_obj_filtered_diag <- subsetMaf(maf = mafobj_allgenes, tsb = sample_order_diag)
 
 sample_order_relapse <- clin_data_sorted[Sample_group == "relapse1"][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
-maf_obj_filtered_relapse <- subsetMaf(maf = maf_obj, tsb = sample_order_relapse)
+maf_obj_filtered_relapse <- subsetMaf(maf = mafobj_allgenes, tsb = sample_order_relapse)
 
 samples_neg <- clin_data_sorted[T1221 == "NEG"][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
-maf_obj_filtered_neg <- subsetMaf(maf = maf_obj, tsb = samples_neg)
+maf_obj_filtered_neg <- subsetMaf(maf = mafobj_allgenes, tsb = samples_neg)
 samples_pos <- clin_data_sorted[T1221 == "POS"][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
-maf_obj_filtered_pos <- subsetMaf(maf = maf_obj, tsb = samples_pos)
+maf_obj_filtered_pos <- subsetMaf(maf = mafobj_allgenes, tsb = samples_pos)
 
 sample_order_patient_adj <- clin_data_sorted[order(T1221, sample_num, sample_suffix)]$Tumor_Sample_Barcode
 ```
