@@ -711,7 +711,7 @@ They provide an overview of the cohort data by showing informations about the va
 ### Summary - all samples
 
 ```{r summary1}
-plotmafSummary(maf = maf_obj, rmOutlier = TRUE, addStat = "median", dashboard = TRUE, titvRaw = FALSE)
+plotmafSummary(maf = mafobj_allgenes, rmOutlier = TRUE, addStat = "median", dashboard = TRUE, titvRaw = FALSE)
 ```
 
 ### Summary - diagnosis samples
@@ -1299,7 +1299,7 @@ Additional secondary plots from maftools.
 The plot contains informations on the sample rate of transition vs transversions for all samples and their distribution across samples.
 
 ```{r transition_transversions, fig.height=13}
-maf_obj.titv = titv(maf = maf_obj, plot = FALSE, useSyn = TRUE)
+maf_obj.titv = titv(maf = mafobj_allgenes, plot = FALSE, useSyn = TRUE)
 plotTiTv(res = maf_obj.titv, showBarcodes = TRUE)
 ```
 
@@ -1308,7 +1308,7 @@ plotTiTv(res = maf_obj.titv, showBarcodes = TRUE)
 The plot shows a comparison between the analyzed cohort and a set of standardized cohorts from the literature and tumor classification. The cohorts are compared by average Tumor mutational burden.
 
 ```{r TMB_comparison}
-maf_obj.mutload = tcgaCompare(maf = maf_obj, cohortName = 'PALL', logscale = TRUE, capture_size = 50)
+maf_obj.mutload = tcgaCompare(maf = mafobj_allgenes, cohortName = 'PALL', logscale = TRUE, capture_size = 50)
 ```
 
 ### VAF Plots
