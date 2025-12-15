@@ -590,9 +590,7 @@ maf_data_filtered <- maf_data[!flag_fishing_genes, ]
 maf_data_filtered <- apply_priority(maf_data_filtered, cols_to_check_clin_canc, priority_order, new_colname = "Clinical_Significance_Summary_Clinvar_Cancervar")
 maf_data_filtered <- apply_priority(maf_data_filtered, cols_to_check_chiara, priority_order, new_colname = "Clinical_Significance_Summary_Chiara")
 
-maf_obj@data <- maf_data_filtered
-
-mafobj_allgenes <- read.maf(maf = maf_obj@data, clinicalData = clinical_mapped, cnTable = cnv_mapped)
+mafobj_allgenes <- read.maf(maf = maf_data_filtered, clinicalData = clinical_mapped, cnTable = cnv_mapped)
 ```
 
 ### Genelists filtering
@@ -707,6 +705,12 @@ if (!dir.exists(output_dir)) {
 The summary plots were generated with maftools.
 
 They provide an overview of the cohort data by showing informations about the variant classification, the top 10 mutated genes and the distribution across samples. 
+
+In the top 10 mutated genes section:
+
+  - the bar length represents the total number of mutations found for that particular gene across all samples
+  
+  - the percentage represents the fraction of samples with at least one mutation in that gene
 
 ### Summary - all samples
 
