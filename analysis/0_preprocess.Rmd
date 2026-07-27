@@ -1,0 +1,1033 @@
+---
+title: "PALL visualization data"
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_float: true
+    theme: united
+    code_folding: hide
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+author: "Gianluca Alessio Mariani"
+
+params:
+  manual_timestamp: "250929_0900"
+  project: "pall"
+  clinical_data: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/clinical_data.csv"
+  id_data: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PATIENTS_ID.csv"
+  gene_table1: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv"
+  gene_table2: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv"
+
+  refgene_file: "/hpcnfs/scratch/DIMA/gmariani/__softwares/gistic2/gistic2/refgenes/hg38.UCSC.add_mir.160920/gistic2.refgene.hg38.UCSC.add_miR.160920.mat"
+  cytoband_file: "/hpcnfs/scratch/DIMA/gmariani/_databases/reference_genomes/hg38/cytoBand_hg38_merged.txt"
+  
+  data_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data"
+  results_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/results"
+  
+  maf_tumor_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic"
+  cnv_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/results/250923_1647_pall/250923/annotation/cnv"
+  raw_samples_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4"
+
+  cnvkit_out_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/results/250918_1626_cnvkit_pall"
+  
+  run_gistic2: FALSE
+  num_top_genes: 25
+  num_top_regions: 40
+  type2use4cn_onco: "anno" #either "anno" or "seg"
+  thr4gain: 0.30
+  thr4amp: 0.90 
+  thr4loss: -0.30 
+  thr4deep: -0.90 
+---
+
+```{r setup_knit, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	fig.height = 8,
+	fig.width = 10,
+	message = FALSE,
+	warning = FALSE,
+	autodep = TRUE,
+	cache = FALSE,
+	dev = c("png", "pdf")
+)
+```
+
+```{r load_libraries_and_setup, results='hide'}
+suppressPackageStartupMessages({
+  library(grDevices)
+  library(maftools)
+  library(data.table)
+  library(tidyr)
+  library(dplyr)
+  library(stringr)
+  library(GenomicRanges)
+  library(readr)
+  library("mclust")
+  library(ggplot2)
+  library(circlize)
+  library(RCircos)
+  library("RColorBrewer")
+  library(grDevices)
+  library(ComplexHeatmap)
+  library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+  library('org.Hs.eg.db')
+  library(AnnotationDbi)
+  library(biovizBase)
+  library(grid)
+  library(purrr)
+  library(ggrepel)
+  library("DT")
+  library(GenomeInfoDb)
+})
+suppressMessages({
+  source("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/src/utils.R")
+})
+```
+
+
+# FIRST BLOCK
+
+```{r preprocessing_genelist, results='hide'}
+samples <- list.dirs(params$maf_tumor_dir, full.names = FALSE, recursive = FALSE)
+
+final_genetable <- bind_rows(
+  read_csv(params$gene_table1),
+  read_csv(params$gene_table2)
+)
+
+genelist <- unique(final_genetable$Hugo_Symbol)
+```
+
+```{r preprocessing_cnv_files, results='hide'}
+cnv_files <- file.path(params$cnv_dir, samples, paste0(samples, ".cnv.annotated.tsv"))
+cnv_files <- cnv_files[file.exists(cnv_files)]
+
+cnv_samples <- setNames(cnv_files, sapply(cnv_files, get_sample_id))
+
+results <- lapply(cnv_files, process_cnv_sample)
+
+# Combina tutti i risultati validi
+cnv_combined <- bind_rows(lapply(results, `[[`, "cnv_list"))
+```
+
+```{r generate_files, results='hide'}
+maf_files <- file.path(params$maf_tumor_dir, samples, paste0(samples, ".maf"))
+maf_files <- maf_files[file.exists(maf_files)]
+merged_maf <- merge_mafs(maf_files)
+
+id_map <- read.csv(params$id_data, stringsAsFactors = FALSE)
+barcode_map <- setNames(id_map$SAMPLENAME, id_map$code)
+
+maf_data_mapped <- merged_maf@data
+clinical_mapped <- read.csv(params$clinical_data, stringsAsFactors = FALSE)
+cnv_mapped <- cnv_combined
+
+# Converti a character
+maf_data_mapped$Tumor_Sample_Barcode <- as.character(maf_data_mapped$Tumor_Sample_Barcode)
+clinical_mapped$Tumor_Sample_Barcode <- as.character(clinical_mapped$Tumor_Sample_Barcode)
+cnv_mapped$Sample <- as.character(cnv_mapped$Sample)
+
+# Mapping
+maf_data_mapped$Tumor_Sample_Barcode_new <- barcode_map[ maf_data_mapped$Tumor_Sample_Barcode ]
+clinical_mapped$Tumor_Sample_Barcode_new <- barcode_map[ clinical_mapped$Tumor_Sample_Barcode ]
+cnv_mapped$Sample_new <- barcode_map[ cnv_mapped$Sample ]
+
+# Controllo missing
+unique(maf_data_mapped$Tumor_Sample_Barcode[ is.na(maf_data_mapped$Tumor_Sample_Barcode_new) ])
+unique(clinical_mapped$Tumor_Sample_Barcode[ is.na(clinical_mapped$Tumor_Sample_Barcode_new) ])
+unique(cnv_mapped$Sample[ is.na(cnv_mapped$Sample_new) ])
+
+# Metti old barcodes in nuova colonna
+maf_data_mapped$Tumor_Sample_Barcode_old <- maf_data_mapped$Tumor_Sample_Barcode
+clinical_mapped$Tumor_Sample_Barcode_old <- clinical_mapped$Tumor_Sample_Barcode
+cnv_mapped$Sample_old <- cnv_mapped$Sample
+
+# Se tutto OK → sostituisci
+maf_data_mapped$Tumor_Sample_Barcode <- maf_data_mapped$Tumor_Sample_Barcode_new
+clinical_mapped$Tumor_Sample_Barcode <- clinical_mapped$Tumor_Sample_Barcode_new
+cnv_mapped$Sample <- cnv_mapped$Sample_new
+
+maf_data_mapped$Tumor_Sample_Barcode_new <- NULL
+clinical_mapped$Tumor_Sample_Barcode_new <- NULL
+cnv_mapped$Sample_new <- NULL
+
+cnv_mapped$Classification <- gsub(" ", "_", cnv_mapped$Classification)
+
+cnv_mapped$Classification <- gsub("likely_pathogenic", "Likely_Pathogenic", cnv_mapped$Classification, ignore.case = TRUE)
+cnv_mapped$Classification <- gsub("uncertain_significance", "Uncertain_Significance", cnv_mapped$Classification, ignore.case = TRUE)
+cnv_mapped$Classification <- gsub("benign", "Benign", cnv_mapped$Classification, ignore.case = TRUE)
+cnv_mapped$Classification <- gsub("pathogenic", "Pathogenic", cnv_mapped$Classification, ignore.case = TRUE)
+
+
+maf_obj <- read.maf(
+  maf = maf_data_mapped,
+  clinicalData = clinical_mapped,
+  cnTable = cnv_mapped
+)
+
+saveRDS(maf_obj, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/maf_obj.rds")
+saveRDS(cnv_mapped, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/cnv_mapped.rds")
+saveRDS(clinical_mapped, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/clinical_mapped.rds")
+```
+
+
+
+
+
+
+# SECOND BLOCK
+
+```{r clin_summary_setup}
+clinvar_dict <- c("Pathogenic" = "Pathogenic",
+    "Pathogenic/Likely_pathogenic" = "Pathogenic",
+    "Likely_pathogenic" = "Likely_Pathogenic",
+    "Uncertain_significance" = "Uncertain_Significance",
+    "Conflicting_classifications_of_pathogenicity" = "Uncertain_Significance",
+    "Conflicting_interpretations_of_pathogenicity" = "Uncertain_Significance",
+    "Likely_benign" = "Likely_Benign",
+    "Benign/Likely_benign" = "Likely_Benign",
+    "Benign" = "Benign",
+    "drug_response" = "Drug_Response",
+    "not_provided" = "Not_Provided",
+    "no_classifications_from_unflagged_records" = "Unknown",
+    "risk_factor" = "Unknown",
+    "Affects" = "Unknown",
+    "no_classification_for_the_single_variant" = "Unknown",
+    "association" = "Unknown",
+    "other" = "Unknown",
+    "Uncertain_risk_allele" = "Unknown",
+    "Likely_risk_allele" = "Unknown",
+    "_low_penetrance" = "Unknown",
+    "protective" = "Unknown",
+    "association_not_found" = "Unknown",
+    "Established_risk_allele" = "Unknown",
+    "confers_sensitivity" = "Unknown")
+
+cancervar_dict <- list("Tier_I_strong" = "Pathogenic",
+    "Tier_II_potential" = "Likely_Pathogenic",
+    "Tier_III_Uncertain" = "Uncertain_Significance",
+    "Tier_IV_benign" = "Benign")
+
+varsome_dict  <- list("TierI" = "Pathogenic",
+                      "TierIV" = "Benign",
+                      "TierIII" = "Uncertain_Significance",
+                      "??" = "Unknown",
+                      "TierII" = "Likely_pathogenic",
+                      "???" = "Unknown")
+
+priority_order <- list("Pathogenic",
+    "Likely_Pathogenic",
+    "Uncertain_Significance",
+    "Likely_Benign",
+    "Benign",
+    "Drug_Response",
+    "Not_Provided",
+    "Unknown")
+
+cols_to_check_clin_canc <- list("CancerVar", "ClinVar_VCF_CLNSIG")
+cols_to_check_chiara <- list("VARSOME", "CancerVar", "ClinVar_VCF_CLNSIG")
+```
+
+```{r clin_summary_exec, results='hide'}
+maf_data <- maf_obj@data
+
+maf_data <- maf_data %>%
+  dplyr::left_join(
+    final_genetable %>% dplyr::select(Chromosome, Start_Position, End_Position, VARSOME),
+    by = c("Chromosome", "Start_Position", "End_Position")
+  )
+
+maf_data$ClinVar_VCF_CLNSIG <- sapply(
+  maf_data$ClinVar_VCF_CLNSIG,
+  simplify_clinvar,
+  priority = priority_order,
+  mapping = clinvar_dict,
+  USE.NAMES = FALSE
+)
+maf_data$CancerVar[is.na(maf_data$CancerVar)] <- "Not_Provided"
+maf_data$CancerVar <- recode(maf_data$CancerVar, !!!cancervar_dict)
+maf_data$VARSOME[is.na(maf_data$VARSOME)] <- "Not_Provided"
+maf_data$VARSOME <- recode(maf_data$VARSOME, !!!varsome_dict)
+
+# Filter VAF > n
+
+min_vaf = 0.05
+maf_data <- maf_data[maf_data$tumor_f > min_vaf]
+to_remove <- c("Splice_Site", "Silent", "Intron", "5'UTR")
+maf_data <- maf_data[!maf_data$Variant_Classification %in% to_remove]
+
+fishing_genes <- c("MUC", "TTN", "RYR", "OR", "KRT")
+non_fishing_genes <- c("ORC1", "MUCL3", "MUCL1", "KRTCAP3")
+
+regex_fishing <- paste0("^(", paste(fishing_genes, collapse = "|"), ")")
+possible_fishing <- grepl(regex_fishing , maf_data$Hugo_Symbol)
+false_positives <- maf_data$Hugo_Symbol %in% non_fishing_genes
+flag_fishing_genes <- possible_fishing & !false_positives
+maf_data_filtered <- maf_data[!flag_fishing_genes, ]
+
+maf_data_filtered <- apply_priority(maf_data_filtered, cols_to_check_clin_canc, priority_order, new_colname = "Clinical_Significance_Summary_Clinvar_Cancervar")
+maf_data_filtered <- apply_priority(maf_data_filtered, cols_to_check_chiara, priority_order, new_colname = "Clinical_Significance_Summary_Chiara")
+
+mafobj_allgenes <- read.maf(maf = maf_data_filtered, clinicalData = clinical_mapped, cnTable = cnv_mapped)
+
+saveRDS(mafobj_allgenes, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/mafobj_allgenes.rds")
+```
+
+
+
+
+
+
+# THIRD BLOCK
+
+```{r generate_cnvkit_data}
+log2_cap_max <- 2.5
+log2_cap_min <- -2.5
+log2_visible_max <- 2.49
+log2_visible_min <- -2.49
+
+thres_logplot <- 0.5
+
+aspect_ratio_manhattan_plots = 1/2
+
+id_map <- read.csv(params$id_data, stringsAsFactors = FALSE)
+barcode_map <- setNames(id_map$SAMPLENAME, id_map$code)
+
+cnvkit_path <- list.dirs(params$cnvkit_out_dir, recursive = FALSE)
+
+## lista che conterrà tutti i dati necessari ai plot
+cnv_plot_data <- list(
+  metadata = list(
+    log2_cap_min = log2_cap_min,
+    log2_cap_max = log2_cap_max,
+    aspect_ratio = aspect_ratio_manhattan_plots,
+    thres_logplot = thres_logplot
+  ),
+  samples = list()
+)
+
+for (c_path in cnvkit_path) {
+
+  sample_raw <- basename(c_path)
+  sample_mapped <- barcode_map[sample_raw]
+
+  file <- file.path(c_path, paste0(sample_raw, "_tumor.cns"))
+
+  cns <- read_tsv(file, show_col_types = FALSE)
+
+  cns2 <- cns %>%
+    mutate(
+      chromosome = gsub("^chr", "", chromosome),
+      mid = (start + end) / 2
+    ) %>%
+    filter(chromosome %in% as.character(1:22)) %>%
+    mutate(
+      chromosome = factor(chromosome, levels = as.character(1:22))
+    ) %>%
+    arrange(chromosome, start)
+
+  ## coordinate cumulative
+  chr_sizes <- cns2 %>%
+    group_by(chromosome) %>%
+    summarise(chr_max = max(end), .groups = "drop") %>%
+    arrange(chromosome) %>%
+    mutate(chr_cum_start = lag(cumsum(chr_max), default = 0))
+
+  cns3 <- cns2 %>%
+    left_join(chr_sizes, by = "chromosome") %>%
+    mutate(
+      pos_cum = mid + chr_cum_start,
+      seg_width = end - start
+    )
+
+  cns3 <- cns3 %>%
+    mutate(
+      log2_capped = case_when(
+        log2 > log2_cap_max ~ log2_visible_max,
+        log2 < log2_cap_min ~ log2_visible_min,
+        TRUE ~ log2
+      ),
+      chromosome = as.character(chromosome)
+    )
+
+  ## GRanges dei segmenti
+  cnv_gr <- GRanges(
+    seqnames = cns3$chromosome,
+    ranges = IRanges(start = cns3$start, end = cns3$end),
+    log2_capped = cns3$log2_capped,
+    pos_cum = cns3$pos_cum
+  )
+
+  ## GRanges dei geni
+  genes_gr <- GRanges(
+    seqnames = gene_annotated$Chromosome,
+    ranges = IRanges(
+      start = gene_annotated$Start_Position,
+      end = gene_annotated$End_Position
+    ),
+    gene = gene_annotated$SYMBOL
+  )
+
+  hits <- findOverlaps(cnv_gr, genes_gr)
+
+  df_hits <- data.frame(
+    queryHits = queryHits(hits),
+    subjectHits = subjectHits(hits)
+  )
+
+  df_annot <- df_hits %>%
+    mutate(
+      pos_cum = mcols(cnv_gr)$pos_cum[queryHits],
+      log2_capped = mcols(cnv_gr)$log2_capped[queryHits],
+      gene = mcols(genes_gr)$gene[subjectHits],
+      chromosome = cns3$chromosome[queryHits]
+    ) %>%
+    group_by(queryHits, pos_cum, log2_capped, chromosome) %>%
+    summarise(
+      genes = paste(unique(gene), collapse = ", "),
+      .groups = "drop"
+    )
+
+  df_annot_filtered <- df_annot %>%
+    filter(log2_capped > thres_logplot | log2_capped < -thres_logplot) %>%
+    mutate(
+      vjust_label = ifelse(log2_capped > 0, -0.5, 1.5)
+    )
+
+  ## centri dei cromosomi (servono per l'asse X)
+  centers <- chr_sizes %>%
+    mutate(center = chr_cum_start + chr_max / 2)
+
+  ## salva tutto ciò che serve al plotting
+  cnv_plot_data$samples[[sample_mapped]] <- list(
+    sample = sample_mapped,
+    cns3 = cns3,
+    centers = centers,
+    chr_sizes = chr_sizes,
+    df_annot_filtered = df_annot_filtered
+  )
+
+}
+
+sample_names <- names(cnv_plot_data$samples)
+
+sample_info <- data.frame(
+  sample = sample_names,
+  number = as.integer(sub("^ALL([0-9]+)-.*$", "\\1", sample_names)),
+  suffix = sub("^ALL[0-9]+-", "", sample_names),
+  stringsAsFactors = FALSE
+)
+
+sample_info$type <- ifelse(grepl("^D$", sample_info$suffix), "D", "R")
+
+sample_info$r_index <- ifelse(
+  sample_info$type == "D",
+  0,
+  ifelse(
+    sample_info$suffix == "R",
+    1,
+    as.integer(sub("^R", "", sample_info$suffix))
+  )
+)
+
+sample_info <- sample_info[
+  order(sample_info$number,
+        sample_info$type,
+        sample_info$r_index),
+]
+
+ordered_names <- sample_info$sample
+
+cnv_plot_data$samples <- cnv_plot_data$samples[ordered_names]
+
+## salva l'intera lista
+saveRDS(cnv_plot_data, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/cnv_plot_data.rds")
+```
+
+
+
+
+# FOURTH BLOCK
+
+```{r mapping_seg2cnv}
+raw_paths <- list.dirs(params$raw_samples_dir, recursive = FALSE)
+cnvkit_paths <- list.dirs(params$cnvkit_out_dir, recursive = FALSE)
+cnv_paths <- list.dirs(params$cnv_dir, recursive = FALSE)
+raw_df <- data.frame(basename = basename(raw_paths), raw_path = raw_paths, stringsAsFactors = FALSE)
+cnvkit_df <- data.frame(basename = basename(cnvkit_paths), cnvkit_path = cnvkit_paths, stringsAsFactors = FALSE)
+cnv_df <- data.frame(basename = basename(cnv_paths), cnv_path = cnv_paths, stringsAsFactors = FALSE)
+
+mapping_table <- raw_df %>%
+  inner_join(cnv_df, by = "basename") %>%
+  inner_join(cnvkit_df, by = "basename") %>%
+  mutate(
+    raw_file_candidate1 = file.path(raw_path, paste0(basename, ".seg")),
+    raw_file_candidate2 = file.path(raw_path, paste0(basename, "_germline.seg")),
+    raw_file = case_when(
+      file.exists(raw_file_candidate1) ~ raw_file_candidate1,
+      file.exists(raw_file_candidate2) ~ raw_file_candidate2,
+      TRUE ~ NA_character_
+    ),
+    raw_file_exists = !is.na(raw_file) & file.exists(raw_file),
+    cnv_file = file.path(cnv_path, paste0(basename, ".cnv.annotated.tsv")),
+    cnv_file_exists = file.exists(cnv_file),
+    cnvkit_file = file.path(cnvkit_path, paste0(basename, "_tumor.cns")),
+    cnvkit_file_exists = file.exists(cnvkit_file),
+    ## 🔑 mapping barcode → ID biologico
+    new_id = unname(barcode_map[basename])
+  ) %>%
+  dplyr::select(
+    basename,
+    new_id,
+    raw_path,
+    cnv_path,
+    cnvkit_path,
+    raw_file,
+    cnv_file,
+    cnvkit_file,
+    raw_file_exists,
+    cnv_file_exists,
+    cnvkit_file_exists
+  )
+
+all_genes <- mapping_table %>%
+  filter(cnv_file_exists) %>%
+  pull(cnv_file) %>%
+  map(~ {
+    df <- read_tsv(.x, col_types = cols())
+
+    df %>%
+      filter(Classification %in% c("Likely pathogenic", "Pathogenic")) %>%
+      pull(`Known or predicted dosage-sensitive genes`)
+  }) %>%
+  unlist(use.names = FALSE) %>%
+  na.omit() %>%
+  # separa valori con virgole
+  str_split(pattern = ",\\s*") %>%  
+  unlist(use.names = FALSE) %>%
+  # rimuove eventuali spazi
+  str_trim() %>%
+  unique()
+```
+
+```{r setup_genelist_dragen_manhattan}
+gene_entrez <- AnnotationDbi::select(org.Hs.eg.db,
+                                    keys = all_genes,
+                                    keytype = "SYMBOL",
+                                    columns = c("ENTREZID"))
+
+gene_entrez <- gene_entrez %>% filter(!is.na(ENTREZID))
+txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+gene_ranges <- genes(txdb, columns = c("gene_id"))
+gene_ranges_filtered <- gene_ranges[as.character(names(gene_ranges)) %in% gene_entrez$ENTREZID]
+gene_df <- as.data.frame(gene_ranges_filtered) %>%
+  dplyr::select(seqnames, start, end, width, strand, gene_id)
+
+gene_annotated <- gene_entrez %>%
+  inner_join(gene_df, by = c("ENTREZID" = "gene_id")) %>%
+  dplyr::rename(
+    Chromosome = seqnames,
+    Start_Position = start,
+    End_Position = end
+  )
+gene_annotated <- gene_annotated %>%
+  mutate(Chromosome = gsub("^chr", "", Chromosome))
+
+gene_annotated <- gene_annotated %>%
+  distinct(SYMBOL, .keep_all = TRUE)
+```
+
+```{r generate_dragen_data}
+aspect_ratio_manhattan_plots <- 1/2
+y_min <- -2.5
+y_max <- 2.5
+
+sample_index_list <- seq_len(nrow(mapping_table))
+
+## lista che conterrà tutti i dati necessari ai plot
+dragen_plot_data <- list(
+  metadata = list(
+    y_min = y_min,
+    y_max = y_max,
+    aspect_ratio = aspect_ratio_manhattan_plots
+  ),
+  samples = list()
+)
+
+for (i in sample_index_list) {
+
+  sample_raw <- mapping_table$basename[i]
+  cnvkit_file <- mapping_table$cnvkit_file[i]
+  
+  if (!mapping_table$cnvkit_file_exists[i]) next
+  
+  sample_map <- barcode_map[sample_raw]
+  if (is.na(sample_map)) {
+    warning(paste("ATTENZIONE: barcode non trovato nel mapping:", sample_raw))
+    next
+  }
+
+  # ---- Leggi CNVkit ----
+  cns <- read_tsv(cnvkit_file, col_types = cols()) %>%
+    mutate(
+      chromosome = gsub("^chr", "", chromosome),
+      mid = (start + end) / 2
+    ) %>%
+    filter(chromosome %in% as.character(1:22)) %>%
+    mutate(chromosome = factor(chromosome, levels = as.character(1:22))) %>%
+    arrange(chromosome, start)
+
+  # ---- Calcola posizioni cumulative ----
+  chr_sizes <- cns %>%
+    group_by(chromosome) %>%
+    summarize(chr_max = max(end), .groups = "drop") %>%
+    arrange(chromosome) %>%
+    mutate(chr_cum_start = lag(cumsum(as.numeric(chr_max)), default = 0))
+
+  cns2 <- cns %>%
+    left_join(chr_sizes, by = "chromosome") %>%
+    mutate(
+      pos_cum = mid + chr_cum_start,
+      log2_capped = pmin(pmax(log2, log2_cap_min), log2_cap_max)
+    )
+
+  # ---- GRanges per CNV ----
+  cnv_gr <- GRanges(
+    seqnames = cns2$chromosome,
+    ranges = IRanges(start = cns2$start, end = cns2$end),
+    log2_capped = cns2$log2_capped,
+    pos_cum = cns2$pos_cum
+  )
+
+  # ---- Annotazioni geni ----
+  df_annot <- NULL
+  if (!is.na(mapping_table$cnv_file[i]) && file.exists(mapping_table$cnv_file[i])) {
+    cnv_data <- read_tsv(mapping_table$cnv_file[i], col_types = cols())
+    
+    genes_raw <- cnv_data %>%
+      filter(Classification %in% c("Likely pathogenic", "Pathogenic")) %>%
+      pull(`Known or predicted dosage-sensitive genes`) %>%
+      str_split(",\\s*") %>%
+      unlist() %>%
+      str_trim() %>%
+      unique()
+    
+    if (length(genes_raw) > 0) {
+      
+      gene_annotated_sample <- gene_annotated %>%
+        filter(SYMBOL %in% genes_raw)
+      
+      genes_gr <- GRanges(
+        seqnames = gene_annotated_sample$Chromosome,
+        ranges = IRanges(
+          start = gene_annotated_sample$Start_Position,
+          end = gene_annotated_sample$End_Position
+        ),
+        gene = gene_annotated_sample$SYMBOL
+      )
+      
+      # ---- Trova il segmento CNV con maggiore sovrapposizione per ciascun gene ----
+      hits <- findOverlaps(genes_gr, cnv_gr)  # genes come query, CNV come subject
+      if (length(hits) > 0) {
+        ovl_width <- pintersect(genes_gr[queryHits(hits)], cnv_gr[subjectHits(hits)]) %>% width()
+        
+        gene_hits <- data.frame(
+          gene = mcols(genes_gr)$gene[queryHits(hits)],
+          cnv_idx = subjectHits(hits),
+          overlap = ovl_width
+        ) %>%
+          group_by(gene) %>%
+          slice_max(overlap, n = 1, with_ties = FALSE) %>%
+          ungroup()
+        
+        df_annot <- gene_hits %>%
+          mutate(
+            pos_cum = mcols(cnv_gr)$pos_cum[cnv_idx],
+            log2_capped = mcols(cnv_gr)$log2_capped[cnv_idx],
+            chromosome = cns2$chromosome[cnv_idx],
+            genes = gene
+          )
+      }
+    }
+  }
+
+  # ---- Centri cromosomi per asse x ----
+  centers <- chr_sizes %>%
+    mutate(center = chr_cum_start + chr_max/2)
+
+  ## salva tutto ciò che serve al plotting
+  dragen_plot_data$samples[[sample_map]] <- list(
+    sample = sample_map,
+    cns2 = cns2,
+    centers = centers,
+    chr_sizes = chr_sizes,
+    df_annot = df_annot
+  )
+
+}
+
+sample_names <- names(dragen_plot_data$samples)
+
+sample_info <- data.frame(
+  sample = sample_names,
+  number = as.integer(sub("^ALL([0-9]+)-.*$", "\\1", sample_names)),
+  suffix = sub("^ALL[0-9]+-", "", sample_names),
+  stringsAsFactors = FALSE
+)
+
+sample_info$type <- ifelse(grepl("^D$", sample_info$suffix), "D", "R")
+
+sample_info$r_index <- ifelse(
+  sample_info$type == "D",
+  0,
+  ifelse(
+    sample_info$suffix == "R",
+    1,
+    as.integer(sub("^R", "", sample_info$suffix))
+  )
+)
+
+sample_info <- sample_info[
+  order(sample_info$number,
+        sample_info$type,
+        sample_info$r_index),
+]
+
+ordered_names <- sample_info$sample
+
+dragen_plot_data$samples <- dragen_plot_data$samples[ordered_names]
+
+## salva l'intera lista
+saveRDS(dragen_plot_data, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/dragen_plot_data.rds")
+```
+
+
+
+
+
+
+# FIFTH BLOCK
+
+```{r generate_cn_oncoplots_data}
+all_seg_data <- list()
+
+raw_path <- list.dirs(params$raw_samples_dir, recursive = FALSE)
+cnv_path <- list.dirs(params$cnv_dir, recursive = FALSE)
+
+if (params$type2use4cn_onco == "seg") {
+
+  for (c_path in raw_path) {
+    sample_raw <- basename(c_path)
+    if (grepl("^PALL[0-9A-Za-z]+-[0-9]+T[0-9A-Za-z]+$", sample_raw)) {
+
+      sample_mapped <- barcode_map[sample_raw]
+      if (is.na(sample_mapped)) {
+        warning(paste("ATTENZIONE: sample non presente nel mapping:", sample_raw))
+        next
+      }
+
+      file <- file.path(c_path, paste0(sample_raw, ".seg"))
+      if (file.exists(file)) {
+
+        seg_data <- read_tsv(file, col_types = cols())
+        seg_data$Sample <- sample_mapped
+
+        all_seg_data[[length(all_seg_data) + 1]] <- seg_data
+
+      }
+    }
+  }
+} else if (params$type2use4cn_onco == "anno") {
+  for (c_path in cnv_path) {
+    sample_raw <- basename(c_path)
+
+    if (grepl("^PALL[0-9A-Za-z]+-[0-9]+T[0-9A-Za-z]+$", sample_raw)) {
+
+      sample_mapped <- barcode_map[sample_raw]
+      if (is.na(sample_mapped)) {
+        warning(paste("ATTENZIONE: sample non presente nel mapping:", sample_raw))
+        next
+      }
+
+      file <- file.path(c_path, paste0(sample_raw, ".cnv.annotated.tsv"))
+
+      if (file.exists(file)) {
+        seg_data <- read_tsv(file, col_types = cols())
+        seg_data$Sample <- sample_mapped
+
+        required_cols <- c(
+          "Sample",
+          "Chromosome",
+          "Start",
+          "End",
+          "Type",
+          "Classification",
+          "logRatio",
+          "CNF"
+        )
+
+        present_cols <- intersect(names(seg_data), required_cols)
+
+        if (!"CNF" %in% present_cols) {
+          stop(paste("File", file, "does not contain required column 'CNF'"))
+        }
+
+        seg_data <- seg_data %>%
+          dplyr::select(all_of(present_cols)) %>%
+          dplyr::rename(Segment_Mean = CNF)
+
+        all_seg_data[[length(all_seg_data) + 1]] <- seg_data
+      }
+    }
+  }
+
+} else {
+  stop(
+    paste(
+      "ERROR: parameter 'type2use4cn_onco' must be 'seg' or 'anno'. Parameter used =",
+      params$type2use4cn_onco
+    )
+  )
+
+}
+
+dt <- bind_rows(all_seg_data)
+all_samples <- unique(dt$Sample)
+
+dt <- dt %>%
+  dplyr::filter(!Chromosome %in% c("chrX", "chrY"))
+
+dt_I <- dt %>%
+  filter(Classification == "Pathogenic")
+dt_I_II <- dt %>%
+  filter(Classification %in% c(
+    "Pathogenic",
+    "Likely pathogenic"
+  ))
+dt_I_II_III <- dt %>%
+  filter(Classification %in% c(
+    "Pathogenic",
+    "Likely pathogenic",
+    "Uncertain significance"
+  ))
+
+clinical_sample_info <- data.frame(maf_obj@clinical.data)
+
+cn_block_I <- preproc_oncocn(
+  dt = dt_I,
+  cyto_file = params$cytoband_file,
+  gain = params$thr4gain,
+  loss = params$thr4loss,
+  top_regions = params$num_top_regions
+)
+cn_block_I_II <- preproc_oncocn(
+  dt = dt_I_II,
+  cyto_file = params$cytoband_file,
+  gain = params$thr4gain,
+  loss = params$thr4loss,
+  top_regions = params$num_top_regions
+)
+cn_block_I_II_III <- preproc_oncocn(
+  dt = dt_I_II_III,
+  cyto_file = params$cytoband_file,
+  gain = params$thr4gain,
+  loss = params$thr4loss,
+  top_regions = params$num_top_regions
+)
+
+cn_oncoplot_data <- list(
+
+  tier_I = cn_block_I,
+  tier_I_II = cn_block_I_II,
+  tier_I_II_III = cn_block_I_II_III,
+
+  all_samples = all_samples,
+  clinical_sample_info = clinical_sample_info,
+
+  metadata = list(
+    type2use4cn_onco = params$type2use4cn_onco,
+    gain = params$thr4gain,
+    loss = params$thr4loss,
+    top_regions = params$num_top_regions,
+    cytoband_file = params$cytoband_file
+  )
+)
+
+saveRDS(cn_oncoplot_data, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/cn_oncoplot_data.rds")
+```
+
+
+
+
+# SIXTH BLOCK
+
+```{r cn_table, results='hide', echo=FALSE}
+allgenes_list <- getGeneSummary(maf_obj)$Hugo_Symbol
+
+gene_entrez <- AnnotationDbi::select(org.Hs.eg.db,
+                                    keys = allgenes_list,
+                                    keytype = "SYMBOL",
+                                    columns = c("ENTREZID"))
+
+gene_entrez <- gene_entrez %>% filter(!is.na(ENTREZID))
+txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+gene_ranges <- genes(txdb, columns = c("gene_id"))
+gene_ranges_filtered <- gene_ranges[as.character(names(gene_ranges)) %in% gene_entrez$ENTREZID]
+gene_df <- as.data.frame(gene_ranges_filtered) %>%
+  dplyr::select(seqnames, start, end, width, strand, gene_id)
+
+gene_annotated <- gene_entrez %>%
+  inner_join(gene_df, by = c("ENTREZID" = "gene_id")) %>%
+  dplyr::rename(
+    Chromosome = seqnames,
+    Start_Position = start,
+    End_Position = end
+  )
+gene_annotated <- gene_annotated %>%
+  mutate(Chromosome = gsub("^chr", "", Chromosome)) %>%
+  filter(!Chromosome %in% c("X", "Y"))
+
+gene_gr <- GRanges(
+  seqnames = gene_annotated$Chromosome,
+  ranges = IRanges(
+    start = gene_annotated$Start_Position,
+    end   = gene_annotated$End_Position
+  ),
+  strand = "*"
+)
+
+mcols(gene_gr)$gene   <- gene_annotated$SYMBOL
+mcols(gene_gr)$entrez <- gene_annotated$ENTREZID
+
+cyto <- fread(
+  params$cytoband_file,
+  header = FALSE,
+  fill = TRUE
+)
+
+colnames(cyto) <- c(
+  "chrom",
+  "chromStart",
+  "chromEnd",
+  "cytoband",
+  "stain"
+)
+
+cyto <- cyto %>%
+  mutate(band = paste0(gsub("^chr", "", chrom), cytoband))
+
+cyto_gr <- GRanges(
+  seqnames = gsub("^chr", "", cyto$chrom),
+  ranges   = IRanges(cyto$chromStart, cyto$chromEnd)
+)
+
+mcols(cyto_gr)$band <- cyto$band
+
+ov_cyto <- findOverlaps(gene_gr, cyto_gr)
+
+gene_cytoband <- tapply(
+  mcols(cyto_gr)$band[subjectHits(ov_cyto)],
+  queryHits(ov_cyto),
+  function(x) paste(unique(x), collapse = ",")
+)
+
+mcols(gene_gr)$band <- gene_cytoband[seq_along(gene_gr)]
+
+cnv_files  <- mapping_table$cnv_file
+sample_ids <- mapping_table$new_id
+```
+
+```{r table_loop, results='hide', echo=FALSE}
+cnv_long <- list()
+idx <- 1
+total_samples <- (seq_along(cnv_files))
+
+for (i in total_samples) {
+
+  cnv <- fread(cnv_files[i])
+  cnv_name <- strsplit(basename(cnv_files[i]), "\\.")[[1]][1]
+  
+  if (nrow(cnv) == 0) next
+
+  cnv <- cnv %>%
+    dplyr::mutate(
+      Chromosome = gsub("^chr", "", Chromosome),
+      cnv_type = case_when(
+        Type == "DEL" ~ "DEL",
+        Type == "DUP" ~ "AMP",
+        TRUE ~ NA_character_
+      )
+    ) %>%
+    filter(!is.na(cnv_type))
+
+  cnv_gr <- GRanges(
+    seqnames = cnv$Chromosome,
+    ranges   = IRanges(cnv$Start, cnv$End)
+  )
+
+  mcols(cnv_gr)$cnv_type <- cnv$cnv_type
+
+  hits <- findOverlaps(gene_gr, cnv_gr)
+
+  if (length(hits) == 0) next
+
+  cnv_long[[idx]] <- data.frame(
+    gene   = mcols(gene_gr)$gene[queryHits(hits)],
+    sample = sample_ids[i],
+    cnv    = mcols(cnv_gr)$cnv_type[subjectHits(hits)],
+    stringsAsFactors = FALSE
+  )
+
+  idx <- idx + 1
+}
+
+total_samples <- idx - 1
+cnv_long <- bind_rows(cnv_long)
+```
+
+```{r final_annotation, results='hide', echo=FALSE}
+cnv_long <- cnv_long %>%
+  group_by(gene, sample) %>%
+  summarise(
+    cnv = case_when(
+      "DEL" %in% cnv & "AMP" %in% cnv ~ "BOTH",
+      "DEL" %in% cnv ~ "DEL",
+      "AMP" %in% cnv ~ "AMP"
+    ),
+    .groups = "drop"
+  )
+
+gene_summary <- cnv_long %>%
+  filter(cnv %in% c("DEL", "AMP")) %>%
+  group_by(gene, cnv) %>%
+  summarise(
+    num_cases = n_distinct(sample),
+    .groups = "drop"
+  ) %>%
+  group_by(gene)
+
+gene_cyto_df <- data.frame(
+  gene = mcols(gene_gr)$gene,
+  band = mcols(gene_gr)$band,
+  stringsAsFactors = FALSE
+)
+
+gene_cn_final_table <- gene_summary %>%
+  mutate(
+    num_samples = total_samples,
+    freq_percent = 100 * num_cases / total_samples
+  ) %>%
+  left_join(gene_cyto_df, by = "gene") %>%
+  dplyr::select(
+    gene,
+    band,
+    del_amp = cnv,
+    num_cases,
+    num_samples,
+    freq_percent
+  ) %>%
+  arrange(desc(freq_percent))
+
+saveRDS(gene_cn_final_table, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/gene_cn_final_table.rds")
+```

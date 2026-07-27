@@ -17,4 +17,4 @@ This  website contains genomic data visualization for the PALL project.
 
 # Main report
 
-- [PALL report](maftools_PALL.html)<span class="label btn-warning">new report</span>
+- [PALL report](1_report.html)<span class="label btn-warning">new report</span>

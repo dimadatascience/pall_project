@@ -1,0 +1,1365 @@
+---
+title: "PALL visualization data"
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_float: true
+    theme: united
+    code_folding: hide
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+author: "Gianluca Alessio Mariani"
+
+params:
+  manual_timestamp: "250929_0900"
+  project: "pall"
+  clinical_data: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/clinical_data.csv"
+  id_data: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PATIENTS_ID.csv"
+  gene_table1: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv"
+  gene_table2: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv"
+
+  refgene_file: "/hpcnfs/scratch/DIMA/gmariani/__softwares/gistic2/gistic2/refgenes/hg38.UCSC.add_mir.160920/gistic2.refgene.hg38.UCSC.add_miR.160920.mat"
+  cytoband_file: "/hpcnfs/scratch/DIMA/gmariani/_databases/reference_genomes/hg38/cytoBand_hg38_merged.txt"
+  
+  data_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data"
+  results_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/results"
+  
+  maf_tumor_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic"
+  cnv_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/results/250923_1647_pall/250923/annotation/cnv"
+  raw_samples_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4"
+
+  cnvkit_out_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/results/250918_1626_cnvkit_pall"
+  
+  run_gistic2: FALSE
+  num_top_genes: 25
+  num_top_regions: 40
+  type2use4cn_onco: "anno" #either "anno" or "seg"
+  thr4gain: 0.30
+  thr4amp: 0.90 
+  thr4loss: -0.30 
+  thr4deep: -0.90 
+---
+
+# Maftools Report
+
+This report has been generated with R.
+
+It contains the analysis for the PALL project, performed on a small set of 21 patients.
+
+For each patient a DNA sample was collected at times t = diagnosis and subsequent relapses.
+
+WES sequencing, variant calling and annotation was performed in previous steps to obtain the data presented in this report.
+
+In particular the tools used to generate the input data are:
+
+  - DRAGEN (4.4.4): sequencing, variant calling and CNV annotation
+  
+  - Variantalker (beta): small variants annotation
+  
+  - CNVkit (0.9.12): additional CNV annotation
+
+```{r setup_knit, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	fig.height = 8,
+	fig.width = 10,
+	message = FALSE,
+	warning = FALSE,
+	autodep = TRUE,
+	cache = FALSE,
+	dev = c("png", "pdf")
+)
+```
+
+```{r load_libraries_and_setup, results='hide'}
+suppressPackageStartupMessages({
+  library(grDevices)
+  library(maftools)
+  library(data.table)
+  library(tidyr)
+  library(dplyr)
+  library(stringr)
+  library(GenomicRanges)
+  library(readr)
+  library("mclust")
+  library(ggplot2)
+  library(circlize)
+  library(RCircos)
+  library("RColorBrewer")
+  library(grDevices)
+  library(ComplexHeatmap)
+  library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+  library('org.Hs.eg.db')
+  library(AnnotationDbi)
+  library(biovizBase)
+  library(grid)
+  library(purrr)
+  library(ggrepel)
+  library("DT")
+})
+suppressMessages({
+  source("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/src/utils.R")
+})
+```
+
+## Setup & Preprocessing
+
+### Genelist preprocessing
+
+The analysis will focus only on a provided specific list of 300 genes.
+
+All oncoplots will be filtered for this specific set of 300 genes.
+
+```{r preprocessing_genelist, results='hide'}
+samples <- list.dirs(params$maf_tumor_dir, full.names = FALSE, recursive = FALSE)
+
+final_genetable <- bind_rows(
+  read_csv(params$gene_table1),
+  read_csv(params$gene_table2)
+)
+
+genelist <- unique(final_genetable$Hugo_Symbol)
+
+id_map <- read.csv(params$id_data, stringsAsFactors = FALSE)
+barcode_map <- setNames(id_map$SAMPLENAME, id_map$code)
+
+maf_obj <- readRDS("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/maf_obj.rds")
+mafobj_allgenes <- readRDS("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/mafobj_allgenes.rds")
+cnv_mapped <- readRDS("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/cnv_mapped.rds")
+clinical_mapped <- readRDS("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/clinical_mapped.rds")
+cnv_plot_data <- readRDS("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/cnv_plot_data.rds")
+dragen_plot_data <- readRDS("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/dragen_plot_data.rds")
+cn_oncoplot_data <- readRDS("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/cn_oncoplot_data.rds")
+gene_cn_final_table <- readRDS("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/gene_cn_final_table.rds")
+```
+
+### CNV files preprocessing
+
+The cnv files from DRAGEN are preprocessed and joined in a single final file.
+
+### Maf Object generation
+
+The MAF object is generated through maftools (2.24.0) by combining the mafs from the small variants analysis (DRAGEN -> Variantalker), the cnv files from DRAGEN and the clinical data provided.
+
+### Preprocessing MAF
+
+The MAF object is preprocessed to:
+
+  - add columns that contain an additional classification based on:
+  
+    - the most pathogenic tag of the variant between the Clinvar, Cancervar and VARSOME annotations
+    
+    - the most pathogenic tag of the variant between the Clinvar and Cancervar annotations
+    
+  - filter the variant list by:
+  
+    - discarding variants with VAF < 0.05
+    
+    - discarding fishing genes ("MUC", "TTN", "RYR", "OR", "KRT")
+    
+    - discarding variants in non important regions such as "Splice_Site", "Silent", "Intron", "5'UTR" ...
+
+```{r clin_summary_setup}
+clinvar_dict <- c("Pathogenic" = "Pathogenic",
+    "Pathogenic/Likely_pathogenic" = "Pathogenic",
+    "Likely_pathogenic" = "Likely_Pathogenic",
+    "Uncertain_significance" = "Uncertain_Significance",
+    "Conflicting_classifications_of_pathogenicity" = "Uncertain_Significance",
+    "Conflicting_interpretations_of_pathogenicity" = "Uncertain_Significance",
+    "Likely_benign" = "Likely_Benign",
+    "Benign/Likely_benign" = "Likely_Benign",
+    "Benign" = "Benign",
+    "drug_response" = "Drug_Response",
+    "not_provided" = "Not_Provided",
+    "no_classifications_from_unflagged_records" = "Unknown",
+    "risk_factor" = "Unknown",
+    "Affects" = "Unknown",
+    "no_classification_for_the_single_variant" = "Unknown",
+    "association" = "Unknown",
+    "other" = "Unknown",
+    "Uncertain_risk_allele" = "Unknown",
+    "Likely_risk_allele" = "Unknown",
+    "_low_penetrance" = "Unknown",
+    "protective" = "Unknown",
+    "association_not_found" = "Unknown",
+    "Established_risk_allele" = "Unknown",
+    "confers_sensitivity" = "Unknown")
+
+cancervar_dict <- list("Tier_I_strong" = "Pathogenic",
+    "Tier_II_potential" = "Likely_Pathogenic",
+    "Tier_III_Uncertain" = "Uncertain_Significance",
+    "Tier_IV_benign" = "Benign")
+
+varsome_dict  <- list("TierI" = "Pathogenic",
+                      "TierIV" = "Benign",
+                      "TierIII" = "Uncertain_Significance",
+                      "??" = "Unknown",
+                      "TierII" = "Likely_pathogenic",
+                      "???" = "Unknown")
+
+priority_order <- list("Pathogenic",
+    "Likely_Pathogenic",
+    "Uncertain_Significance",
+    "Likely_Benign",
+    "Benign",
+    "Drug_Response",
+    "Not_Provided",
+    "Unknown")
+
+cols_to_check_clin_canc <- list("CancerVar", "ClinVar_VCF_CLNSIG")
+cols_to_check_chiara <- list("VARSOME", "CancerVar", "ClinVar_VCF_CLNSIG")
+```
+
+### Genelists filtering
+
+For convenience, a series of maf objects are generated by subsetting the original maf to keep only the variants with a pathogenicity tier above a certain tier. This will be useful to generate the final oncoplots.
+
+The list of genes associated with each maf is also generated.
+
+```{r genelists, results='hide'}
+maf_300 <- mafobj_allgenes@data[Hugo_Symbol %in% genelist, ]
+cnv_300 <- cnv_mapped[cnv_mapped$Hugo_Symbol %in% genelist, ]
+mafobj_300 <- read.maf(maf = maf_300, clinicalData = clinical_mapped, cnTable = cnv_300)
+
+tier1 <- c("Pathogenic")
+tier2 <- c("Pathogenic", "Likely_Pathogenic")
+tier3 <- c("Pathogenic", "Likely_Pathogenic", "Uncertain_Significance")
+
+maf_t1 <- maf_300[maf_300$Clinical_Significance_Summary_Clinvar_Cancervar %in% tier1, ]
+cnv_t1 <- cnv_300[cnv_300$Classification %in% tier1, ]
+mafobj_t1 <- read.maf(maf = maf_t1, cnTable = cnv_t1, clinicalData = clinical_mapped)
+
+maf_t2 <- maf_300[maf_300$Clinical_Significance_Summary_Clinvar_Cancervar %in% tier2, ]
+cnv_t2 <- cnv_300[cnv_300$Classification %in% tier2, ]
+mafobj_t2 <- read.maf(maf = maf_t2, cnTable = cnv_t2, clinicalData = clinical_mapped)
+
+maf_t3 <- maf_300[maf_300$Clinical_Significance_Summary_Clinvar_Cancervar %in% tier3, ]
+cnv_t3 <- cnv_300[cnv_300$Classification %in% tier3, ]
+mafobj_t3 <- read.maf(maf = maf_t3, cnTable = cnv_t3, clinicalData = clinical_mapped)
+
+maf_t1_c <- maf_300[maf_300$Clinical_Significance_Summary_Chiara %in% tier1, ]
+cnv_t1_c <- cnv_300[cnv_300$Classification %in% tier1, ]
+mafobj_t1_c <- read.maf(maf = maf_t1_c, cnTable = cnv_t1_c, clinicalData = clinical_mapped)
+
+maf_t2_c <- maf_300[maf_300$Clinical_Significance_Summary_Chiara %in% tier2, ]
+cnv_t2_c <- cnv_300[cnv_300$Classification %in% tier2, ]
+mafobj_t2_c <- read.maf(maf = maf_t2_c, cnTable = cnv_t2_c, clinicalData = clinical_mapped)
+
+maf_t3_c <- maf_300[maf_300$Clinical_Significance_Summary_Chiara %in% tier3, ]
+cnv_t3_c <- cnv_300[cnv_300$Classification %in% tier3, ]
+mafobj_t3_c <- read.maf(maf = maf_t3_c, cnTable = cnv_t3_c, clinicalData = clinical_mapped)
+
+genes_t1   <- getGeneSummary(mafobj_t1)$Hugo_Symbol
+genes_t2   <- getGeneSummary(mafobj_t2)$Hugo_Symbol
+genes_t3   <- getGeneSummary(mafobj_t3)$Hugo_Symbol
+
+genes_t1_c <- getGeneSummary(mafobj_t1_c)$Hugo_Symbol
+genes_t2_c <- getGeneSummary(mafobj_t2_c)$Hugo_Symbol
+genes_t3_c <- getGeneSummary(mafobj_t3_c)$Hugo_Symbol
+```
+
+```{r filters_genes, results='hide'}
+clin_data <- mafobj_allgenes@clinical.data
+clin_data_sorted <- clin_data[order(clin_data$T1221, clin_data$Sample_group), ]
+clin_data_sorted_samples_paired <- clin_data[order(clin_data$Tumor_Sample_Barcode, clin_data$T1221, clin_data$Sample_group), ]
+clin_data_sorted[, patient_id := sub("-.*", "", Tumor_Sample_Barcode)]
+clin_data_sorted[, sample_suffix := sub(".*-(.*)", "\\1", Tumor_Sample_Barcode)]
+clin_data_sorted[, sample_num := as.integer(sub("ALL([0-9]+).*", "\\1", Tumor_Sample_Barcode))]
+
+sample_order <- clin_data_sorted$Tumor_Sample_Barcode
+sample_order_paired <- clin_data_sorted_samples_paired$Tumor_Sample_Barcode
+
+# gene filters
+topN <- params$num_top_genes
+
+top_t1   <- head(mafobj_t1@gene.summary[order(-MutatedSamples)]$Hugo_Symbol, topN)
+top_t2   <- head(mafobj_t2@gene.summary[order(-MutatedSamples)]$Hugo_Symbol, topN)
+top_t3   <- head(mafobj_t3@gene.summary[order(-MutatedSamples)]$Hugo_Symbol, topN)
+
+top_t1_c <- head(mafobj_t1_c@gene.summary[order(-MutatedSamples)]$Hugo_Symbol, topN)
+top_t2_c <- head(mafobj_t2_c@gene.summary[order(-MutatedSamples)]$Hugo_Symbol, topN)
+top_t3_c <- head(mafobj_t3_c@gene.summary[order(-MutatedSamples)]$Hugo_Symbol, topN)
+```
+
+### Sample lists filtering
+
+Similarly to the genes, the sample list is also filtered by clinical conditions and ordered to be used in the final oncoplots.
+
+```{r filters_samples, results='hide'}
+# sample filters
+sample_order_diag_relapse <- clin_data_sorted[Sample_group %in% c("diag", "relapse1")][order(T1221, sample_num, sample_suffix)]$Tumor_Sample_Barcode
+maf_obj_filtered_diag_relapse <- subsetMaf(maf = mafobj_allgenes, tsb = sample_order_diag_relapse)
+
+samples_neg_diag_relapse <- clin_data_sorted[T1221 == "NEG" & Sample_group %in% c("diag", "relapse1")][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
+
+samples_pos_diag_relapse <- clin_data_sorted[T1221 == "POS" & Sample_group %in% c("diag", "relapse1")][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
+
+
+sample_order_diag <- clin_data_sorted[Sample_group == "diag"][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
+maf_obj_filtered_diag <- subsetMaf(maf = mafobj_allgenes, tsb = sample_order_diag)
+
+sample_order_relapse <- clin_data_sorted[Sample_group == "relapse1"][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
+maf_obj_filtered_relapse <- subsetMaf(maf = mafobj_allgenes, tsb = sample_order_relapse)
+
+samples_neg <- clin_data_sorted[T1221 == "NEG"][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
+maf_obj_filtered_neg <- subsetMaf(maf = mafobj_allgenes, tsb = samples_neg)
+samples_pos <- clin_data_sorted[T1221 == "POS"][order(sample_num, sample_suffix)]$Tumor_Sample_Barcode
+maf_obj_filtered_pos <- subsetMaf(maf = mafobj_allgenes, tsb = samples_pos)
+
+sample_order_patient_adj <- clin_data_sorted[order(T1221, sample_num, sample_suffix)]$Tumor_Sample_Barcode
+```
+
+```{r setup_directories}
+# setup directories
+output_dir <- file.path(params$results_dir, paste0(params$manual_timestamp, "_", params$project))
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+```
+
+## Summary
+
+The summary plots were generated with maftools.
+
+They provide an overview of the cohort data by showing informations about the variant classification, the top 10 mutated genes and the distribution across samples. 
+
+In the top 10 mutated genes section:
+
+  - the bar length represents the total number of mutations found for that particular gene across all samples
+  
+  - the percentage represents the fraction of samples with at least one mutation in that gene
+
+### Summary - all samples
+
+```{r summary1}
+plotmafSummary(maf = mafobj_allgenes, rmOutlier = TRUE, addStat = "median", dashboard = TRUE, titvRaw = FALSE)
+```
+
+### Summary - diagnosis samples
+
+```{r summary2}
+plotmafSummary(maf = maf_obj_filtered_diag, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
+```
+
+### Summary - first relapse samples
+
+```{r summary3}
+plotmafSummary(maf = maf_obj_filtered_relapse, rmOutlier = TRUE, addStat = 'median', dashboard = TRUE, titvRaw = FALSE)
+```
+
+## Oncoplots
+
+All small variants oncoplots were generated with maftools.
+
+Each oncoplot was generated by taking into account:
+
+  - The tier filter (above I only, above II only and above III only) and the tiering method (most pathogenic across Clinvar, Cancervar and VARSOME (VCC) vs Clinvar and Cancervar only (CC))
+  
+  - The number of top genes to plot (25)
+  
+  - The sample grouping (either by clinical info (T1221 = based on detection of the traslocation of chr 12 to chr 21, Sample_group = diagnosis, relapses), or by patient (diagnosis and relapses grouped together))
+
+### Most pathogenic in VCC, Tier I and II genes
+
+#### All samples
+
+```{r oncoplot1, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = mafobj_t2_c,
+  genes = top_t2_c,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 8, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+
+#### All samples, by patient
+
+```{r oncoplot1bypat, results='hide', echo=FALSE}
+oncoplot(
+  maf = mafobj_t2_c,
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_patient_adj
+  )
+```
+
+#### Positive samples
+
+```{r oncoplot1pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t2_c, tsb = samples_pos),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+#### Negative samples
+
+```{r oncoplot1neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t2_c, tsb = samples_neg),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+### Most pathogenic in VCC, Tier I, II and III genes
+
+#### All samples
+
+```{r oncoplot2, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = mafobj_t3_c,
+  genes = top_t3_c, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+#### All samples, by patient
+
+```{r oncoplot2bypat, results='hide', echo=FALSE}
+oncoplot(
+  maf = mafobj_t3_c,
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_patient_adj
+  )
+```
+
+#### Positive samples
+
+```{r oncoplot2pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t3_c, tsb = samples_pos),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+#### Negative samples
+
+```{r oncoplot2neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t3_c, tsb = samples_neg),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+### Most pathogenic in CC, Tier I and II genes
+
+#### All samples
+
+```{r oncoplot3, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = mafobj_t2,
+  genes = top_t2, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+#### All samples, by patient
+
+```{r oncoplot3bypat, results='hide', echo=FALSE}
+oncoplot(
+  maf = mafobj_t2,
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_patient_adj
+  )
+```
+
+#### Positive samples
+
+```{r oncoplot3pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t2, tsb = samples_pos),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+#### Negative samples
+
+```{r oncoplot3neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t2, tsb = samples_neg),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+
+### Most pathogenic in CC, Tier I, II and III genes, all samples
+
+#### All samples
+
+```{r oncoplot4, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = mafobj_t3,
+  genes = top_t3, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+#### All samples, by patient
+
+```{r oncoplot4bypat, results='hide', echo=FALSE}
+oncoplot(
+  maf = mafobj_t3,
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_patient_adj
+  )
+```
+
+#### Positive samples
+
+```{r oncoplot4pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t3, tsb = samples_pos),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+#### Negative samples
+
+```{r oncoplot4neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t3, tsb = samples_neg),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+### Most pathogenic in VCC, Tier I and II genes, only diagnosis and relapse 1 samples
+
+#### All samples
+
+```{r oncoplot5, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = subsetMaf(maf = mafobj_t2_c, tsb = sample_order_diag_relapse),
+  genes = top_t2_c, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+#### All samples, by patient
+
+```{r oncoplot5bypat, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t2_c, tsb = sample_order_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_patient_adj
+  )
+```
+
+#### Positive samples
+
+```{r oncoplot5pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t2_c, tsb = samples_pos_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+#### Negative samples
+
+```{r oncoplot5neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t2_c, tsb = samples_neg_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+### Most pathogenic in VCC, Tier I, II and III genes, only diagnosis and relapse 1 samples
+
+#### All samples
+
+```{r oncoplot6, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = subsetMaf(maf = mafobj_t3_c, tsb = sample_order_diag_relapse),
+  genes = top_t3_c, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+#### All samples, by patient
+
+```{r oncoplot6bypat, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t3_c, tsb = sample_order_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_patient_adj
+  )
+```
+
+#### Positive samples
+
+```{r oncoplot6pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t3_c, tsb = samples_pos_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+#### Negative samples
+
+```{r oncoplot6neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t3_c, tsb = samples_neg_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+### Most pathogenic in CC, Tier I, and II genes, only diagnosis and relapse 1 samples
+
+#### All samples
+
+```{r oncoplot7, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = subsetMaf(maf = mafobj_t2, tsb = sample_order_diag_relapse),
+  genes = top_t2, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+#### All samples, by patient
+
+```{r oncoplot7bypat, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t2, tsb = sample_order_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_patient_adj
+  )
+```
+
+#### Positive samples
+
+```{r oncoplot7pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t2, tsb = samples_pos_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+#### Negative samples
+
+```{r oncoplot7neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t2, tsb = samples_neg_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+
+### Most pathogenic in CC, Tier I, II and III genes, only diagnosis and relapse 1 samples
+
+#### All samples
+
+```{r oncoplot8, results='hide', echo=FALSE}
+main_onco <- oncoplot(
+  maf = subsetMaf(maf = mafobj_t3, tsb = sample_order_diag_relapse),
+  genes = top_t3, 
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order
+  )
+gene_order <- rownames(main_onco$oncomatrix)
+print(main_onco)
+```
+
+#### All samples, by patient
+
+```{r oncoplot8bypat, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t3, tsb = sample_order_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = sample_order_patient_adj
+  )
+```
+
+#### Positive samples
+
+```{r oncoplot8pos, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t3, tsb = samples_pos_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_pos
+  )
+```
+
+#### Negative samples
+
+```{r oncoplot8neg, results='hide', echo=FALSE}
+oncoplot(
+  maf = subsetMaf(maf = mafobj_t3, tsb = samples_neg_diag_relapse),
+  genes = gene_order, 
+  keepGeneOrder = TRUE,
+  GeneOrderSort = FALSE,
+  showTumorSampleBarcodes = TRUE, 
+  barcode_mar = 12.5, 
+  clinicalFeatures = c("T1221", "Sample_group"), 
+  SampleNamefontSize = 1.3,
+  sampleOrder = samples_neg
+  )
+```
+
+
+
+## Other Plots
+
+Additional secondary plots from maftools.
+
+### Transitions-Transversions
+
+The plot contains informations on the sample rate of transition vs transversions for all samples and their distribution across samples.
+
+```{r transition_transversions, fig.height=13}
+maf_obj.titv = titv(maf = mafobj_allgenes, plot = FALSE, useSyn = TRUE)
+plotTiTv(res = maf_obj.titv, showBarcodes = TRUE)
+```
+
+### TMB Comparison Graph
+
+The plot shows a comparison between the analyzed cohort and a set of standardized cohorts from the literature and tumor classification. The cohorts are compared by average Tumor mutational burden.
+
+```{r TMB_comparison}
+maf_obj.mutload = tcgaCompare(maf = mafobj_allgenes, cohortName = 'PALL', logscale = TRUE, capture_size = 50)
+```
+
+### VAF Plots
+
+The VAF plots show the VAF distribution of the top 20 genes in the selected 300 gene list by VAF.
+
+#### VAF Plot, positive samples, most pathogenic in CC, Tier I and II genes
+
+```{r vaf_plot1, results='hide', echo=FALSE}
+plotVaf(maf = subsetMaf(maf = mafobj_t2, tsb = samples_pos), vafCol = 'tumor_f', genes = genes_t2)
+```
+
+#### VAF Plot, negative samples, most pathogenic in CC, Tier I and II genes
+
+```{r vaf_plot2, results='hide', echo=FALSE}
+plotVaf(maf = subsetMaf(maf = mafobj_t2, tsb = samples_neg), vafCol = 'tumor_f', genes = genes_t2)
+```
+
+#### VAF Plot, positive samples, most pathogenic in VCC, Tier I and II genes
+
+```{r vaf_plot3, results='hide', echo=FALSE}
+plotVaf(maf = subsetMaf(maf = mafobj_t2_c, tsb = samples_pos), vafCol = 'tumor_f', genes = genes_t2_c)
+```
+
+#### VAF Plot, negative samples, most pathogenic in VCC, Tier I and II genes
+
+```{r vaf_plot4, results='hide', echo=FALSE}
+plotVaf(maf = subsetMaf(maf = mafobj_t2_c, tsb = samples_neg), vafCol = 'tumor_f', genes = genes_t2_c)
+```
+
+## Copy number Manhattan Plots
+
+This section contains the Manhattan plots generated from the copy number data from DRAGEN and CNVkit. 
+
+The plots are generated with ggplot2 (4.0.0).
+
+```{r setup_genelist_cnvkit}
+gene_entrez <- AnnotationDbi::select(org.Hs.eg.db,
+                                    keys = genelist,
+                                    keytype = "SYMBOL",
+                                    columns = c("ENTREZID"))
+
+gene_entrez <- gene_entrez %>% filter(!is.na(ENTREZID))
+txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+gene_ranges <- genes(txdb, columns = c("gene_id"))
+gene_ranges_filtered <- gene_ranges[names(gene_ranges) %in% gene_entrez$ENTREZID]
+gene_df <- as.data.frame(gene_ranges_filtered) %>%
+  dplyr::select(seqnames, start, end, width, strand, gene_id)
+
+gene_annotated <- gene_entrez %>%
+  inner_join(gene_df, by = c("ENTREZID" = "gene_id")) %>%
+  dplyr::rename(
+    Chromosome = seqnames,
+    Start_Position = start,
+    End_Position = end
+  )
+gene_annotated <- gene_annotated %>%
+  mutate(Chromosome = gsub("^chr", "", Chromosome))
+```
+
+### CN CNVKit, Manhattan Plot, Segments
+
+The CNVkit Manhattan plots have been generated from the CNVkit output which was in turn generated from the tumor and normal cram files from DRAGEN.
+
+These plots show on the Y axis the log2R of the copy number of each region calculated directly by CNVkit. 
+
+The plot has been centered at value log2R = 0 for all patients and the log2R values have been capped at +- 2.5 to limit the outliers effect on influencing the plot scaling from patient to patient. 
+
+An additional gene label has been added by taking the initial list of 300 genes and evaluating if each one of these genes would fall in a copy number region with a log2R absolute value > 0.5.
+
+```{r manhattan_manual_seg_cnvkit}
+plot_list <- list()
+plot_params <- cnv_plot_data$metadata
+
+for (sample in names(cnv_plot_data$samples)) {
+
+  cns3 <- cnv_plot_data$samples[[sample]]$cns3
+  centers <- cnv_plot_data$samples[[sample]]$centers
+  df_annot_filtered <- cnv_plot_data$samples[[sample]]$df_annot_filtered
+
+  n_chrom <- length(unique(cns3$chromosome))
+  chrom_colors <- colorRampPalette(
+    brewer.pal(12, "Paired")
+  )(n_chrom)
+
+  x_total <- max(cns3$pos_cum) - min(cns3$pos_cum)
+  nudge_range <- 0.05 * x_total
+
+  p <- ggplot(
+    cns3,
+    aes(
+      x = pos_cum,
+      y = log2_capped,
+      group = chromosome
+    )
+  ) +
+    geom_segment(
+      aes(
+        x = start + chr_cum_start,
+        xend = end + chr_cum_start,
+        y = log2_capped,
+        yend = log2_capped,
+        color = chromosome
+      ),
+      linewidth = 1
+    ) +
+    geom_hline(
+      yintercept = 0,
+      linetype = "dashed",
+      color = "red"
+    ) +
+    geom_text_repel(
+      data = df_annot_filtered,
+      aes(
+        x = pos_cum,
+        y = log2_capped,
+        label = genes
+      ),
+      size = 2,
+      nudge_y = ifelse(
+        df_annot_filtered$log2_capped > 0,
+        0.2,
+        -0.2
+      ),
+      nudge_x = runif(
+        nrow(df_annot_filtered),
+        -nudge_range,
+        nudge_range
+      ),
+      direction = "y",
+      segment.size = 0.2,
+      segment.color = "grey60",
+      box.padding = 0.2,
+      force = 2,
+      force_pull = 0.5
+    ) +
+    scale_y_continuous(
+      limits = c(
+        plot_params$log2_cap_min,
+        plot_params$log2_cap_max
+      )
+    ) +
+    scale_x_continuous(
+      breaks = centers$center,
+      labels = centers$chromosome,
+      expand = c(0,0)
+    ) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 90, size = 6),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      aspect.ratio = plot_params$aspect_ratio
+    ) +
+    labs(
+      title = paste(
+        "Copy number segments (line plot) for sample",
+        sample
+      ),
+      x = "Chromosome",
+      y = "Log2 copy number ratio"
+    )
+
+  plot_list[[sample]] <- p
+
+}
+```
+
+```{r results='asis', echo=FALSE}
+patient_ids <- unique(sub("-.*", "", names(plot_list)))
+
+for (patient in patient_ids) {
+  cat(sprintf(
+    "<details style='margin-bottom:12px;'>\n<summary><b>%s</b></summary>\n\n",
+    patient
+  ))
+  samples <- grep(
+    paste0("^", patient, "-"),
+    names(plot_list),
+    value = TRUE
+  )
+  for (sample in samples) {
+    cat(sprintf("<h4>%s</h4>\n", sample))
+    print(plot_list[[sample]])
+  }
+  cat("</details>\n\n")
+}
+```
+
+### CN DRAGEN annotation files + CNVKit seg files, Manhattan Plot, Segments
+
+The DRAGEN Manhattan plots have been generated directly from the DRAGEN output that has been annotated by Variantalker (ClassifyCNV, ".cnv.annotated.tsv" files).
+
+These plots show on the Y axis the log2R of the copy number of each region calculated directly by CNVkit.
+
+The plot has been centered at value log2R = 0 for all patients and the log2R values have been capped at +- 2.5 to limit the outliers effect on influencing the plot scaling from patient to patient. 
+
+An additional gene label has been added by taking the list of genes contained in the column "Known or predicted dosage-sensitive genes" from each .cnv.annotated.tsv patient file.
+
+Only the mutations classified as Pathogenic or Likely Pathogenic by ClassifyCNV were taken.
+
+In this case the threshold has been removed since the genes listed in the annotated file should be already above threshold, considering they have been annotated for copy number effects.
+
+```{r plot_dragen_manhattan}
+plot_params <- dragen_plot_data$metadata
+plot_list <- list()
+
+for (sample in names(dragen_plot_data$samples)) {
+
+  cns2 <- dragen_plot_data$samples[[sample]]$cns2
+  centers <- dragen_plot_data$samples[[sample]]$centers
+  df_annot <- dragen_plot_data$samples[[sample]]$df_annot
+
+  n_chrom <- length(unique(cns2$chromosome))
+
+  chrom_colors <- setNames(
+    colorRampPalette(
+      RColorBrewer::brewer.pal(12, "Paired")
+    )(n_chrom),
+    sort(unique(cns2$chromosome))
+  )
+
+  x_total <- max(cns2$pos_cum) - min(cns2$pos_cum)
+  nudge_range <- 0.08 * x_total
+
+  p <- ggplot(
+    cns2,
+    aes(
+      x = pos_cum,
+      y = log2_capped,
+      group = chromosome
+    )
+  ) +
+    geom_segment(
+      aes(
+        x = start + chr_cum_start,
+        xend = end + chr_cum_start,
+        y = log2_capped,
+        yend = log2_capped,
+        color = chromosome
+      ),
+      linewidth = 1
+    ) +
+    geom_hline(
+      yintercept = 0,
+      linetype = "dashed",
+      color = "red"
+    ) +
+    scale_color_manual(values = chrom_colors) +
+    scale_x_continuous(
+      breaks = centers$center,
+      labels = centers$chromosome,
+      expand = c(0,0)
+    ) +
+    coord_cartesian(
+      ylim = c(
+        plot_params$y_min,
+        plot_params$y_max
+      )
+    ) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(
+        angle = 90,
+        size = 6
+      ),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      aspect.ratio = plot_params$aspect_ratio
+    ) +
+    labs(
+      title = paste(
+        "Copy number segments (line plot) for sample",
+        sample
+      ),
+      x = "Chromosome",
+      y = "Log2 copy number ratio"
+    )
+
+  if (!is.null(df_annot) && nrow(df_annot) > 0) {
+
+    p <- p +
+      geom_text_repel(
+        data = df_annot,
+        aes(
+          x = pos_cum,
+          y = log2_capped,
+          label = genes
+        ),
+        size = 2,
+        nudge_y = ifelse(
+          df_annot$log2_capped > 0,
+          0.2,
+          -0.2
+        ),
+        nudge_x = runif(
+          nrow(df_annot),
+          -nudge_range,
+          nudge_range
+        ),
+        direction = "y",
+        segment.size = 0.2,
+        segment.color = "grey60",
+        box.padding = 0.2,
+        force = 2,
+        force_pull = 0.5
+      )
+
+  }
+  plot_list[[sample]] <- p
+}
+```
+
+```{r results='asis', echo=FALSE}
+patient_ids <- unique(sub("-.*", "", names(plot_list)))
+
+for (patient in patient_ids) {
+  cat(sprintf(
+    "<details style='margin-bottom:15px;'>\n<summary><b>%s</b></summary>\n\n",
+    patient
+  ))
+  samples <- grep(
+    paste0("^", patient, "-"),
+    names(plot_list),
+    value = TRUE
+  )
+  for (sample in samples) {
+    cat(sprintf("<h4>%s</h4>\n", sample))
+    print(plot_list[[sample]])
+  }
+  cat("</details>\n\n")
+}
+```
+
+### CN Oncoplot, DRAGEN annotation/seg files
+
+The copy number oncoplots have been generated from the same DRAGEN annotation files used for the DRAGEN Manhattan plots. 
+
+3 different oncoplots have been generated based on the mutations tiering described above (tier I and above, tier II and above, tier III and above).
+
+The logRatio used to define amplifications or deletions was already calculated by DRAGEN and the categories used to classify each copy number are simply Amplifications and Deletions.
+
+``` {r oncoplot_setup}
+all_samples <- cn_oncoplot_data$all_samples
+clinical_sample_info <- cn_oncoplot_data$clinical_sample_info
+
+t1221_colors <- c(
+  NEG = "#1f78b4",
+  POS = "#33a02c",
+  NE  = "#b2df8a"
+)
+
+sample_group_colors <- c(
+  diag = "#e41a1c",
+  relapse1 = "#377eb8",
+  relapse2 = "#4daf4a"
+)
+
+get_type <- function(x) strsplit(x, ";")[[1]]
+```
+
+#### CN Oncoplot, all samples, tier I
+
+```{r oncoplot_dragen_cnbands_filter1, fig.width = 12}
+plot_cn_oncoprint(
+  cn_block = cn_oncoplot_data$tier_I,
+  title = paste(
+    "Top",
+    cn_oncoplot_data$metadata$top_regions,
+    "CNV Regions (cytobands × sample)"
+  ),
+  remove_empty_columns = FALSE
+)
+```
+
+#### CN Oncoplot, all samples, tier I and II
+
+```{r oncoplot_dragen_cnbands_filter2, fig.width = 12}
+plot_cn_oncoprint(
+  cn_block = cn_oncoplot_data$tier_I_II,
+  title = paste(
+    "Top",
+    cn_oncoplot_data$metadata$top_regions,
+    "CNV Regions (cytobands × sample)"
+  ),
+  remove_empty_columns = TRUE
+)
+```
+
+#### CN Oncoplot, all samples, tier I, II and III
+
+```{r oncoplot_dragen_cnbands_filter3, fig.width = 12}
+plot_cn_oncoprint(
+  cn_block = cn_oncoplot_data$tier_I_II_III,
+  title = paste(
+    "Top",
+    cn_oncoplot_data$metadata$top_regions,
+    "CNV Regions (cytobands × sample)"
+  ),
+  remove_empty_columns = TRUE
+)
+```
+
+## CN Table
+
+The following table contains copy number data on all analyzed exome genes:
+
+  - gene: the gene symbol
+  
+  - band: the band containing that gene
+  
+  - del_amp: either deletion or amplification
+  
+  - num_cases: number of cases with that copy number alteration
+  
+  - num_samples: number of total samples analyzed
+  
+  - freq_percent: the alteration frequence in percentage (cases / total samples)
+  
+
+```{r plot_table, echo=FALSE}
+DT::datatable(
+  gene_cn_final_table,
+  extensions = 'Buttons',
+  options = list(
+    dom = 'Blfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+    lengthMenu = list(c(10, 25, 50,-1),
+                      c(10, 25, 50, "All"))
+  ),
+  rownames = TRUE,
+)
+```
