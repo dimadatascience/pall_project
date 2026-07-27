@@ -1,4 +1,15 @@
 
+details_begin <- function(title) {
+  cat(sprintf(
+    "<details style='margin-bottom:12px;'>\n<summary><b>%s</b></summary>\n\n",
+    title
+  ))
+}
+
+details_end <- function() {
+  cat("</details>\n")
+}
+
 get_sample_id <- function(filepath) {
   tools::file_path_sans_ext(basename(filepath)) %>%
     sub("\\.cnv\\.annotated$", "", .) %>%

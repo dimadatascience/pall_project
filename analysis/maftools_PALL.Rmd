@@ -12,17 +12,23 @@ author: "Gianluca Alessio Mariani"
 params:
   manual_timestamp: "250929_0900"
   project: "pall"
-  clinical_data: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/clinical_data.csv"
-  id_data: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PATIENTS_ID.csv"
-  maf_tumor_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic"
-  cnv_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/variantalker/results/250923_1647_pall/250923/annotation/cnv"
-  raw_samples_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4"
-  results_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results"
+  clinical_data: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/clinical_data.csv"
+  id_data: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PATIENTS_ID.csv"
+  gene_table1: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv"
+  gene_table2: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv"
+
   refgene_file: "/hpcnfs/scratch/DIMA/gmariani/__softwares/gistic2/gistic2/refgenes/hg38.UCSC.add_mir.160920/gistic2.refgene.hg38.UCSC.add_miR.160920.mat"
   cytoband_file: "/hpcnfs/scratch/DIMA/gmariani/_databases/reference_genomes/hg38/cytoBand_hg38_merged.txt"
-  gene_table1: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv"
-  gene_table2: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv"
-  cnvkit_out_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results/250918_1626_cnvkit_pall"
+  
+  data_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data"
+  results_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/results"
+  
+  maf_tumor_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic"
+  cnv_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/results/250923_1647_pall/250923/annotation/cnv"
+  raw_samples_dir: "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4"
+
+  cnvkit_out_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/results/250918_1626_cnvkit_pall"
+  
   run_gistic2: FALSE
   num_top_genes: 25
   num_top_regions: 40
@@ -65,330 +71,35 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r params_for_interactive_session}
-# Chunk: setup_parameters
-if (!exists("params")) {
-  params <- list(
-    manual_timestamp = "250929_0900",
-    project = "pall",
-    clinical_data = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/clinical_data.csv",
-    maf_tumor_dir = "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4/annotations/variant_annotations/250916/annotation/somatic",
-    cnv_dir = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/variantalker/results/250923_1647_pall/250923/annotation/cnv",
-    raw_samples_dir = "/hpcnfs/scratch/P_DIMA_PALL/wes/250912_rerun_dragen4.4.4",
-    results_dir = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results",
-    refgene_file = "/hpcnfs/scratch/DIMA/gmariani/__softwares/gistic2/gistic2/refgenes/hg38.UCSC.add_mir.160920/gistic2.refgene.hg38.UCSC.add_miR.160920.mat",
-    gene_table1 = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv",
-    gene_table2 = "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv",
-    cnvkit_out_dir: "/hpcnfs/scratch/DIMA/gmariani/PROJECTS/pall_ALL/results/250918_1626_cnvkit_pall",
-    run_gistic2 = FALSE
-  )
-}
-
-if (!is.null(params$manual_timestamp) && 
-    !is.na(params$manual_timestamp) &&
-    params$manual_timestamp != "") {
-  manual_timestamp <- params$manual_timestamp
-} else {
-  manual_timestamp <- format(Sys.time(), "%y%m%d_%H%M")
-}
-```
-
 ```{r load_libraries_and_setup, results='hide'}
-library(grDevices)
-library(maftools)
-library(data.table)
-library(tidyr)
-library(dplyr)
-library(stringr)
-library(GenomicRanges)
-library(readr)
-library("mclust")
-library(ggplot2)
-library(circlize)
-library(RCircos)
-library("RColorBrewer")
-library(grDevices)
-library(ComplexHeatmap)
-library(TxDb.Hsapiens.UCSC.hg38.knownGene)
-library('org.Hs.eg.db')
-library(AnnotationDbi)
-library(biovizBase)
-library(grid)
-library(purrr)
-library(ggrepel)
-library("DT")
-```
-
-```{r func_get_sample_id}
-get_sample_id <- function(filepath) {
-  tools::file_path_sans_ext(basename(filepath)) %>% 
-    sub("\\.cnv\\.annotated$", "", .) %>% 
-    sub("\\.target\\.counts$", "", .)
-}
-```
-
-```{r func_process_cnv_sample}
-process_cnv_sample <- function(cnv_file) {
-  sample_id <- strsplit(basename(cnv_file), "\\.")[[1]][[1]]
-  
-  # 1. Leggi CNV
-  cnv <- tryCatch({
-    read.delim(cnv_file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
-  }, error = function(e) {
-    message(sprintf("Errore nella lettura di %s: %s", cnv_file, e$message))
-    return(NULL)
-  })
-  
-  if (is.null(cnv) || !"All.protein.coding.genes" %in% colnames(cnv)) return(NULL)
-  cnv <- cnv[cnv$All.protein.coding.genes != "", ]
-  cnv$CNV_Status <- ifelse(cnv$Type == "DEL", "Del",
-                           ifelse(cnv$Type == "DUP", "Amp", NA))
-  cnv <- cnv[!is.na(cnv$CNV_Status), ]
-  if (nrow(cnv) == 0) return(NULL)
-
-  cnv_gr <- GRanges(
-    seqnames = cnv$Chromosome,
-    ranges = IRanges(start = cnv$Start, end = cnv$End)
-  )
-
-  # 🔹 File gene-level (solo se ti serve)
-  gene_annotation_df <- cnv %>%
-    mutate(Sample = sample_id,
-           Start_Position = Start,
-           End_Position = End) %>%
-    separate_rows(All.protein.coding.genes, sep = ",\\s*") %>%
-    mutate(Hugo_Symbol = All.protein.coding.genes) %>%
-    dplyr::select(Hugo_Symbol, Sample, CNV_Status, Chromosome, Start_Position, End_Position, Classification)
-
-  # Ritorna entrambi
-  return(list(
-    cnv_list = gene_annotation_df
-  ))
-}
-```
-
-```{r func_apply_priority}
-apply_priority <- function(df, colnames_list, priority, new_colname = "Clinical_Significance_Summary") {
-  
-  colnames_vec <- unlist(colnames_list)
-  df <- as.data.frame(df)
-  
-  # Funzione che prende un vettore di tag e sceglie quello con priorità più alta
-  select_highest_priority <- function(tags) {
-    tags <- trimws(tags)
-    tags <- tags[tags != "" & !is.na(tags)]
-    
-    for (p in priority) {
-      if (p %in% tags) return(p)
-    }
-    return(NA_character_)
-  }
-  
-  df[[new_colname]] <- apply(df[, colnames_vec, drop=FALSE], 1, select_highest_priority)
-  
-  return(data.table(df))
-}
-```
-
-```{r func_simplify_clinvar}
-simplify_clinvar <- function(value, priority, mapping) {
-  if (is.na(value) || trimws(value) == "") {
-    return("Not_Provided")
-  }
-  
-  # Split per tutti i separatori
-  tags <- unlist(strsplit(value, "[|/;,]"))
-  tags <- trimws(tags)
-  
-  # Applica il mapping ai tag
-  mapped_tags <- sapply(tags, function(x) {
-    if (x %in% names(mapping)) {
-      return(mapping[[x]])
-    } else {
-      return(x)
-    }
-  }, USE.NAMES = FALSE)
-  
-  # Trova il primo tag con priorità più alta nel mapping
-  for (p in priority) {
-    if (p %in% mapped_tags) {
-      return(p)
-    }
-  }
-  
-  # Se nessun match nella priorità, restituisce il primo tag mappato
-  return(mapped_tags[1])
-}
-```
-
-```{r func_preproc_oncocn}
-preproc_oncocn <- function(dt,
-                           cyto_file,
-                           gain = 0.30,
-                           loss = -0.30,
-                           top_regions = 50) {
-
-  # ---- 1) Preprocessing ----
-  dt_test <- dt %>%
-    mutate(
-      Chromosome = ifelse(grepl("^chr", Chromosome), Chromosome, paste0("chr", Chromosome)),
-      original_call = ifelse(is.na(Type) | Type == "", NA, Type),
-      log2R_seg = ifelse(Segment_Mean > 0, log2(Segment_Mean), NA)   # evita -Inf
-    )
-
-  # ---- 2) GRanges ----
-  cnv_gr <- GRanges(
-    seqnames = dt_test$Chromosome,
-    ranges = IRanges(start = dt_test$Start, end = dt_test$End),
-    sample = dt_test$Sample,
-    log2R = dt_test$log2R_seg,
-    original_call = dt_test$original_call
-  )
-
-  # ---- 3) Cytoband ----
-  cyto <- read.delim(cyto_file, header = FALSE, stringsAsFactors = FALSE)
-  colnames(cyto) <- c("chrom", "chromStart", "chromEnd", "name", "gieStain")
-
-  cyto_gr <- GRanges(
-    seqnames = cyto$chrom,
-    ranges = IRanges(start = cyto$chromStart + 1, end = cyto$chromEnd),
-    name = cyto$name,
-    gieStain = cyto$gieStain
-  )
-
-  cyto_gr$region <- paste0(seqnames(cyto_gr), cyto_gr$name)
-
-  # ---- 4) Match seqlevels ----
-  seqlevelsStyle(cnv_gr) <- "UCSC"
-  common <- intersect(seqlevels(cyto_gr), seqlevels(cnv_gr))
-  cyto_gr <- keepSeqlevels(cyto_gr, common, pruning.mode = "coarse")
-  cnv_gr  <- keepSeqlevels(cnv_gr, common, pruning.mode = "coarse")
-
-  # ---- 5) Overlap ----
-  ov <- findOverlaps(cnv_gr, cyto_gr, ignore.strand = TRUE)
-  qh <- queryHits(ov)
-  sh <- subjectHits(ov)
-
-  ints <- pintersect(cnv_gr[qh], cyto_gr[sh])
-
-  df_raw <- data.frame(
-    sample = cnv_gr$sample[qh],
-    region = cyto_gr$region[sh],
-    log2R = cnv_gr$log2R[qh],
-    original_call = cnv_gr$original_call[qh],
-    w = width(ints),
-    stringsAsFactors = FALSE
-  )
-
-  # ---- 6) Weighted mean per regione ----
-  df <- df_raw %>%
-    group_by(sample, region) %>%
-    summarise(
-      log2R = weighted.mean(log2R, w, na.rm = TRUE),
-      original_call = original_call[which.max(w)],
-      .groups = "drop"
-    )
-
-  # ---- 7) Tua classificazione: SOLO DEL/DUP ----
-  df <- df %>%
-    mutate(
-      my_call = case_when(
-        log2R <= loss ~ "DEL",
-        log2R >= gain ~ "DUP",
-        TRUE ~ NA_character_
-      )
-    )
-
-  # ---- 8) Final call = DRAGEN se disponibile ----
-  df <- df %>%
-    mutate(
-      final_call = ifelse(
-        is.na(original_call) | original_call == "",
-        my_call,
-        original_call
-      )
-    ) %>%
-    filter(!is.na(final_call))
-
-  # ---- 9) Matrice regione × sample ----
-  mat <- df %>%
-    dplyr::select(sample, region, final_call) %>%
-    pivot_wider(names_from = sample, values_from = final_call, values_fill = "") %>%
-    group_by(region) %>%
-    summarise(across(everything(), ~ paste(unique(.), collapse = ";")),
-              .groups = "drop") %>%
-    tibble::column_to_rownames("region") %>%
-    as.matrix()
-
-  # ---- 10) Selezione top regioni ----
-  region_freq <- apply(mat, 1, function(x) sum(x != ""))
-  top_regions <- names(sort(region_freq, decreasing = TRUE))[1:top_regions]
-  mat_top <- mat[top_regions, , drop = FALSE]
-
-  # ---- 11) Oncoprint setup ----
-  col_map <- c(DUP = "#e41a1c", DEL = "#377eb8")
-
-  alter_fun <- list(
-    background = function(x, y, w, h) {
-      grid::grid.rect(x, y, w, h,
-                      gp = grid::gpar(fill = "#f2f2f2", col = NA))
-    },
-    DUP = function(x, y, w, h) {
-      grid::grid.rect(x, y, w * 0.9, h * 0.9,
-                      gp = grid::gpar(fill = col_map["DUP"], col = NA))
-    },
-    DEL = function(x, y, w, h) {
-      grid::grid.rect(x, y, w * 0.9, h * 0.9,
-                      gp = grid::gpar(fill = col_map["DEL"], col = NA))
-    }
-  )
-
-  get_type <- function(x) strsplit(x, ";")[[1]]
-
-  return(list(
-    mat_top = mat_top,
-    col_map = col_map,
-    alter_fun = alter_fun,
-    get_type = get_type,
-    df = df   # utile per debug/analisi mismatch
-  ))
-}
-```
-
-```{r func_savepdf}
-save_pdf_plot <- function(plot_expr, pdf_dir) {
-
-  # Recupera opzioni del chunk corrente
-  opts <- knitr::opts_current$get()
-  
-  # Nome del chunk
-  chunk_name <- opts$label
-  if (is.null(chunk_name) || chunk_name == "") {
-    chunk_name <- "unnamed_chunk"
-  }
-  
-  # Dimensioni del chunk
-  fig_width  <- opts$fig.width  %||% 10
-  fig_height <- opts$fig.height %||% 8
-  
-  # Assicurati che la cartella esista
-  dir.create(pdf_dir, recursive = TRUE, showWarnings = FALSE)
-  
-  # Gestione del nome con indice progressivo
-  index <- 1
-  pdf_file <- file.path(pdf_dir, paste0(chunk_name, "-", index, ".pdf"))
-  while (file.exists(pdf_file)) {
-    index <- index + 1
-    pdf_file <- file.path(pdf_dir, paste0(chunk_name, "-", index, ".pdf"))
-  }
-  
-  # Salva il PDF
-  pdf(pdf_file, width = fig_width, height = fig_height)
-  eval(plot_expr)   # esegue il plot
-  dev.off()
-  
-  message("PDF salvato in: ", pdf_file)
-}
+suppressPackageStartupMessages({
+  library(grDevices)
+  library(maftools)
+  library(data.table)
+  library(tidyr)
+  library(dplyr)
+  library(stringr)
+  library(GenomicRanges)
+  library(readr)
+  library("mclust")
+  library(ggplot2)
+  library(circlize)
+  library(RCircos)
+  library("RColorBrewer")
+  library(grDevices)
+  library(ComplexHeatmap)
+  library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+  library('org.Hs.eg.db')
+  library(AnnotationDbi)
+  library(biovizBase)
+  library(grid)
+  library(purrr)
+  library(ggrepel)
+  library("DT")
+})
+suppressMessages({
+  source("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/src/utils.R")
+})
 ```
 
 ## Setup & Preprocessing
@@ -456,6 +167,11 @@ cnv_mapped$Sample_new <- barcode_map[ cnv_mapped$Sample ]
 unique(maf_data_mapped$Tumor_Sample_Barcode[ is.na(maf_data_mapped$Tumor_Sample_Barcode_new) ])
 unique(clinical_mapped$Tumor_Sample_Barcode[ is.na(clinical_mapped$Tumor_Sample_Barcode_new) ])
 unique(cnv_mapped$Sample[ is.na(cnv_mapped$Sample_new) ])
+
+# Metti old barcodes in nuova colonna
+maf_data_mapped$Tumor_Sample_Barcode_old <- maf_data_mapped$Tumor_Sample_Barcode
+clinical_mapped$Tumor_Sample_Barcode_old <- clinical_mapped$Tumor_Sample_Barcode
+cnv_mapped$Sample_old <- cnv_mapped$Sample
 
 # Se tutto OK → sostituisci
 maf_data_mapped$Tumor_Sample_Barcode <- maf_data_mapped$Tumor_Sample_Barcode_new
@@ -694,7 +410,7 @@ sample_order_patient_adj <- clin_data_sorted[order(T1221, sample_num, sample_suf
 
 ```{r setup_directories}
 # setup directories
-output_dir <- file.path(params$results_dir, paste0(manual_timestamp, "_", params$project))
+output_dir <- file.path(params$results_dir, paste0(params$manual_timestamp, "_", params$project))
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
@@ -751,7 +467,7 @@ main_onco <- oncoplot(
   maf = mafobj_t2_c,
   genes = top_t2_c,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = 8, 
   clinicalFeatures = c("T1221", "Sample_group"), 
   SampleNamefontSize = 1.3,
   sampleOrder = sample_order
@@ -2223,6 +1939,7 @@ total_samples <- (seq_along(cnv_files))
 for (i in total_samples) {
 
   cnv <- fread(cnv_files[i])
+  cnv_name <- strsplit(basename(cnv_files[i]), "\\.")[[1]][1]
   
   if (nrow(cnv) == 0) next
 

@@ -448,10 +448,10 @@ changes </a>
 <div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
 <code>wflow_publish</code> to commit the R Markdown file and build the
 HTML.</p>
 </div>
@@ -642,15 +642,15 @@ data/gene_cn_final_table.rds
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdimadatasciencepallprojecttree32d6b697aa83ee336a02c4235b69fcfff1640efctargetblank32d6b69a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdimadatasciencepallprojecttreef2123d054c612f2651087d2d1213d7b6b8f59533targetblankf2123d0a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/dimadatascience/pall_project/tree/32d6b697aa83ee336a02c4235b69fcfff1640efc" target="_blank">32d6b69</a>
+<a href="https://github.com/dimadatascience/pall_project/tree/f2123d054c612f2651087d2d1213d7b6b8f59533" target="_blank">f2123d0</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdimadatasciencepallprojecttree32d6b697aa83ee336a02c4235b69fcfff1640efctargetblank32d6b69a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdimadatasciencepallprojecttreef2123d054c612f2651087d2d1213d7b6b8f59533targetblankf2123d0a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -660,7 +660,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/dimadatascience/pall_project/tree/32d6b697aa83ee336a02c4235b69fcfff1640efc" target="_blank">32d6b69</a>.
+<a href="https://github.com/dimadatascience/pall_project/tree/f2123d054c612f2651087d2d1213d7b6b8f59533" target="_blank">f2123d0</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -679,20 +679,11 @@ Ignored files:
 
 Untracked files:
     Untracked:  .Renviron
-    Untracked:  Rplot001.png
-    Untracked:  analysis/0_preprocess.Rmd
-    Untracked:  analysis/1_report.Rmd
-    Untracked:  src/
-    Untracked:  test.png
-    Untracked:  test_init.png
-    Untracked:  test_plot.png
 
 Unstaged changes:
-    Deleted:    .Rprofile
-    Modified:   .gitignore
-    Modified:   analysis/index.Rmd
+    Modified:   analysis/1_report.Rmd
     Modified:   analysis/maftools_PALL.Rmd
-    Deleted:    analysis/test.Rmd
+    Modified:   src/utils.R
 
 </code></pre>
 <p>
@@ -708,9 +699,76 @@ have uncommitted changes.
 </div>
 <div id="versions" class="tab-pane fade">
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/1_report.Rmd</code>) and HTML
+(<code>docs/1_report.html</code>) files. If you’ve configured a remote
+Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/analysis/1_report.Rmd" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+<td>
+:wrench: Modified structure of PALL report, now it is divided in two
+parts. First a preprocessing step to generate .Rds data and then a
+plotting step to generate the final .html report with the plots
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/dimadatascience/pall_project/c00be6892f40944dc338060152a91f4174c3f64d/docs/1_report.html" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+<td>
+:wrench: Modified structure of PALL report, now it is divided in two
+parts. First a preprocessing step to generate .Rds data and then a
+plotting step to generate the final .html report with the plots
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -803,14 +861,125 @@ one mutation in that gene</p></li>
 <div id="summary---all-samples" class="section level3">
 <h3>Summary - all samples</h3>
 <p><img src="figure/1_report.Rmd/summary1-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summary1-1">
+Past versions of summary1-1.png
+</button>
+</p>
+<div id="fig-summary1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/summary1-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="summary---diagnosis-samples" class="section level3">
 <h3>Summary - diagnosis samples</h3>
 <p><img src="figure/1_report.Rmd/summary2-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summary2-1">
+Past versions of summary2-1.png
+</button>
+</p>
+<div id="fig-summary2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/summary2-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="summary---first-relapse-samples" class="section level3">
 <h3>Summary - first relapse samples</h3>
 <p><img src="figure/1_report.Rmd/summary3-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-summary3-1">
+Past versions of summary3-1.png
+</button>
+</p>
+<div id="fig-summary3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/summary3-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="oncoplots" class="section level2">
@@ -827,172 +996,1354 @@ detection of the traslocation of chr 12 to chr 21, Sample_group =
 diagnosis, relapses), or by patient (diagnosis and relapses grouped
 together))</p></li>
 </ul>
-<div id="most-pathogenic-in-vcc-tier-i-and-ii-genes"
-class="section level3">
-<h3>Most pathogenic in VCC, Tier I and II genes</h3>
-<div id="all-samples" class="section level4">
-<h4>All samples</h4>
+<div id="most-pathogenic-in-vcc-all-samples" class="section level3">
+<h3>Most pathogenic in VCC, all samples</h3>
+<div id="tier-i-and-ii-genes" class="section level4 tabset">
+<h4 class="tabset">Tier I and II genes</h4>
+<div id="all-samples" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot1-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot1-1">
+Past versions of oncoplot1-1.png
+</button>
+</p>
+<div id="fig-oncoplot1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot1-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="all-samples-by-patient" class="section level4">
-<h4>All samples, by patient</h4>
+</div>
+</div>
+<div id="all-samples-by-patient" class="section level5">
+<h5>All samples, by patient</h5>
 <p><img src="figure/1_report.Rmd/oncoplot1bypat-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot1bypat-1">
+Past versions of oncoplot1bypat-1.png
+</button>
+</p>
+<div id="fig-oncoplot1bypat-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot1bypat-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="positive-samples" class="section level4">
-<h4>Positive samples</h4>
+</div>
+</div>
+<div id="positive-samples" class="section level5">
+<h5>Positive samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot1pos-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot1pos-1">
+Past versions of oncoplot1pos-1.png
+</button>
+</p>
+<div id="fig-oncoplot1pos-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot1pos-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="negative-samples" class="section level4">
-<h4>Negative samples</h4>
+</div>
+</div>
+<div id="negative-samples" class="section level5">
+<h5>Negative samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot1neg-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot1neg-1">
+Past versions of oncoplot1neg-1.png
+</button>
+</p>
+<div id="fig-oncoplot1neg-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot1neg-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div id="most-pathogenic-in-vcc-tier-i-ii-and-iii-genes"
-class="section level3">
-<h3>Most pathogenic in VCC, Tier I, II and III genes</h3>
-<div id="all-samples-1" class="section level4">
-<h4>All samples</h4>
+</div>
+</div>
+<div id="tier-i-ii-and-iii-genes" class="section level4 tabset">
+<h4 class="tabset">Tier I, II and III genes</h4>
+<div id="all-samples-1" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot2-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot2-1">
+Past versions of oncoplot2-1.png
+</button>
+</p>
+<div id="fig-oncoplot2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot2-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="all-samples-by-patient-1" class="section level4">
-<h4>All samples, by patient</h4>
+</div>
+</div>
+<div id="all-samples-by-patient-1" class="section level5">
+<h5>All samples, by patient</h5>
 <p><img src="figure/1_report.Rmd/oncoplot2bypat-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot2bypat-1">
+Past versions of oncoplot2bypat-1.png
+</button>
+</p>
+<div id="fig-oncoplot2bypat-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot2bypat-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="positive-samples-1" class="section level4">
-<h4>Positive samples</h4>
+</div>
+</div>
+<div id="positive-samples-1" class="section level5">
+<h5>Positive samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot2pos-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot2pos-1">
+Past versions of oncoplot2pos-1.png
+</button>
+</p>
+<div id="fig-oncoplot2pos-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot2pos-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="negative-samples-1" class="section level4">
-<h4>Negative samples</h4>
+</div>
+</div>
+<div id="negative-samples-1" class="section level5">
+<h5>Negative samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot2neg-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot2neg-1">
+Past versions of oncoplot2neg-1.png
+</button>
+</p>
+<div id="fig-oncoplot2neg-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot2neg-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div id="most-pathogenic-in-cc-tier-i-and-ii-genes"
-class="section level3">
-<h3>Most pathogenic in CC, Tier I and II genes</h3>
-<div id="all-samples-2" class="section level4">
-<h4>All samples</h4>
+</div>
+</div>
+</div>
+<div id="most-pathogenic-in-cc-all-samples" class="section level3">
+<h3>Most pathogenic in CC, all samples</h3>
+<div id="tier-i-and-ii-genes-1" class="section level4 tabset">
+<h4 class="tabset">Tier I and II genes</h4>
+<div id="all-samples-2" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot3-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot3-1">
+Past versions of oncoplot3-1.png
+</button>
+</p>
+<div id="fig-oncoplot3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot3-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="all-samples-by-patient-2" class="section level4">
-<h4>All samples, by patient</h4>
+</div>
+</div>
+<div id="all-samples-by-patient-2" class="section level5">
+<h5>All samples, by patient</h5>
 <p><img src="figure/1_report.Rmd/oncoplot3bypat-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot3bypat-1">
+Past versions of oncoplot3bypat-1.png
+</button>
+</p>
+<div id="fig-oncoplot3bypat-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot3bypat-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="positive-samples-2" class="section level4">
-<h4>Positive samples</h4>
+</div>
+</div>
+<div id="positive-samples-2" class="section level5">
+<h5>Positive samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot3pos-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot3pos-1">
+Past versions of oncoplot3pos-1.png
+</button>
+</p>
+<div id="fig-oncoplot3pos-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot3pos-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="negative-samples-2" class="section level4">
-<h4>Negative samples</h4>
+</div>
+</div>
+<div id="negative-samples-2" class="section level5">
+<h5>Negative samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot3neg-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot3neg-1">
+Past versions of oncoplot3neg-1.png
+</button>
+</p>
+<div id="fig-oncoplot3neg-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot3neg-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div id="most-pathogenic-in-cc-tier-i-ii-and-iii-genes-all-samples"
-class="section level3">
-<h3>Most pathogenic in CC, Tier I, II and III genes, all samples</h3>
-<div id="all-samples-3" class="section level4">
-<h4>All samples</h4>
+</div>
+</div>
+<div id="tier-i-ii-and-iii-genes-1" class="section level4 tabset">
+<h4 class="tabset">Tier I, II and III genes</h4>
+<div id="all-samples-3" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot4-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot4-1">
+Past versions of oncoplot4-1.png
+</button>
+</p>
+<div id="fig-oncoplot4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot4-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="all-samples-by-patient-3" class="section level4">
-<h4>All samples, by patient</h4>
+</div>
+</div>
+<div id="all-samples-by-patient-3" class="section level5">
+<h5>All samples, by patient</h5>
 <p><img src="figure/1_report.Rmd/oncoplot4bypat-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot4bypat-1">
+Past versions of oncoplot4bypat-1.png
+</button>
+</p>
+<div id="fig-oncoplot4bypat-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot4bypat-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="positive-samples-3" class="section level4">
-<h4>Positive samples</h4>
+</div>
+</div>
+<div id="positive-samples-3" class="section level5">
+<h5>Positive samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot4pos-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot4pos-1">
+Past versions of oncoplot4pos-1.png
+</button>
+</p>
+<div id="fig-oncoplot4pos-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot4pos-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="negative-samples-3" class="section level4">
-<h4>Negative samples</h4>
+</div>
+</div>
+<div id="negative-samples-3" class="section level5">
+<h5>Negative samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot4neg-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot4neg-1">
+Past versions of oncoplot4neg-1.png
+</button>
+</p>
+<div id="fig-oncoplot4neg-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot4neg-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div
-id="most-pathogenic-in-vcc-tier-i-and-ii-genes-only-diagnosis-and-relapse-1-samples"
+</div>
+</div>
+</div>
+<div id="most-pathogenic-in-vcc-only-diagnosis-and-relapse-1-samples"
 class="section level3">
-<h3>Most pathogenic in VCC, Tier I and II genes, only diagnosis and
-relapse 1 samples</h3>
-<div id="all-samples-4" class="section level4">
-<h4>All samples</h4>
+<h3>Most pathogenic in VCC, only diagnosis and relapse 1 samples</h3>
+<div id="tier-i-and-ii-genes-2" class="section level4 tabset">
+<h4 class="tabset">Tier I and II genes</h4>
+<div id="all-samples-4" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot5-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot5-1">
+Past versions of oncoplot5-1.png
+</button>
+</p>
+<div id="fig-oncoplot5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot5-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="all-samples-by-patient-4" class="section level4">
-<h4>All samples, by patient</h4>
+</div>
+</div>
+<div id="all-samples-by-patient-4" class="section level5">
+<h5>All samples, by patient</h5>
 <p><img src="figure/1_report.Rmd/oncoplot5bypat-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot5bypat-1">
+Past versions of oncoplot5bypat-1.png
+</button>
+</p>
+<div id="fig-oncoplot5bypat-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot5bypat-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="positive-samples-4" class="section level4">
-<h4>Positive samples</h4>
+</div>
+</div>
+<div id="positive-samples-4" class="section level5">
+<h5>Positive samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot5pos-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot5pos-1">
+Past versions of oncoplot5pos-1.png
+</button>
+</p>
+<div id="fig-oncoplot5pos-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot5pos-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="negative-samples-4" class="section level4">
-<h4>Negative samples</h4>
+</div>
+</div>
+<div id="negative-samples-4" class="section level5">
+<h5>Negative samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot5neg-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot5neg-1">
+Past versions of oncoplot5neg-1.png
+</button>
+</p>
+<div id="fig-oncoplot5neg-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot5neg-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div
-id="most-pathogenic-in-vcc-tier-i-ii-and-iii-genes-only-diagnosis-and-relapse-1-samples"
-class="section level3">
-<h3>Most pathogenic in VCC, Tier I, II and III genes, only diagnosis and
-relapse 1 samples</h3>
-<div id="all-samples-5" class="section level4">
-<h4>All samples</h4>
+</div>
+</div>
+<div id="tier-i-ii-and-iii-genes-2" class="section level4 tabset">
+<h4 class="tabset">Tier I, II and III genes</h4>
+<div id="all-samples-5" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot6-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot6-1">
+Past versions of oncoplot6-1.png
+</button>
+</p>
+<div id="fig-oncoplot6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot6-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="all-samples-by-patient-5" class="section level4">
-<h4>All samples, by patient</h4>
+</div>
+</div>
+<div id="all-samples-by-patient-5" class="section level5">
+<h5>All samples, by patient</h5>
 <p><img src="figure/1_report.Rmd/oncoplot6bypat-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot6bypat-1">
+Past versions of oncoplot6bypat-1.png
+</button>
+</p>
+<div id="fig-oncoplot6bypat-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot6bypat-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="positive-samples-5" class="section level4">
-<h4>Positive samples</h4>
+</div>
+</div>
+<div id="positive-samples-5" class="section level5">
+<h5>Positive samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot6pos-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot6pos-1">
+Past versions of oncoplot6pos-1.png
+</button>
+</p>
+<div id="fig-oncoplot6pos-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot6pos-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="negative-samples-5" class="section level4">
-<h4>Negative samples</h4>
+</div>
+</div>
+<div id="negative-samples-5" class="section level5">
+<h5>Negative samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot6neg-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot6neg-1">
+Past versions of oncoplot6neg-1.png
+</button>
+</p>
+<div id="fig-oncoplot6neg-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot6neg-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div
-id="most-pathogenic-in-cc-tier-i-and-ii-genes-only-diagnosis-and-relapse-1-samples"
+</div>
+</div>
+</div>
+<div id="most-pathogenic-in-cc-only-diagnosis-and-relapse-1-samples"
 class="section level3">
-<h3>Most pathogenic in CC, Tier I, and II genes, only diagnosis and
-relapse 1 samples</h3>
-<div id="all-samples-6" class="section level4">
-<h4>All samples</h4>
+<h3>Most pathogenic in CC, only diagnosis and relapse 1 samples</h3>
+<div id="tier-i-and-ii-genes-3" class="section level4 tabset">
+<h4 class="tabset">Tier I, and II genes</h4>
+<div id="all-samples-6" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot7-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot7-1">
+Past versions of oncoplot7-1.png
+</button>
+</p>
+<div id="fig-oncoplot7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot7-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="all-samples-by-patient-6" class="section level4">
-<h4>All samples, by patient</h4>
+</div>
+</div>
+<div id="all-samples-by-patient-6" class="section level5">
+<h5>All samples, by patient</h5>
 <p><img src="figure/1_report.Rmd/oncoplot7bypat-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot7bypat-1">
+Past versions of oncoplot7bypat-1.png
+</button>
+</p>
+<div id="fig-oncoplot7bypat-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot7bypat-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="positive-samples-6" class="section level4">
-<h4>Positive samples</h4>
+</div>
+</div>
+<div id="positive-samples-6" class="section level5">
+<h5>Positive samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot7pos-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot7pos-1">
+Past versions of oncoplot7pos-1.png
+</button>
+</p>
+<div id="fig-oncoplot7pos-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot7pos-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="negative-samples-6" class="section level4">
-<h4>Negative samples</h4>
+</div>
+</div>
+<div id="negative-samples-6" class="section level5">
+<h5>Negative samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot7neg-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot7neg-1">
+Past versions of oncoplot7neg-1.png
+</button>
+</p>
+<div id="fig-oncoplot7neg-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot7neg-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div
-id="most-pathogenic-in-cc-tier-i-ii-and-iii-genes-only-diagnosis-and-relapse-1-samples"
-class="section level3">
-<h3>Most pathogenic in CC, Tier I, II and III genes, only diagnosis and
-relapse 1 samples</h3>
-<div id="all-samples-7" class="section level4">
-<h4>All samples</h4>
+</div>
+</div>
+<div id="tier-i-ii-and-iii-genes-3" class="section level4 tabset">
+<h4 class="tabset">Tier I, II and III genes</h4>
+<div id="all-samples-7" class="section level5">
+<h5>All samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot8-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot8-1">
+Past versions of oncoplot8-1.png
+</button>
+</p>
+<div id="fig-oncoplot8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot8-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="all-samples-by-patient-7" class="section level4">
-<h4>All samples, by patient</h4>
+</div>
+</div>
+<div id="all-samples-by-patient-7" class="section level5">
+<h5>All samples, by patient</h5>
 <p><img src="figure/1_report.Rmd/oncoplot8bypat-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot8bypat-1">
+Past versions of oncoplot8bypat-1.png
+</button>
+</p>
+<div id="fig-oncoplot8bypat-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot8bypat-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="positive-samples-7" class="section level4">
-<h4>Positive samples</h4>
+</div>
+</div>
+<div id="positive-samples-7" class="section level5">
+<h5>Positive samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot8pos-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot8pos-1">
+Past versions of oncoplot8pos-1.png
+</button>
+</p>
+<div id="fig-oncoplot8pos-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot8pos-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="negative-samples-7" class="section level4">
-<h4>Negative samples</h4>
+</div>
+</div>
+<div id="negative-samples-7" class="section level5">
+<h5>Negative samples</h5>
 <p><img src="figure/1_report.Rmd/oncoplot8neg-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot8neg-1">
+Past versions of oncoplot8neg-1.png
+</button>
+</p>
+<div id="fig-oncoplot8neg-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot8neg-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1004,6 +2355,43 @@ relapse 1 samples</h3>
 <p>The plot contains informations on the sample rate of transition vs
 transversions for all samples and their distribution across samples.</p>
 <p><img src="figure/1_report.Rmd/transition_transversions-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-transition_transversions-1">
+Past versions of transition_transversions-1.png
+</button>
+</p>
+<div id="fig-transition_transversions-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/transition_transversions-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="tmb-comparison-graph" class="section level3">
 <h3>TMB Comparison Graph</h3>
@@ -1011,6 +2399,43 @@ transversions for all samples and their distribution across samples.</p>
 standardized cohorts from the literature and tumor classification. The
 cohorts are compared by average Tumor mutational burden.</p>
 <p><img src="figure/1_report.Rmd/TMB_comparison-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-TMB_comparison-1">
+Past versions of TMB_comparison-1.png
+</button>
+</p>
+<div id="fig-TMB_comparison-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/TMB_comparison-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="vaf-plots" class="section level3">
 <h3>VAF Plots</h3>
@@ -1022,6 +2447,43 @@ class="section level4">
 <h4>VAF Plot, positive samples, most pathogenic in CC, Tier I and II
 genes</h4>
 <p><img src="figure/1_report.Rmd/vaf_plot1-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vaf_plot1-1">
+Past versions of vaf_plot1-1.png
+</button>
+</p>
+<div id="fig-vaf_plot1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/vaf_plot1-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div
 id="vaf-plot-negative-samples-most-pathogenic-in-cc-tier-i-and-ii-genes"
@@ -1029,6 +2491,43 @@ class="section level4">
 <h4>VAF Plot, negative samples, most pathogenic in CC, Tier I and II
 genes</h4>
 <p><img src="figure/1_report.Rmd/vaf_plot2-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vaf_plot2-1">
+Past versions of vaf_plot2-1.png
+</button>
+</p>
+<div id="fig-vaf_plot2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/vaf_plot2-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div
 id="vaf-plot-positive-samples-most-pathogenic-in-vcc-tier-i-and-ii-genes"
@@ -1036,6 +2535,43 @@ class="section level4">
 <h4>VAF Plot, positive samples, most pathogenic in VCC, Tier I and II
 genes</h4>
 <p><img src="figure/1_report.Rmd/vaf_plot3-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vaf_plot3-1">
+Past versions of vaf_plot3-1.png
+</button>
+</p>
+<div id="fig-vaf_plot3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/vaf_plot3-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div
 id="vaf-plot-negative-samples-most-pathogenic-in-vcc-tier-i-and-ii-genes"
@@ -1043,6 +2579,43 @@ class="section level4">
 <h4>VAF Plot, negative samples, most pathogenic in VCC, Tier I and II
 genes</h4>
 <p><img src="figure/1_report.Rmd/vaf_plot4-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vaf_plot4-1">
+Past versions of vaf_plot4-1.png
+</button>
+</p>
+<div id="fig-vaf_plot4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/vaf_plot4-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1071,11 +2644,85 @@ number region with a log2R absolute value &gt; 0.5.</p>
 <h4>
 ALL1-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-1.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-1">
+Past versions of unnamed-chunk-1-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL1-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-2.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-2.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-2">
+Past versions of unnamed-chunk-1-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-2.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1084,11 +2731,85 @@ ALL1-R
 <h4>
 ALL2-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-3.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-3.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-3">
+Past versions of unnamed-chunk-1-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-3.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL2-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-4.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-4.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-4">
+Past versions of unnamed-chunk-1-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-4.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1097,11 +2818,85 @@ ALL2-R
 <h4>
 ALL3-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-5.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-5.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-5">
+Past versions of unnamed-chunk-1-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-5.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL3-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-6.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-6.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-6">
+Past versions of unnamed-chunk-1-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-6.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1110,15 +2905,126 @@ ALL3-R
 <h4>
 ALL4-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-7.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-7.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-7">
+Past versions of unnamed-chunk-1-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-7.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL4-R1
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-8.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-8.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-8">
+Past versions of unnamed-chunk-1-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-8.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL4-R2
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-9.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-9.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-9">
+Past versions of unnamed-chunk-1-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-9.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1127,11 +3033,85 @@ ALL4-R2
 <h4>
 ALL5-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-10.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-10.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-10">
+Past versions of unnamed-chunk-1-10.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-10.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL5-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-11.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-11.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-11">
+Past versions of unnamed-chunk-1-11.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-11.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1140,11 +3120,85 @@ ALL5-R
 <h4>
 ALL6-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-12.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-12.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-12">
+Past versions of unnamed-chunk-1-12.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-12.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL6-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-13.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-13.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-13">
+Past versions of unnamed-chunk-1-13.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-13.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1153,11 +3207,85 @@ ALL6-R
 <h4>
 ALL7-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-14.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-14.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-14">
+Past versions of unnamed-chunk-1-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-14.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL7-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-15.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-15.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-15">
+Past versions of unnamed-chunk-1-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-15.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1166,11 +3294,85 @@ ALL7-R
 <h4>
 ALL8-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-16.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-16.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-16">
+Past versions of unnamed-chunk-1-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-16.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL8-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-17.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-17.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-17">
+Past versions of unnamed-chunk-1-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-17.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1179,11 +3381,85 @@ ALL8-R
 <h4>
 ALL9-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-18.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-18.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-18">
+Past versions of unnamed-chunk-1-18.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-18.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL9-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-19.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-19.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-19">
+Past versions of unnamed-chunk-1-19.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-19" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-19.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1192,11 +3468,85 @@ ALL9-R
 <h4>
 ALL10-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-20.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-20.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-20">
+Past versions of unnamed-chunk-1-20.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-20" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-20.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL10-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-21.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-21.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-21">
+Past versions of unnamed-chunk-1-21.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-21" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-21.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1205,11 +3555,85 @@ ALL10-R
 <h4>
 ALL11-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-22.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-22.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-22">
+Past versions of unnamed-chunk-1-22.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-22" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-22.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL11-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-23.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-23.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-23">
+Past versions of unnamed-chunk-1-23.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-23" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-23.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1218,11 +3642,85 @@ ALL11-R
 <h4>
 ALL12-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-24.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-24.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-24">
+Past versions of unnamed-chunk-1-24.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-24" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-24.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL12-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-25.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-25.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-25">
+Past versions of unnamed-chunk-1-25.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-25" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-25.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1231,15 +3729,126 @@ ALL12-R
 <h4>
 ALL13-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-26.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-26.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-26">
+Past versions of unnamed-chunk-1-26.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-26" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-26.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL13-R1
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-27.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-27.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-27">
+Past versions of unnamed-chunk-1-27.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-27" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-27.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL13-R2
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-28.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-28.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-28">
+Past versions of unnamed-chunk-1-28.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-28" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-28.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1248,11 +3857,85 @@ ALL13-R2
 <h4>
 ALL14-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-29.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-29.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-29">
+Past versions of unnamed-chunk-1-29.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-29" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-29.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL14-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-30.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-30.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-30">
+Past versions of unnamed-chunk-1-30.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-30" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-30.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1261,11 +3944,85 @@ ALL14-R
 <h4>
 ALL15-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-31.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-31.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-31">
+Past versions of unnamed-chunk-1-31.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-31" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-31.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL15-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-32.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-32.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-32">
+Past versions of unnamed-chunk-1-32.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-32" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-32.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1274,11 +4031,85 @@ ALL15-R
 <h4>
 ALL16-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-33.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-33.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-33">
+Past versions of unnamed-chunk-1-33.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-33" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-33.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL16-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-34.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-34.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-34">
+Past versions of unnamed-chunk-1-34.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-34" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-34.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1287,11 +4118,85 @@ ALL16-R
 <h4>
 ALL17-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-35.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-35.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-35">
+Past versions of unnamed-chunk-1-35.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-35" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-35.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL17-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-36.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-36.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-36">
+Past versions of unnamed-chunk-1-36.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-36" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-36.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1300,11 +4205,85 @@ ALL17-R
 <h4>
 ALL18-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-37.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-37.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-37">
+Past versions of unnamed-chunk-1-37.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-37" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-37.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL18-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-38.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-38.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-38">
+Past versions of unnamed-chunk-1-38.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-38" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-38.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1313,11 +4292,85 @@ ALL18-R
 <h4>
 ALL19-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-39.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-39.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-39">
+Past versions of unnamed-chunk-1-39.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-39" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-39.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL19-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-40.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-40.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-40">
+Past versions of unnamed-chunk-1-40.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-40" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-40.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1326,11 +4379,85 @@ ALL19-R
 <h4>
 ALL20-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-41.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-41.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-41">
+Past versions of unnamed-chunk-1-41.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-41" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-41.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL20-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-42.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-42.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-42">
+Past versions of unnamed-chunk-1-42.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-42" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-42.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:12px;">
 <summary>
@@ -1339,15 +4466,126 @@ ALL20-R
 <h4>
 ALL21-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-43.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-43.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-43">
+Past versions of unnamed-chunk-1-43.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-43" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-43.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL21-R1
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-44.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-44.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-44">
+Past versions of unnamed-chunk-1-44.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-44" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-44.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL21-R2
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-1-45.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-1-45.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-45">
+Past versions of unnamed-chunk-1-45.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-45" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-1-45.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 </div>
 <div
@@ -1378,11 +4616,85 @@ have been annotated for copy number effects.</p>
 <h4>
 ALL1-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-1.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL1-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-2.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-2.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-2">
+Past versions of unnamed-chunk-2-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-2.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1391,11 +4703,85 @@ ALL1-R
 <h4>
 ALL2-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-3.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-3.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-3">
+Past versions of unnamed-chunk-2-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-3.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL2-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-4.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-4.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-4">
+Past versions of unnamed-chunk-2-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-4.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1404,11 +4790,85 @@ ALL2-R
 <h4>
 ALL3-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-5.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-5.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-5">
+Past versions of unnamed-chunk-2-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-5.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL3-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-6.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-6.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-6">
+Past versions of unnamed-chunk-2-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-6.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1417,15 +4877,126 @@ ALL3-R
 <h4>
 ALL4-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-7.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-7.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-7">
+Past versions of unnamed-chunk-2-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-7.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL4-R1
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-8.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-8.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-8">
+Past versions of unnamed-chunk-2-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-8.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL4-R2
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-9.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-9.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-9">
+Past versions of unnamed-chunk-2-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-9.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1434,11 +5005,85 @@ ALL4-R2
 <h4>
 ALL5-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-10.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-10.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-10">
+Past versions of unnamed-chunk-2-10.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-10.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL5-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-11.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-11.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-11">
+Past versions of unnamed-chunk-2-11.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-11.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1447,11 +5092,85 @@ ALL5-R
 <h4>
 ALL6-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-12.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-12.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-12">
+Past versions of unnamed-chunk-2-12.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-12.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL6-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-13.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-13.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-13">
+Past versions of unnamed-chunk-2-13.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-13.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1460,11 +5179,85 @@ ALL6-R
 <h4>
 ALL7-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-14.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-14.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-14">
+Past versions of unnamed-chunk-2-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-14.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL7-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-15.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-15.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-15">
+Past versions of unnamed-chunk-2-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-15.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1473,11 +5266,85 @@ ALL7-R
 <h4>
 ALL8-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-16.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-16.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-16">
+Past versions of unnamed-chunk-2-16.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-16.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL8-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-17.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-17.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-17">
+Past versions of unnamed-chunk-2-17.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-17.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1486,11 +5353,85 @@ ALL8-R
 <h4>
 ALL9-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-18.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-18.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-18">
+Past versions of unnamed-chunk-2-18.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-18.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL9-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-19.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-19.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-19">
+Past versions of unnamed-chunk-2-19.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-19" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-19.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1499,11 +5440,85 @@ ALL9-R
 <h4>
 ALL10-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-20.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-20.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-20">
+Past versions of unnamed-chunk-2-20.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-20" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-20.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL10-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-21.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-21.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-21">
+Past versions of unnamed-chunk-2-21.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-21" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-21.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1512,11 +5527,85 @@ ALL10-R
 <h4>
 ALL11-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-22.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-22.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-22">
+Past versions of unnamed-chunk-2-22.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-22" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-22.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL11-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-23.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-23.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-23">
+Past versions of unnamed-chunk-2-23.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-23" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-23.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1525,11 +5614,85 @@ ALL11-R
 <h4>
 ALL12-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-24.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-24.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-24">
+Past versions of unnamed-chunk-2-24.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-24" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-24.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL12-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-25.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-25.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-25">
+Past versions of unnamed-chunk-2-25.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-25" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-25.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1538,15 +5701,126 @@ ALL12-R
 <h4>
 ALL13-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-26.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-26.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-26">
+Past versions of unnamed-chunk-2-26.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-26" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-26.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL13-R1
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-27.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-27.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-27">
+Past versions of unnamed-chunk-2-27.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-27" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-27.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL13-R2
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-28.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-28.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-28">
+Past versions of unnamed-chunk-2-28.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-28" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-28.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1555,11 +5829,85 @@ ALL13-R2
 <h4>
 ALL14-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-29.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-29.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-29">
+Past versions of unnamed-chunk-2-29.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-29" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-29.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL14-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-30.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-30.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-30">
+Past versions of unnamed-chunk-2-30.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-30" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-30.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1568,11 +5916,85 @@ ALL14-R
 <h4>
 ALL15-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-31.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-31.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-31">
+Past versions of unnamed-chunk-2-31.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-31" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-31.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL15-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-32.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-32.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-32">
+Past versions of unnamed-chunk-2-32.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-32" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-32.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1581,11 +6003,85 @@ ALL15-R
 <h4>
 ALL16-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-33.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-33.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-33">
+Past versions of unnamed-chunk-2-33.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-33" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-33.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL16-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-34.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-34.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-34">
+Past versions of unnamed-chunk-2-34.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-34" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-34.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1594,11 +6090,85 @@ ALL16-R
 <h4>
 ALL17-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-35.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-35.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-35">
+Past versions of unnamed-chunk-2-35.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-35" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-35.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL17-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-36.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-36.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-36">
+Past versions of unnamed-chunk-2-36.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-36" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-36.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1607,11 +6177,85 @@ ALL17-R
 <h4>
 ALL18-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-37.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-37.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-37">
+Past versions of unnamed-chunk-2-37.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-37" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-37.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL18-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-38.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-38.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-38">
+Past versions of unnamed-chunk-2-38.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-38" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-38.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1620,11 +6264,85 @@ ALL18-R
 <h4>
 ALL19-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-39.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-39.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-39">
+Past versions of unnamed-chunk-2-39.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-39" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-39.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL19-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-40.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-40.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-40">
+Past versions of unnamed-chunk-2-40.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-40" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-40.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1633,11 +6351,85 @@ ALL19-R
 <h4>
 ALL20-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-41.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-41.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-41">
+Past versions of unnamed-chunk-2-41.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-41" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-41.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL20-R
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-42.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-42.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-42">
+Past versions of unnamed-chunk-2-42.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-42" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-42.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 <details style="margin-bottom:15px;">
 <summary>
@@ -1646,15 +6438,126 @@ ALL20-R
 <h4>
 ALL21-D
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-43.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-43.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-43">
+Past versions of unnamed-chunk-2-43.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-43" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-43.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL21-R1
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-44.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-44.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-44">
+Past versions of unnamed-chunk-2-44.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-44" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-44.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <h4>
 ALL21-R2
 </h4>
-<img src="figure/1_report.Rmd/unnamed-chunk-2-45.png" alt="" width="960" style="display: block; margin: auto;" />
+<p><img src="figure/1_report.Rmd/unnamed-chunk-2-45.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-45">
+Past versions of unnamed-chunk-2-45.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-45" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/unnamed-chunk-2-45.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </details>
 </div>
 <div id="cn-oncoplot-dragen-annotationseg-files" class="section level3">
@@ -1670,15 +6573,126 @@ number are simply Amplifications and Deletions.</p>
 <div id="cn-oncoplot-all-samples-tier-i" class="section level4">
 <h4>CN Oncoplot, all samples, tier I</h4>
 <p><img src="figure/1_report.Rmd/oncoplot_dragen_cnbands_filter1-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot_dragen_cnbands_filter1-1">
+Past versions of oncoplot_dragen_cnbands_filter1-1.png
+</button>
+</p>
+<div id="fig-oncoplot_dragen_cnbands_filter1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot_dragen_cnbands_filter1-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cn-oncoplot-all-samples-tier-i-and-ii" class="section level4">
 <h4>CN Oncoplot, all samples, tier I and II</h4>
 <p><img src="figure/1_report.Rmd/oncoplot_dragen_cnbands_filter2-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot_dragen_cnbands_filter2-1">
+Past versions of oncoplot_dragen_cnbands_filter2-1.png
+</button>
+</p>
+<div id="fig-oncoplot_dragen_cnbands_filter2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot_dragen_cnbands_filter2-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cn-oncoplot-all-samples-tier-i-ii-and-iii"
 class="section level4">
 <h4>CN Oncoplot, all samples, tier I, II and III</h4>
 <p><img src="figure/1_report.Rmd/oncoplot_dragen_cnbands_filter3-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-oncoplot_dragen_cnbands_filter3-1">
+Past versions of oncoplot_dragen_cnbands_filter3-1.png
+</button>
+</p>
+<div id="fig-oncoplot_dragen_cnbands_filter3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/dimadatascience/pall_project/blob/c00be6892f40944dc338060152a91f4174c3f64d/docs/figure/1_report.Rmd/oncoplot_dragen_cnbands_filter3-1.png" target="_blank">c00be68</a>
+</td>
+<td>
+Mariani_Gianluca_Alessio
+</td>
+<td>
+2026-07-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1771,53 +6785,54 @@ loaded via a namespace (and not attached):
  [19] SparseArray_1.10.9          Formula_1.2-5              
  [21] sass_0.4.10                 bslib_0.10.0               
  [23] htmlwidgets_1.6.4           cachem_1.1.0               
- [25] GenomicAlignments_1.46.0    lifecycle_1.0.5            
- [27] iterators_1.0.14            pkgconfig_2.0.3            
- [29] Matrix_1.7-3                R6_2.6.1                   
- [31] fastmap_1.2.0               MatrixGenerics_1.22.0      
- [33] clue_0.3-66                 digest_0.6.39              
- [35] colorspace_2.1-2            rprojroot_2.1.1            
- [37] crosstalk_1.2.2             Hmisc_5.2-4                
- [39] RSQLite_2.4.3               labeling_0.4.3             
- [41] httr_1.4.7                  abind_1.4-8                
- [43] compiler_4.5.1              bit64_4.6.0-1              
- [45] withr_3.0.3                 doParallel_1.0.17          
- [47] htmlTable_2.4.3             S7_0.2.2                   
- [49] backports_1.5.0             BiocParallel_1.44.0        
- [51] DBI_1.2.3                   R.utils_2.13.0             
- [53] DelayedArray_0.36.0         rjson_0.2.23               
- [55] DNAcopy_1.84.0              tools_4.5.1                
- [57] foreign_0.8-90              otel_0.2.0                 
- [59] httpuv_1.6.16               nnet_7.3-20                
- [61] R.oo_1.27.1                 glue_1.8.1                 
- [63] restfulr_0.0.16             promises_1.4.0             
- [65] checkmate_2.3.3             cluster_2.1.8.1            
- [67] BSgenome_1.78.0             gtable_0.3.6               
- [69] tzdb_0.5.0                  R.methodsS3_1.8.2          
- [71] ensembldb_2.34.0            hms_1.1.4                  
- [73] XVector_0.50.0              foreach_1.5.2              
- [75] pillar_1.11.1               vroom_1.7.0                
- [77] later_1.4.4                 splines_4.5.1              
- [79] lattice_0.22-7              survival_3.8-3             
- [81] rtracklayer_1.70.1          bit_4.6.0                  
- [83] tidyselect_1.2.1            Biostrings_2.78.0          
- [85] knitr_1.51                  git2r_0.36.2               
- [87] gridExtra_2.3               ProtGenerics_1.42.0        
- [89] SummarizedExperiment_1.40.0 xfun_0.57                  
- [91] matrixStats_1.5.0           stringi_1.8.7              
- [93] UCSC.utils_1.6.1            lazyeval_0.2.2             
- [95] workflowr_1.7.2             yaml_2.3.12                
- [97] evaluate_1.0.5              codetools_0.2-20           
- [99] cigarillo_1.0.0             tibble_3.3.1               
-[101] cli_3.6.6                   rpart_4.1.24               
-[103] jquerylib_0.1.4             dichromat_2.0-0.1          
-[105] Rcpp_1.1.0                  GenomeInfoDb_1.46.2        
-[107] png_0.1-8                   XML_3.99-0.19              
-[109] parallel_4.5.1              blob_1.2.4                 
-[111] AnnotationFilter_1.34.0     bitops_1.0-9               
-[113] VariantAnnotation_1.56.0    scales_1.4.0               
-[115] crayon_1.5.3                GetoptLong_1.0.5           
-[117] rlang_1.2.0                 KEGGREST_1.50.0            </code></pre>
+ [25] GenomicAlignments_1.46.0    whisker_0.4.1              
+ [27] lifecycle_1.0.5             iterators_1.0.14           
+ [29] pkgconfig_2.0.3             Matrix_1.7-3               
+ [31] R6_2.6.1                    fastmap_1.2.0              
+ [33] MatrixGenerics_1.22.0       clue_0.3-66                
+ [35] digest_0.6.39               colorspace_2.1-2           
+ [37] rprojroot_2.1.1             crosstalk_1.2.2            
+ [39] Hmisc_5.2-4                 RSQLite_2.4.3              
+ [41] labeling_0.4.3              httr_1.4.7                 
+ [43] abind_1.4-8                 compiler_4.5.1             
+ [45] bit64_4.6.0-1               withr_3.0.3                
+ [47] doParallel_1.0.17           htmlTable_2.4.3            
+ [49] S7_0.2.2                    backports_1.5.0            
+ [51] BiocParallel_1.44.0         DBI_1.2.3                  
+ [53] R.utils_2.13.0              DelayedArray_0.36.0        
+ [55] rjson_0.2.23                DNAcopy_1.84.0             
+ [57] tools_4.5.1                 foreign_0.8-90             
+ [59] otel_0.2.0                  httpuv_1.6.16              
+ [61] nnet_7.3-20                 R.oo_1.27.1                
+ [63] glue_1.8.1                  restfulr_0.0.16            
+ [65] promises_1.4.0              checkmate_2.3.3            
+ [67] cluster_2.1.8.1             BSgenome_1.78.0            
+ [69] gtable_0.3.6                tzdb_0.5.0                 
+ [71] R.methodsS3_1.8.2           ensembldb_2.34.0           
+ [73] hms_1.1.4                   XVector_0.50.0             
+ [75] foreach_1.5.2               pillar_1.11.1              
+ [77] vroom_1.7.0                 later_1.4.4                
+ [79] splines_4.5.1               lattice_0.22-7             
+ [81] survival_3.8-3              rtracklayer_1.70.1         
+ [83] bit_4.6.0                   tidyselect_1.2.1           
+ [85] Biostrings_2.78.0           knitr_1.51                 
+ [87] git2r_0.36.2                gridExtra_2.3              
+ [89] ProtGenerics_1.42.0         SummarizedExperiment_1.40.0
+ [91] xfun_0.57                   matrixStats_1.5.0          
+ [93] UCSC.utils_1.6.1            stringi_1.8.7              
+ [95] lazyeval_0.2.2              workflowr_1.7.2            
+ [97] yaml_2.3.12                 evaluate_1.0.5             
+ [99] codetools_0.2-20            cigarillo_1.0.0            
+[101] tibble_3.3.1                cli_3.6.6                  
+[103] rpart_4.1.24                jquerylib_0.1.4            
+[105] GenomeInfoDb_1.46.2         dichromat_2.0-0.1          
+[107] Rcpp_1.1.0                  png_0.1-8                  
+[109] XML_3.99-0.19               parallel_4.5.1             
+[111] blob_1.2.4                  AnnotationFilter_1.34.0    
+[113] bitops_1.0-9                VariantAnnotation_1.56.0   
+[115] scales_1.4.0                crayon_1.5.3               
+[117] GetoptLong_1.0.5            rlang_1.2.0                
+[119] KEGGREST_1.50.0            </code></pre>
 </div>
 </div>
 </div>
