@@ -16,6 +16,8 @@ params:
   id_data: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PATIENTS_ID.csv"
   gene_table1: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PALL_WES_PrimaryTumors/FINAL_DATASET.csv"
   gene_table2: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PALL_WES_RelapseTumors/FINAL_DATASET.csv"
+  
+  genelist_for_datatables: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/data/PALL_deletedGenes.csv"
 
   refgene_file: "/hpcnfs/scratch/DIMA/gmariani/__softwares/gistic2/gistic2/refgenes/hg38.UCSC.add_mir.160920/gistic2.refgene.hg38.UCSC.add_miR.160920.mat"
   cytoband_file: "/hpcnfs/scratch/DIMA/gmariani/_databases/reference_genomes/hg38/cytoBand_hg38_merged.txt"
@@ -96,6 +98,7 @@ suppressPackageStartupMessages({
   library(purrr)
   library(ggrepel)
   library("DT")
+  library(readxl)
 })
 suppressMessages({
   source("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/src/utils.R")
@@ -122,6 +125,12 @@ genelist <- unique(final_genetable$Hugo_Symbol)
 
 id_map <- read.csv(params$id_data, stringsAsFactors = FALSE)
 barcode_map <- setNames(id_map$SAMPLENAME, id_map$code)
+
+oncoplot_margin <- 6
+oncoplot_font_size <- 1.3
+
+genelist_for_datatables <- read_csv(params$genelist_for_datatables, show_col_types = FALSE) %>%
+  pull(Gene)
 
 maf_obj <- readRDS("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/maf_obj.rds")
 mafobj_allgenes <- readRDS("/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/mafobj_allgenes.rds")
@@ -371,9 +380,9 @@ main_onco <- oncoplot(
   maf = mafobj_t2_c,
   genes = top_t2_c,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 8, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order
   )
 gene_order <- rownames(main_onco$oncomatrix)
@@ -390,9 +399,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order_patient_adj
   )
 ```
@@ -406,9 +415,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_pos
   )
 ```
@@ -422,9 +431,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_neg
   )
 ```
@@ -439,9 +448,9 @@ main_onco <- oncoplot(
   maf = mafobj_t3_c,
   genes = top_t3_c, 
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order
   )
 gene_order <- rownames(main_onco$oncomatrix)
@@ -457,9 +466,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order_patient_adj
   )
 ```
@@ -473,9 +482,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_pos
   )
 ```
@@ -489,9 +498,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_neg
   )
 ```
@@ -508,9 +517,9 @@ main_onco <- oncoplot(
   maf = mafobj_t2,
   genes = top_t2, 
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order
   )
 gene_order <- rownames(main_onco$oncomatrix)
@@ -526,9 +535,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order_patient_adj
   )
 ```
@@ -542,9 +551,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_pos
   )
 ```
@@ -558,9 +567,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_neg
   )
 ```
@@ -574,9 +583,9 @@ main_onco <- oncoplot(
   maf = mafobj_t3,
   genes = top_t3, 
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order
   )
 gene_order <- rownames(main_onco$oncomatrix)
@@ -592,9 +601,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order_patient_adj
   )
 ```
@@ -608,9 +617,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_pos
   )
 ```
@@ -624,9 +633,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_neg
   )
 ```
@@ -642,9 +651,9 @@ main_onco <- oncoplot(
   maf = subsetMaf(maf = mafobj_t2_c, tsb = sample_order_diag_relapse),
   genes = top_t2_c, 
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order
   )
 gene_order <- rownames(main_onco$oncomatrix)
@@ -660,9 +669,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order_patient_adj
   )
 ```
@@ -676,9 +685,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_pos
   )
 ```
@@ -692,9 +701,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_neg
   )
 ```
@@ -708,9 +717,9 @@ main_onco <- oncoplot(
   maf = subsetMaf(maf = mafobj_t3_c, tsb = sample_order_diag_relapse),
   genes = top_t3_c, 
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order
   )
 gene_order <- rownames(main_onco$oncomatrix)
@@ -726,9 +735,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order_patient_adj
   )
 ```
@@ -742,9 +751,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_pos
   )
 ```
@@ -758,9 +767,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_neg
   )
 ```
@@ -776,9 +785,9 @@ main_onco <- oncoplot(
   maf = subsetMaf(maf = mafobj_t2, tsb = sample_order_diag_relapse),
   genes = top_t2, 
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order
   )
 gene_order <- rownames(main_onco$oncomatrix)
@@ -794,9 +803,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order_patient_adj
   )
 ```
@@ -810,9 +819,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_pos
   )
 ```
@@ -826,9 +835,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_neg
   )
 ```
@@ -842,9 +851,9 @@ main_onco <- oncoplot(
   maf = subsetMaf(maf = mafobj_t3, tsb = sample_order_diag_relapse),
   genes = top_t3, 
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order
   )
 gene_order <- rownames(main_onco$oncomatrix)
@@ -860,9 +869,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = sample_order_patient_adj
   )
 ```
@@ -876,9 +885,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_pos
   )
 ```
@@ -892,9 +901,9 @@ oncoplot(
   keepGeneOrder = TRUE,
   GeneOrderSort = FALSE,
   showTumorSampleBarcodes = TRUE, 
-  barcode_mar = 12.5, 
+  barcode_mar = oncoplot_margin, 
   clinicalFeatures = c("T1221", "Sample_group"), 
-  SampleNamefontSize = 1.3,
+  SampleNamefontSize = oncoplot_font_size,
   sampleOrder = samples_neg
   )
 ```
@@ -1253,7 +1262,7 @@ for (patient in patient_ids) {
 }
 ```
 
-### CN Oncoplot, DRAGEN annotation/seg files
+## CN Oncoplots, DRAGEN annotation/seg files
 
 The copy number oncoplots have been generated from the same DRAGEN annotation files used for the DRAGEN Manhattan plots. 
 
@@ -1279,6 +1288,8 @@ sample_group_colors <- c(
 
 get_type <- function(x) strsplit(x, ";")[[1]]
 ```
+
+### All samples {.tabset}
 
 #### CN Oncoplot, all samples, tier I
 
@@ -1322,7 +1333,54 @@ plot_cn_oncoprint(
 )
 ```
 
-## CN Table
+### All samples, grouped by patient {.tabset}
+
+#### CN Oncoplot, all samples, tier I
+
+```{r oncoplot_dragen_cnbands_filter12, fig.width = 12}
+plot_cn_oncoprint(
+  cn_block = cn_oncoplot_data$tier_I,
+  title = paste(
+    "Top",
+    cn_oncoplot_data$metadata$top_regions,
+    "CNV Regions (cytobands × sample)"
+  ),
+  sample_order = sample_order_patient_adj,
+  remove_empty_columns = FALSE
+)
+```
+
+#### CN Oncoplot, all samples, tier I and II
+
+```{r oncoplot_dragen_cnbands_filter22, fig.width = 12}
+plot_cn_oncoprint(
+  cn_block = cn_oncoplot_data$tier_I_II,
+  title = paste(
+    "Top",
+    cn_oncoplot_data$metadata$top_regions,
+    "CNV Regions (cytobands × sample)"
+  ),
+  sample_order = sample_order_patient_adj,
+  remove_empty_columns = TRUE
+)
+```
+
+#### CN Oncoplot, all samples, tier I, II and III
+
+```{r oncoplot_dragen_cnbands_filter32, fig.width = 12}
+plot_cn_oncoprint(
+  cn_block = cn_oncoplot_data$tier_I_II_III,
+  title = paste(
+    "Top",
+    cn_oncoplot_data$metadata$top_regions,
+    "CNV Regions (cytobands × sample)"
+  ),
+  sample_order = sample_order_patient_adj,
+  remove_empty_columns = TRUE
+)
+```
+
+## CN Table {.tabset}
 
 The following table contains copy number data on all analyzed exome genes:
 
@@ -1338,10 +1396,63 @@ The following table contains copy number data on all analyzed exome genes:
   
   - freq_percent: the alteration frequence in percentage (cases / total samples)
   
+### Tier I
 
-```{r plot_table, echo=FALSE}
+```{r plot_table1, echo=FALSE}
 DT::datatable(
-  gene_cn_final_table,
+  gene_cn_final_table %>%
+    filter(classification %in% c("Pathogenic")),
+  extensions = 'Buttons',
+  options = list(
+    dom = 'Blfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+    lengthMenu = list(c(10, 25, 50,-1),
+                      c(10, 25, 50, "All"))
+  ),
+  rownames = TRUE,
+)
+```
+
+### Tier I and II
+
+```{r plot_table2, echo=FALSE}
+DT::datatable(
+  gene_cn_final_table %>%
+    filter(classification %in% c("Pathogenic", "Likely pathogenic")),
+  extensions = 'Buttons',
+  options = list(
+    dom = 'Blfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+    lengthMenu = list(c(10, 25, 50,-1),
+                      c(10, 25, 50, "All"))
+  ),
+  rownames = TRUE,
+)
+```
+
+### Tier I, II and III
+
+```{r plot_table3, echo=FALSE}
+DT::datatable(
+  gene_cn_final_table %>%
+    filter(classification %in% c("Pathogenic", "Likely pathogenic", "Uncertain significance")),
+  extensions = 'Buttons',
+  options = list(
+    dom = 'Blfrtip',
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+    lengthMenu = list(c(10, 25, 50,-1),
+                      c(10, 25, 50, "All"))
+  ),
+  rownames = TRUE,
+)
+```
+
+### Only genes from genelist
+
+```{r plot_table4, echo=FALSE}
+DT::datatable(
+  gene_cn_final_table %>%
+    filter(gene %in% genelist_for_datatables),
   extensions = 'Buttons',
   options = list(
     dom = 'Blfrtip',

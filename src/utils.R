@@ -270,7 +270,8 @@ save_pdf_plot <- function(plot_expr, pdf_dir) {
 
 plot_cn_oncoprint <- function(cn_block,
                               title,
-                              remove_empty_columns = TRUE) {
+                              remove_empty_columns = TRUE,
+                              sample_order = NULL) {
 
   mat_top <- cn_block$mat_top
   col_map <- cn_block$col_map
@@ -317,8 +318,19 @@ plot_cn_oncoprint <- function(cn_block,
   mat_top <- mat_top[, all_samples]
 
   anno_df <- clinical_sample_info %>%
-    filter(Tumor_Sample_Barcode %in% colnames(mat_top)) %>%
-    arrange(T1221, Sample_group)
+    filter(Tumor_Sample_Barcode %in% colnames(mat_top))
+
+  if (is.null(sample_order)) {
+    anno_df <- anno_df %>%
+      arrange(T1221, Sample_group)
+  } else {
+    sample_order <- sample_order[
+      sample_order %in% anno_df$Tumor_Sample_Barcode
+    ]
+    anno_df <- anno_df[
+      match(sample_order, anno_df$Tumor_Sample_Barcode),
+    ]
+  }
 
   mat_top <- mat_top[, anno_df$Tumor_Sample_Barcode]
 
@@ -344,10 +356,6 @@ plot_cn_oncoprint <- function(cn_block,
     top_annotation = HeatmapAnnotation(
       `Alteration burden` = anno_oncoprint_barplot(),
       annotation_name_side = "left"
-    ),
-    left_annotation = rowAnnotation(
-      `Alteration freq` = anno_oncoprint_barplot(),
-      annotation_name_rot = 0
     ),
     bottom_annotation = bottom_anno,
     column_order = anno_df$Tumor_Sample_Barcode,

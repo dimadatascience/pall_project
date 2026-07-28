@@ -29,6 +29,10 @@ params:
 
   cnvkit_out_dir: "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/results/250918_1626_cnvkit_pall"
   
+  sex_chrom_cnvkit_manhattan: FALSE
+  sex_chrom_dragen_manhattan: TRUE
+  sex_chrom_oncoplots: FALSE
+  
   run_gistic2: FALSE
   num_top_genes: 25
   num_top_regions: 40
@@ -88,7 +92,7 @@ suppressMessages({
 
 # FIRST BLOCK
 
-```{r preprocessing_genelist, results='hide'}
+```{r preprocessing_start, results='hide'}
 samples <- list.dirs(params$maf_tumor_dir, full.names = FALSE, recursive = FALSE)
 
 final_genetable <- bind_rows(
@@ -97,6 +101,24 @@ final_genetable <- bind_rows(
 )
 
 genelist <- unique(final_genetable$Hugo_Symbol)
+
+chromosomes_to_keep_cnvkit <- if (params$sex_chrom_cnvkit_manhattan) {
+  c(as.character(1:22), "X", "Y")
+} else {
+  as.character(1:22)
+}
+
+chromosomes_to_keep_dragen <- if (params$sex_chrom_dragen_manhattan) {
+  c(as.character(1:22), "X", "Y")
+} else {
+  as.character(1:22)
+}
+
+chromosomes_to_keep_cn_oncoplots <- if (params$sex_chrom_oncoplots) {
+  paste0("chr", c(1:22, "X", "Y"))
+} else {
+  paste0("chr", 1:22)
+}
 ```
 
 ```{r preprocessing_cnv_files, results='hide'}
@@ -164,6 +186,35 @@ maf_obj <- read.maf(
   maf = maf_data_mapped,
   clinicalData = clinical_mapped,
   cnTable = cnv_mapped
+)
+
+sample_classification <- list(
+  # Combinazioni T1221 + Sample_group
+  T1221_POS_DIAG = clinical_mapped %>%
+    filter(T1221 == "POS", Sample_group == "diag") %>%
+    pull(Tumor_Sample_Barcode),
+  T1221_POS_RELAPSE = clinical_mapped %>%
+    filter(T1221 == "POS", str_starts(Sample_group, "relapse")) %>%
+    pull(Tumor_Sample_Barcode),
+  T1221_NEG_DIAG = clinical_mapped %>%
+    filter(T1221 == "NEG", Sample_group == "diag") %>%
+    pull(Tumor_Sample_Barcode),
+  T1221_NEG_RELAPSE = clinical_mapped %>%
+    filter(T1221 == "NEG", str_starts(Sample_group, "relapse")) %>%
+    pull(Tumor_Sample_Barcode),
+  # Singole condizioni
+  T1221_POS = clinical_mapped %>%
+    filter(T1221 == "POS") %>%
+    pull(Tumor_Sample_Barcode),
+  T1221_NEG = clinical_mapped %>%
+    filter(T1221 == "NEG") %>%
+    pull(Tumor_Sample_Barcode),
+  DIAG = clinical_mapped %>%
+    filter(Sample_group == "diag") %>%
+    pull(Tumor_Sample_Barcode),
+  RELAPSE = clinical_mapped %>%
+    filter(str_starts(Sample_group, "relapse")) %>%
+    pull(Tumor_Sample_Barcode)
 )
 
 saveRDS(maf_obj, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/maf_obj.rds")
@@ -274,7 +325,32 @@ mafobj_allgenes <- read.maf(maf = maf_data_filtered, clinicalData = clinical_map
 saveRDS(mafobj_allgenes, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/mafobj_allgenes.rds")
 ```
 
+```{r gene_list}
+allgenes_list <- getGeneSummary(maf_obj)$Hugo_Symbol
 
+gene_entrez <- AnnotationDbi::select(org.Hs.eg.db,
+                                    keys = allgenes_list,
+                                    keytype = "SYMBOL",
+                                    columns = c("ENTREZID"))
+
+gene_entrez <- gene_entrez %>% filter(!is.na(ENTREZID))
+txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+gene_ranges <- genes(txdb, columns = c("gene_id"))
+gene_ranges_filtered <- gene_ranges[as.character(names(gene_ranges)) %in% gene_entrez$ENTREZID]
+gene_df <- as.data.frame(gene_ranges_filtered) %>%
+  dplyr::select(seqnames, start, end, width, strand, gene_id)
+
+gene_annotated <- gene_entrez %>%
+  inner_join(gene_df, by = c("ENTREZID" = "gene_id")) %>%
+  dplyr::rename(
+    Chromosome = seqnames,
+    Start_Position = start,
+    End_Position = end
+  )
+gene_annotated <- gene_annotated %>%
+  mutate(Chromosome = gsub("^chr", "", Chromosome)) %>%
+  filter(Chromosome %in% chromosomes_to_keep_cnvkit)
+```
 
 
 
@@ -321,9 +397,9 @@ for (c_path in cnvkit_path) {
       chromosome = gsub("^chr", "", chromosome),
       mid = (start + end) / 2
     ) %>%
-    filter(chromosome %in% as.character(1:22)) %>%
+    filter(chromosome %in% chromosomes_to_keep_cnvkit) %>%
     mutate(
-      chromosome = factor(chromosome, levels = as.character(1:22))
+      chromosome = factor(chromosome, levels = chromosomes_to_keep_cnvkit)
     ) %>%
     arrange(chromosome, start)
 
@@ -532,7 +608,8 @@ gene_annotated <- gene_entrez %>%
     End_Position = end
   )
 gene_annotated <- gene_annotated %>%
-  mutate(Chromosome = gsub("^chr", "", Chromosome))
+  mutate(Chromosome = gsub("^chr", "", Chromosome)) %>%
+  filter(Chromosome %in% chromosomes_to_keep_dragen)
 
 gene_annotated <- gene_annotated %>%
   distinct(SYMBOL, .keep_all = TRUE)
@@ -574,8 +651,8 @@ for (i in sample_index_list) {
       chromosome = gsub("^chr", "", chromosome),
       mid = (start + end) / 2
     ) %>%
-    filter(chromosome %in% as.character(1:22)) %>%
-    mutate(chromosome = factor(chromosome, levels = as.character(1:22))) %>%
+    filter(chromosome %in% chromosomes_to_keep_dragen) %>%
+    mutate(chromosome = factor(chromosome, levels = chromosomes_to_keep_dragen)) %>%
     arrange(chromosome, start)
 
   # ---- Calcola posizioni cumulative ----
@@ -796,7 +873,7 @@ dt <- bind_rows(all_seg_data)
 all_samples <- unique(dt$Sample)
 
 dt <- dt %>%
-  dplyr::filter(!Chromosome %in% c("chrX", "chrY"))
+  dplyr::filter(Chromosome %in% chromosomes_to_keep_cn_oncoplots)
 
 dt_I <- dt %>%
   filter(Classification == "Pathogenic")
@@ -967,6 +1044,7 @@ for (i in total_samples) {
   )
 
   mcols(cnv_gr)$cnv_type <- cnv$cnv_type
+  mcols(cnv_gr)$classification <- cnv$Classification
 
   hits <- findOverlaps(gene_gr, cnv_gr)
 
@@ -976,6 +1054,7 @@ for (i in total_samples) {
     gene   = mcols(gene_gr)$gene[queryHits(hits)],
     sample = sample_ids[i],
     cnv    = mcols(cnv_gr)$cnv_type[subjectHits(hits)],
+    classification = mcols(cnv_gr)$classification[subjectHits(hits)],
     stringsAsFactors = FALSE
   )
 
@@ -984,6 +1063,20 @@ for (i in total_samples) {
 
 total_samples <- idx - 1
 cnv_long <- bind_rows(cnv_long)
+
+cnv_long <- cnv_long %>%
+  mutate(
+    classification = factor(
+      classification,
+      levels = c(
+        "Benign",
+        "Uncertain significance",
+        "Likely pathogenic",
+        "Pathogenic"
+      ),
+      ordered = TRUE
+    )
+  )
 ```
 
 ```{r final_annotation, results='hide', echo=FALSE}
@@ -995,6 +1088,7 @@ cnv_long <- cnv_long %>%
       "DEL" %in% cnv ~ "DEL",
       "AMP" %in% cnv ~ "AMP"
     ),
+    classification = as.character(max(classification)),
     .groups = "drop"
   )
 
@@ -1003,9 +1097,22 @@ gene_summary <- cnv_long %>%
   group_by(gene, cnv) %>%
   summarise(
     num_cases = n_distinct(sample),
+    samples = list(sort(unique(sample))),
+    classification = as.character(max(classification)),
     .groups = "drop"
   ) %>%
-  group_by(gene)
+  group_by(gene) %>%
+  mutate(
+    n_T1221_POS_DIAG = lengths(Map(intersect, samples, list(sample_classification$T1221_POS_DIAG))),
+    n_T1221_POS_RELAPSE = lengths(Map(intersect, samples, list(sample_classification$T1221_POS_RELAPSE))),
+    n_T1221_NEG_DIAG = lengths(Map(intersect, samples, list(sample_classification$T1221_NEG_DIAG))),
+    n_T1221_NEG_RELAPSE = lengths(Map(intersect, samples, list(sample_classification$T1221_NEG_RELAPSE))),
+    n_T1221_POS = lengths(Map(intersect, samples, list(sample_classification$T1221_POS))),
+    n_T1221_NEG = lengths(Map(intersect, samples, list(sample_classification$T1221_NEG))),
+    n_DIAG = lengths(Map(intersect, samples, list(sample_classification$DIAG))),
+    n_RELAPSE = lengths(Map(intersect, samples, list(sample_classification$RELAPSE)))
+  ) %>%
+  mutate(samples = sapply(samples, paste, collapse = ", "))
 
 gene_cyto_df <- data.frame(
   gene = mcols(gene_gr)$gene,
@@ -1023,9 +1130,19 @@ gene_cn_final_table <- gene_summary %>%
     gene,
     band,
     del_amp = cnv,
+    classification,
     num_cases,
     num_samples,
-    freq_percent
+    freq_percent,
+    n_DIAG,
+    n_RELAPSE,
+    n_T1221_POS,
+    n_T1221_NEG,
+    n_T1221_POS_DIAG,
+    n_T1221_POS_RELAPSE,
+    n_T1221_NEG_DIAG,
+    n_T1221_NEG_RELAPSE,
+    samples
   ) %>%
   arrange(desc(freq_percent))
 
