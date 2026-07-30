@@ -305,7 +305,7 @@ maf_data$VARSOME <- recode(maf_data$VARSOME, !!!varsome_dict)
 
 min_vaf = 0.05
 maf_data <- maf_data[maf_data$tumor_f > min_vaf]
-to_remove <- c("Splice_Site", "Silent", "Intron", "5'UTR")
+to_remove <- c("Silent", "Intron", "5'UTR")
 maf_data <- maf_data[!maf_data$Variant_Classification %in% to_remove]
 
 fishing_genes <- c("MUC", "TTN", "RYR", "OR", "KRT")
@@ -324,6 +324,9 @@ mafobj_allgenes <- read.maf(maf = maf_data_filtered, clinicalData = clinical_map
 
 saveRDS(mafobj_allgenes, file = "/hpcnfs/scratch/P_DIMA_PALL/report_ALL/scripts_report/R_project/data/mafobj_allgenes.rds")
 ```
+
+
+
 
 ```{r gene_list}
 allgenes_list <- getGeneSummary(maf_obj)$Hugo_Symbol

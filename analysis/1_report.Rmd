@@ -166,7 +166,7 @@ The MAF object is preprocessed to:
     
     - discarding fishing genes ("MUC", "TTN", "RYR", "OR", "KRT")
     
-    - discarding variants in non important regions such as "Splice_Site", "Silent", "Intron", "5'UTR" ...
+    - discarding not important variants ("Silent", "Intron", "5'UTR")
 
 ```{r clin_summary_setup}
 clinvar_dict <- c("Pathogenic" = "Pathogenic",
