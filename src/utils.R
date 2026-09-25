@@ -370,3 +370,72 @@ plot_cn_oncoprint <- function(cn_block,
   draw(ht)
 
 }
+
+setup_knitr_png_download <- function(
+    width_cm = 24,
+    height_cm = 18,
+    dpi = 150
+) {
+
+  knitr::opts_chunk$set(
+    echo = FALSE,
+    fig.align = "center",
+
+    # knitr usa inches
+    fig.width = width_cm / 2.54,
+    fig.height = height_cm / 2.54,
+
+    message = FALSE,
+    warning = FALSE,
+    autodep = TRUE,
+    cache = FALSE,
+
+    # Genera solamente PNG
+    dev = "png",
+
+    # PNG resolution
+    dpi = dpi
+  )
+
+  # Salva il normale plot hook di knitr
+  default_plot_hook <- knitr::knit_hooks$get("plot")
+
+  # Plot + pulsante download
+  knitr::knit_hooks$set(
+    plot = function(x, options) {
+
+      # Rendering normale gestito da workflowr/knitr
+      html_plot <- default_plot_hook(x, options)
+
+      png_name <- basename(x)
+
+      button <- sprintf(
+        paste0(
+          '<div style="',
+          'text-align:center;',
+          'margin-top:8px;',
+          'margin-bottom:20px;',
+          '">',
+
+          '<a href="%s" ',
+          'download="%s" ',
+          'class="btn btn-primary btn-sm">',
+
+          '&#11015; Download PNG',
+
+          '</a>',
+
+          '</div>'
+        ),
+        x,
+        png_name
+      )
+
+      paste0(
+        html_plot,
+        "\n",
+        button
+      )
+    }
+  )
+}
